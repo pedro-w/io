@@ -6,7 +6,7 @@ int PortableUsleep_justHereToAvoidRanlibWarning(void) { return 0; }
 int usleep(unsigned int us) {
     static LARGE_INTEGER freq;
     static int initted = 0;
-    LARGE_INTEGER s, e, d;
+    LARGE_INTEGER s, e, d = {0, 0};
 
     if (!initted) {
         QueryPerformanceFrequency(&freq);
@@ -14,7 +14,7 @@ int usleep(unsigned int us) {
     }
 
     QueryPerformanceCounter(&s);
-    d.QuadPart = freq.QuadPart * ((double)us / 1000000.0);
+    d.QuadPart = (LONGLONG) (freq.QuadPart * ((double)us / 1000000.0));
 
     do {
         QueryPerformanceCounter(&e);

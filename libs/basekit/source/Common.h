@@ -21,18 +21,19 @@ These defines are helpful for doing OS specific checks in the code.
 #elif !defined(__SYMBIAN32__) && !defined(_MSC_VER) && !defined(__NeXT__)
 #include <stdint.h>
 #else
-typedef unsigned char uint8_t;
-typedef signed char int8_t;
-typedef unsigned short uint16_t;
-typedef signed short int16_t;
-typedef unsigned long uint32_t;
-typedef signed long int32_t;
+#include "PortableStdint.h"
+//typedef unsigned char uint8_t;
+//typedef signed char int8_t;
+//typedef unsigned short uint16_t;
+//typedef signed short int16_t;
+//typedef unsigned long uint32_t;
+//typedef signed long int32_t;
 /*
  typedef unsigned long uint64_t;
  typedef signed long int64_t;
  */
-typedef unsigned long long uint64_t;
-typedef long long int64_t;
+//typedef unsigned long long uint64_t;
+//typedef long long int64_t;
 #endif
 
 /* Windows stuff */
@@ -70,7 +71,13 @@ typedef long long int64_t;
 #if defined(WIN32) || defined(__WINS__) || defined(__MINGW32__) ||             \
     defined(_MSC_VER)
 #define inline __inline
+// Windows doesn't have ssize_t
+#define ssize_t long long int
+
+// From https://stackoverflow.com/a/51897550/231929
+#if _MSC_VER < 1900
 #define snprintf _snprintf
+#endif
 #ifndef __MINGW32__
 #define usleep(x) Sleep(((x) + 999) / 1000)
 #endif
@@ -132,7 +139,6 @@ as errors in my dev settings */
 #include <memory.h>
 
 /* strlen undefined */
-#include <string.h>
 #include <malloc.h> /* for calloc */
 #endif
 #else

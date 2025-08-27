@@ -318,13 +318,13 @@ IO_METHOD(IoDirectory, exists) {
     */
 
     IoSymbol *path = DATA(self)->path;
-    DIR *dirp;
 
     if (IoMessage_argCount(m) > 0) {
         path = IoMessage_locals_symbolArgAt_(m, locals, 0);
     }
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
+    DIR *dirp;
     dirp = opendir(UTF8CSTRING(path));
 
     if (!dirp) {

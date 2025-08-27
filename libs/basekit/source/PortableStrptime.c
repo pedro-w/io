@@ -114,7 +114,7 @@ char *io_strptime(char *buf, char *fmt, struct tm *tm) {
                            "%A, %B, %e, %Y"};
 
     char c, *ptr;
-    long i, len;
+    size_t i, len;
 
     len = 0;
     ptr = fmt;

@@ -78,7 +78,7 @@ void UArray_rangeFill(UArray *self) {
 
 void UArray_negate(const UArray *self) {
     if (UArray_isSignedType(self)) {
-        UARRAY_FOREACHASSIGN(self, i, v, -v);
+        UARRAY_FOREACHASSIGN(self, i, v, 0-v);
     } else {
         UArray_error_(self, "UArray_negate not supported on this type");
     }

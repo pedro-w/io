@@ -188,9 +188,9 @@ IOINLINE int List_removeFirst_(List *self, void *item) {
 }
 
 IOINLINE void List_removeLast_(List *self, void *item) {
-    size_t index = self->size - 1;
+    size_t index = self->size;
 
-    for (index = self->size - 1; index > -1; index--) {
+    while (index-- > 0) {
         if (self->items[index] == item) {
             List_removeIndex_(self, index);
             break;
@@ -225,7 +225,7 @@ IOINLINE void List_at_put_(List *self, size_t index, void *item) {
     }
 }
 
-IOINLINE void List_swap_with_(List *self, long index1, long index2) {
+IOINLINE void List_swap_with_(List *self, ssize_t index1, ssize_t index2) {
     if (index1 < 0 || index2 < 0) {
         return;
     }

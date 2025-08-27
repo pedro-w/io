@@ -54,18 +54,18 @@ static const uint8_t utf8d[] = {
 };
 
 Boolean isLegalUTF8Sequence(const UTF8 *source, const UTF8 *sourceEnd) {
-    size_t i;
     uint8_t type;
     uint32_t state = UTF8_ACCEPT;
 
-    for (i = 0; i < sourceEnd - source; i++) {
+    while (source < sourceEnd) {
         // We don't care about the codepoint, so this is
         // a simplified version of the decode function.
-        type = utf8d[(uint8_t)source[i]];
+        type = utf8d[(uint8_t)*source];
         state = utf8d[256 + state * 16 + type];
 
         if (state == UTF8_REJECT)
             break;
+        ++source;
     }
 
     return state == UTF8_ACCEPT;

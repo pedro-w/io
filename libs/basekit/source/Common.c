@@ -8,8 +8,8 @@
 
 static long allocs = 0;
 static long reallocs = 0;
-static long allocatedBytes = 0;
-static long maxAllocatedBytes = 0;
+static size_t allocatedBytes = 0;
+static size_t maxAllocatedBytes = 0;
 static long frees = 0;
 
 /*
@@ -90,16 +90,18 @@ struct MemoryBlock {
     int line;
     MemoryBlock *next;
     MemoryBlock *prev;
-    char padding[40 - (sizeof(size_t) + sizeof(size_t) + sizeof(char *) +
-                       sizeof(int) + sizeof(void *) + sizeof(void *))];
+    /*char padding[40 - (sizeof(size_t) + sizeof(size_t) + sizeof(char *) +
+                       sizeof(int) + sizeof(void *) + sizeof(void *))];*/
 };
 
+#define MEMORY_BLOCK_SIZE ((sizeof(MemoryBlock)+7) & ~7)
+
 MemoryBlock *PtrToMemoryBlock(void *ptr) {
-    return (MemoryBlock *)(((char *)ptr) - sizeof(MemoryBlock));
+    return (MemoryBlock *)(((char *)ptr) - MEMORY_BLOCK_SIZE);
 }
 
 void *MemoryBlockToPtr(MemoryBlock *self) {
-    return (void *)(((char *)self) + sizeof(MemoryBlock));
+    return (void *)(((char *)self) + MEMORY_BLOCK_SIZE);
 }
 
 static MemoryBlock *_baseblock = NULL;
@@ -128,17 +130,19 @@ void MemoryBlock_insertAfter_(MemoryBlock *self, MemoryBlock *other) {
 
 MemoryBlock *MemoryBlock_newWithSize_file_line_(size_t size, char *file,
                                                 int line) {
-    MemoryBlock *self = calloc(1, sizeof(MemoryBlock) + size);
-    self->size = size;
-    self->allocNum = allocs;
-    self->file = file;
-    self->line = line;
-    MemoryBlock_insertAfter_(self, baseblock());
+    MemoryBlock *self = calloc(1, MEMORY_BLOCK_SIZE + size);
+    if (self != NULL) {
+        self->size = size;
+        self->allocNum = allocs;
+        self->file = file;
+        self->line = line;
+        MemoryBlock_insertAfter_(self, baseblock());
 
-    allocs++;
-    allocatedBytes += size;
-    if (allocatedBytes > maxAllocatedBytes)
-        maxAllocatedBytes = allocatedBytes;
+        allocs++;
+        allocatedBytes += size;
+        if (allocatedBytes > maxAllocatedBytes)
+            maxAllocatedBytes = allocatedBytes;
+    }
     return self;
 }
 
@@ -148,9 +152,11 @@ MemoryBlock *MemoryBlock_reallocToSize_(MemoryBlock *self, size_t size) {
     allocatedBytes -= self->size;
     allocatedBytes += size;
     reallocs++;
-    self = realloc(self, sizeof(MemoryBlock) + size);
-    self->size = size;
-    MemoryBlock_insertAfter_(self, prev);
+    self = realloc(self, MEMORY_BLOCK_SIZE + size);
+    if (self != NULL) {
+        self->size = size;
+        MemoryBlock_insertAfter_(self, prev);
+    }
     return self;
 }
 
@@ -170,7 +176,7 @@ void MemoryBlock_show(MemoryBlock *self) {
     // printf("\tsize %i\n", self->size);
     // printf("\tfile %s\n", file);
     // printf("\tline %i\n", self->line);
-    printf("\t%i %p %s:%i\t\t%i bytes\n", self->allocNum,
+    printf("\t%llu %p %s:%i\t\t%llu bytes\n", self->allocNum,
            MemoryBlockToPtr(self), file, self->line, self->size);
 }
 
@@ -205,8 +211,8 @@ void io_show_mem(char *s) {
     printf("reallocs            %i\n", reallocs);
     printf("frees               %i\n", frees);
     printf("allocsMinusfrees    %i\n", allocs - frees);
-    printf("allocatedBytes      %i\n", allocatedBytes);
-    printf("maxAllocatedBytes   %i\n", maxAllocatedBytes);
+    printf("allocatedBytes      %llu\n", allocatedBytes);
+    printf("maxAllocatedBytes   %llu\n", maxAllocatedBytes);
     // printf("allocs  %i  bytes   %i\n", allocs, allocatedBytes);
     // printf("\n");
 }

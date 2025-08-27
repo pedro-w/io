@@ -20,7 +20,7 @@ CHash *CHash_new(void) {
 void CHash_copy_(CHash *self, const CHash *other) {
     io_free(self->records);
     memcpy(self, other, sizeof(CHash));
-    self->records = malloc(self->size * sizeof(CHashRecord));
+    self->records = io_malloc(self->size * sizeof(CHashRecord));
     memcpy(self->records, other->records, self->size * sizeof(CHashRecord));
 }
 
@@ -31,7 +31,7 @@ CHash *CHash_clone(CHash *self) {
 }
 
 void CHash_setSize_(CHash *self, size_t size) {
-    self->records = realloc(self->records, size * sizeof(CHashRecord));
+    self->records = io_realloc(self->records, size * sizeof(CHashRecord));
 
     if (size > self->size) {
         memset(self->records + self->size * sizeof(CHashRecord), 0x0,

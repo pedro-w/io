@@ -8,9 +8,9 @@
 // read
 
 BASEKIT_API size_t UArray_fread_(UArray *self, FILE *fp);
-BASEKIT_API long UArray_readFromCStream_(UArray *self, FILE *stream);
+BASEKIT_API ssize_t UArray_readFromCStream_(UArray *self, FILE *stream);
 BASEKIT_API long UArray_readFromFilePath_(UArray *self, const UArray *path);
-BASEKIT_API long
+BASEKIT_API size_t
 UArray_readNumberOfItems_fromCStream_(UArray *self, size_t size, FILE *stream);
 BASEKIT_API int UArray_readLineFromCStream_(UArray *self, FILE *stream);
 
@@ -18,6 +18,6 @@ BASEKIT_API int UArray_readLineFromCStream_(UArray *self, FILE *stream);
 
 BASEKIT_API size_t UArray_fwrite_(const UArray *self, size_t size,
                                   FILE *stream);
-BASEKIT_API long UArray_writeToCStream_(const UArray *self, FILE *stream);
-BASEKIT_API long UArray_writeToFilePath_(const UArray *self,
+BASEKIT_API ssize_t UArray_writeToCStream_(const UArray *self, FILE *stream);
+BASEKIT_API ssize_t UArray_writeToFilePath_(const UArray *self,
                                          const UArray *path);

@@ -9,6 +9,21 @@ void IoAddonsInit(IoObject *context);
 #endif
 
 #ifdef IO_SHOW_STATS
+
+#ifdef WIN32
+double System_UserTime(void) { 
+	HANDLE hProcess = GetCurrentProcess();
+    FILETIME start, stop, kernel, user;
+    BOOL rc = GetProcessTimes(hProcess, &start, &stop, &kernel, &user);
+    if (rc) {
+		// These are in 100ns units
+        return (double)user.dwLowDateTime * 100.0e-9 +
+               (double)user.dwHighDateTime * (4294967296 * 100.0e-9);
+    } else {
+        return 0.0;
+    }
+}
+#else
 #include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -21,7 +36,7 @@ double System_UserTime(void)
 }
 
 #endif
-
+#endif
 int main(int argc, const char *argv[])
 {
 	int exitResult;

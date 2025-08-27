@@ -19,9 +19,9 @@ size_t UArray_fread_(UArray *self, FILE *fp) {
     return itemsRead;
 }
 
-long UArray_readFromCStream_(UArray *self, FILE *fp) {
-    long totalItemsRead = 0;
-    long itemsPerBuffer = CHUNK_SIZE / self->itemSize;
+ssize_t UArray_readFromCStream_(UArray *self, FILE *fp) {
+    size_t totalItemsRead = 0;
+    size_t itemsPerBuffer = CHUNK_SIZE / self->itemSize;
     UArray *buffer = UArray_new();
     UArray_setItemType_(buffer, self->itemType);
     UArray_setSize_(buffer, itemsPerBuffer);
@@ -51,7 +51,7 @@ long UArray_readFromCStream_(UArray *self, FILE *fp) {
     return totalItemsRead;
 }
 
-long UArray_readNumberOfItems_fromCStream_(UArray *self, size_t size,
+size_t UArray_readNumberOfItems_fromCStream_(UArray *self, size_t size,
                                            FILE *stream) {
     size_t itemsRead;
     UArray *buffer = UArray_new();
@@ -92,8 +92,8 @@ int UArray_readLineFromCStream_(UArray *self, FILE *stream) {
         char *s = (char *)io_calloc(1, CHUNK_SIZE);
 
         while (fgets(s, CHUNK_SIZE, stream) != NULL) {
-            long i;
-            long start = strlen(s) - 1;
+            ssize_t i;
+            size_t start = strlen(s) - 1;
 
             /* Remove trailing newline characters */
             for (i = start; (i >= 0) && ((s[i] == '\n') || (s[i] == '\r'));
@@ -125,20 +125,20 @@ size_t UArray_fwrite_(const UArray *self, size_t size, FILE *fp) {
     return fwrite(self->data, 1, self->itemSize * size, fp);
 }
 
-long UArray_writeToCStream_(const UArray *self, FILE *stream) {
-    size_t totalItemsRead = UArray_fwrite_(self, self->size, stream);
+ssize_t UArray_writeToCStream_(const UArray *self, FILE *stream) {
+    size_t totalItemsWritten = UArray_fwrite_(self, self->size, stream);
     if (ferror(stream)) {
-        perror("UArray_readFromCStream_");
+        perror("UArray_writeToCStream_");
         return -1;
     }
-    return totalItemsRead;
+    return totalItemsWritten;
 }
 
-long UArray_writeToFilePath_(const UArray *self, const UArray *path) {
+ssize_t UArray_writeToFilePath_(const UArray *self, const UArray *path) {
     UArray *sysPath =
         (UArray_itemSize(path) == 1) ? (UArray *)path : UArray_asUTF8(path);
     FILE *fp = fopen(UArray_asCString(sysPath), "w");
-    long itemsWritten = -1;
+    ssize_t itemsWritten = -1;
 
     if (fp) {
         itemsWritten = UArray_writeToCStream_(self, fp);

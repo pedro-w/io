@@ -21,7 +21,7 @@ PHash *PHash_new(void) {
 void PHash_copy_(PHash *self, const PHash *other) {
     io_free(self->records);
     memcpy(self, other, sizeof(PHash));
-    self->records = malloc(self->size * sizeof(PHashRecord));
+    self->records = io_malloc(self->size * sizeof(PHashRecord));
     memcpy(self->records, other->records, self->size * sizeof(PHashRecord));
 }
 
@@ -32,7 +32,7 @@ PHash *PHash_clone(PHash *self) {
 }
 
 void PHash_setSize_(PHash *self, size_t size) {
-    self->records = realloc(self->records, size * sizeof(PHashRecord));
+    self->records = io_realloc(self->records, size * sizeof(PHashRecord));
 
     if (size > self->size) {
         memset(self->records + self->size * sizeof(PHashRecord), 0x0,
@@ -103,7 +103,7 @@ void PHash_resizeTo_(PHash *self, size_t newSize) {
     unsigned char *oldRecords = self->records;
     size_t oldSize = self->size;
     self->size = newSize;
-    self->records = io_calloc(1, sizeof(PHashRecord) * self->size);
+    self->records = io_calloc(self->size, sizeof(PHashRecord));
     self->keyCount = 0;
     PHash_updateMask(self);
     PHash_insertRecords(self, oldRecords, oldSize);

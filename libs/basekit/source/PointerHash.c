@@ -20,7 +20,7 @@ PointerHash *PointerHash_new(void) {
 void PointerHash_copy_(PointerHash *self, const PointerHash *other) {
     io_free(self->records);
     memcpy(self, other, sizeof(PointerHash));
-    self->records = malloc(self->size * sizeof(PointerHashRecord));
+    self->records = io_malloc(self->size * sizeof(PointerHashRecord));
     memcpy(self->records, other->records,
            self->size * sizeof(PointerHashRecord));
 }
@@ -32,7 +32,7 @@ PointerHash *PointerHash_clone(PointerHash *self) {
 }
 
 void PointerHash_setSize_(PointerHash *self, size_t size) {
-    self->records = realloc(self->records, size * sizeof(PointerHashRecord));
+    self->records = io_realloc(self->records, size * sizeof(PointerHashRecord));
 
     if (size > self->size) {
         memset(self->records + self->size * sizeof(PointerHashRecord), 0x0,
