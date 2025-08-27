@@ -70,7 +70,13 @@ typedef long long int64_t;
 #if defined(WIN32) || defined(__WINS__) || defined(__MINGW32__) ||             \
     defined(_MSC_VER)
 #define inline __inline
+// Windows doesn't have ssize_t
+#define ssize_t long long int
+
+// From https://stackoverflow.com/a/51897550/231929
+#if _MSC_VER < 1900
 #define snprintf _snprintf
+#endif
 #ifndef __MINGW32__
 #define usleep(x) Sleep(((x) + 999) / 1000)
 #endif
