@@ -51,6 +51,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/_build/headers/IoInstallPrefix.h "#define
 
 # The custom command to generate source/IoVMInit.c which is our
 # "compiled" Io to C source code.
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/source)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
     COMMAND io2c VMCode IoState_doString_ ${IO_SRCS} > ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c

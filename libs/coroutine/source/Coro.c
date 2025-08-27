@@ -138,7 +138,11 @@ ptrdiff_t *Coro_CurrentStackPointer(void) __attribute__((noinline));
 
 ptrdiff_t *Coro_CurrentStackPointer(void) {
     ptrdiff_t a;
+#ifdef _MSC_VER
 #pragma warning(suppress : 4172)
+#else
+#pragma GCC diagnostic ignored "-Wreturn-local-addr"
+#endif
     return &a;
 }
 
