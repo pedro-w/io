@@ -68,14 +68,17 @@ typedef struct CallbackBlock {
 #if !defined(__arm64__) && !defined(__aarch64__)
 Coro *Coro_new(void) {
     Coro *self = (Coro *)io_calloc(1, sizeof(Coro));
-    self->requestedStackSize = CORO_DEFAULT_STACK_SIZE;
-    self->allocatedStackSize = 0;
+    if (self != NULL) {
+
+        self->requestedStackSize = CORO_DEFAULT_STACK_SIZE;
+        self->allocatedStackSize = 0;
 
 #ifdef USE_FIBERS
-    self->fiber = NULL;
+        self->fiber = NULL;
 #else
-    self->stack = NULL;
+        self->stack = NULL;
 #endif
+    }
     return self;
 }
 
@@ -135,9 +138,8 @@ ptrdiff_t *Coro_CurrentStackPointer(void) __attribute__((noinline));
 
 ptrdiff_t *Coro_CurrentStackPointer(void) {
     ptrdiff_t a;
-    ptrdiff_t *b = &a; // to avoid compiler warning about unused variables
-    // ptrdiff_t *c = a ^ (b ^ a); // to avoid
-    return b;
+#pragma warning(suppress : 4172)
+    return &a;
 }
 
 size_t Coro_bytesLeftOnStack(Coro *self) {
@@ -242,6 +244,7 @@ void Coro_StartWithArg(CallbackBlock *block) {
 
     // Look at the descriptors of the meminfo structure, which is
     // conveniently located on the stack we are interested into.
+    memset(&meminfo, 0, sizeof meminfo);
     VirtualQuery(&meminfo, &meminfo, sizeof meminfo);
     block->associatedCoro->stack = (char *)meminfo.AllocationBase + 64 * 1024;
 #endif
