@@ -21,8 +21,8 @@
 # Require CMake 2.8. I know for sure that this will not work with CMake 2.6
 # due to the use of the FILE command we use when creating the bundle
 # hierarchy.
-cmake_minimum_required(VERSION 3.5)
-
+cmake_minimum_required(VERSION 3.10)
+cmake_policy(VERSION 3.31)
 # Mac OS X: Setting policy CMP0042 to the new behavior generates dylibs with
 # RPATH-relative install name that is better suited for Mac OS X applications
 # embedding Io in their bundle.
@@ -82,8 +82,9 @@ macro(copy_files NAME GLOBPAT DSTDIR)
 	foreach(FILENAME ${${NAME}})
 		# Finally, copy the files.
 		add_custom_command(
-			TARGET copy_${NAME}
-			COMMAND ${CMAKE_COMMAND} -E copy ${FILENAME} ${DSTDIR}
+		  TARGET copy_${NAME}
+		  PRE_BUILD
+		  COMMAND ${CMAKE_COMMAND} -E copy ${FILENAME} ${DSTDIR}
 		)
 	endforeach(FILENAME)
 endmacro(copy_files)
