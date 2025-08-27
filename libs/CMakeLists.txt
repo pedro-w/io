@@ -71,11 +71,11 @@ set(IOVMALL_STATIC_SRCS
 
 # The custom command to generate source/IoVMInit.c which is our
 # "compiled" Io to C source code.
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/iovm/source/IoVMInit.c
-	COMMAND ${PROJECT_BINARY_DIR}/_build/binaries/io2c VMCode IoState_doString_ ${IO_SRCS} > ${CMAKE_CURRENT_SOURCE_DIR}/iovm/source/IoVMInit.c
-	DEPENDS io2c
-)
+#add_custom_command(
+#	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/iovm/source/IoVMInit.c
+#	COMMAND ${PROJECT_BINARY_DIR}/_build/binaries/io2c VMCode IoState_doString_ ${IO_SRCS} > ${CMAKE_CURRENT_SOURCE_DIR}/iovm/source/IoVMInit.c
+#	DEPENDS io2c
+#)
 
 # Include dirs, -I flags and whatnot
 include_directories(
@@ -88,7 +88,7 @@ include_directories(
 )
 
 # Add a file to our library sources.
-list(APPEND IOVMALL_STATIC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/iovm/source/IoVMInit.c) # Because we generate it
+list(APPEND IOVMALL_STATIC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/iovm/source/IoVMInit.c) # Because we generate it
 
 # ...And the static library. Refer to IOVMALL_STATIC_SRCS definition
 # up top.
