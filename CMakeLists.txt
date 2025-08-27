@@ -21,7 +21,6 @@
 # Require CMake 2.8. I know for sure that this will not work with CMake 2.6
 # due to the use of the FILE command we use when creating the bundle
 # hierarchy.
-#cmake_minimum_required(VERSION 2.8.12)
 cmake_minimum_required(VERSION 3.5)
 
 # Mac OS X: Setting policy CMP0042 to the new behavior generates dylibs with
@@ -105,6 +104,7 @@ set(COROUTINE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs/coroutine/source)
 set(BASEKIT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs/basekit/source)
 set(GARBAGECOLLECTOR_SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs/garbagecollector/source)
 set(IOVM_SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs/iovm/source)
+set(PARSON_SOURCE_DIR ${PROJECT_SOURCE_DIR}/deps/parson)
 
 # Subdirectories. These directories should have their own CMakeLists.txt.
 add_subdirectory(libs)

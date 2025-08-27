@@ -1,6 +1,8 @@
 # Base Io build system
 # Written by Jeremy Tregunna <jeremy.tregunna@me.com>
 #
+# CMake file for libs/iovm subdirectory.
+#
 # Build the Io VM.
 
 # Need to go in and build io2c first. We need it to build our library.
@@ -10,7 +12,6 @@ add_subdirectory(tools)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/dll)
 
 # Our Io source files to be "compiled" into a C source file.
-#file(GLOB IO_SRCS "io/*.io")
 set(IO_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/io/A0_List.io
     ${CMAKE_CURRENT_SOURCE_DIR}/io/A0_Object.io
@@ -44,21 +45,9 @@ set(IO_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/io/Z_Importer.io
     )
 
-# Object files from every lib. Used to create iovmall static library.
-# file(GLOB COROUTINE_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../coroutine/source/*.[cS]")
-# file(GLOB BASEKIT_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../basekit/source/*.c")
-# file(GLOB GARBAGECOLLECTOR_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../garbagecollector/source/*.c")
-# file(GLOB IOVM_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../source/*.c")
-# set(IOVMALL_STATIC_SRCS
-# ${COROUTINE_SRCS}
-# ${BASEKIT_SRCS}
-# ${GARBAGECOLLECTOR_SRCS}
-# ${IOVM_SRCS}
-# )
-
 # Create a header file which defines our install prefix. This is
 # only needed because GCC is batshit insane.
-file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/source/IoInstallPrefix.h "#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\"")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/_build/headers/IoInstallPrefix.h "#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\"")
 
 # The custom command to generate source/IoVMInit.c which is our
 # "compiled" Io to C source code.
@@ -91,23 +80,43 @@ add_definitions("-DBUILDING_IOVM_DLL")# -DINSTALL_PREFIX="${CMAKE_INSTALL_PREFIX
 
 # Include dirs, -I flags and whatnot
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/parson
-    ${CMAKE_CURRENT_SOURCE_DIR}/../basekit/source
-    ${CMAKE_CURRENT_SOURCE_DIR}/../coroutine/source
-    ${CMAKE_CURRENT_SOURCE_DIR}/../garbagecollector/source
+    ${COROUTINE_SOURCE_DIR}
+    ${BASEKIT_SOURCE_DIR}
+    ${BASEKIT_SOURCE_DIR}/simd_cph/include
+    ${GARBAGECOLLECTOR_SOURCE_DIR}
+    ${IOVM_SOURCE_DIR}
+    ${PARSON_SOURCE_DIR}
     )
 
 # Our library sources.
-file(GLOB SRCS "source/*.c")
-list(APPEND SRCS ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c)
-list(APPEND SRCS ../../deps/parson/parson.c)
+file(GLOB COROUTINE_SRCS "${COROUTINE_SOURCE_DIR}/*.c")
+file(GLOB BASEKIT_SRCS "${BASEKIT_SOURCE_DIR}/*.c")
+file(GLOB GARBAGECOLLECTOR_SRCS "${GARBAGECOLLECTOR_SOURCE_DIR}/*.c")
+file(GLOB IOVM_SRCS "${IOVM_SOURCE_DIR}/*.c")
+list(APPEND IOVM_SRCS 
+    ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
+    ${PARSON_SOURCE_DIR}/parson.c)
+set(SRCS ${IOVM_SRCS})
 file(GLOB HEADERS "source/*.h")
 
 # Now build the shared library
 add_library(iovmall SHARED ${SRCS})
-add_dependencies(iovmall io2c basekit coroutine garbagecollector)
 set_target_properties(iovmall PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(iovmall basekit coroutine garbagecollector)
+
+
+
+set(IOVMALL_STATIC_SRCS
+	${COROUTINE_SRCS}
+	${ASM_SOURCES}
+	${BASEKIT_SRCS}
+	${GARBAGECOLLECTOR_SRCS}
+	${IOVM_SRCS}
+)
+
+# Now build the static library
+add_library(iovmall_static STATIC ${IOVMALL_STATIC_SRCS})
+#add_dependencies(iovmall_static io2c basekit coroutine garbagecollector iovmall)
 
 # The following add the install target, so we put libvmall.* in our
 # install prefix.
