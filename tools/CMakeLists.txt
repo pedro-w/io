@@ -1,6 +1,8 @@
 # Base Io build system
 # Written by Jeremy Tregunna <jeremy.tregunna@me.com>
 #
+# CMake file for tools subdirectory.
+#
 # Creates the io_static and io binaries. These are different, only
 # in so much as io_static depends on the *_static libraries, and
 # io uses dynamic libraries. Use whichever floats your boat, we
@@ -25,10 +27,10 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/binaries)
 
 # Include locations
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/../libs/basekit/source
-	${CMAKE_CURRENT_SOURCE_DIR}/../libs/coroutine/source
-	${CMAKE_CURRENT_SOURCE_DIR}/../libs/garbagecollector/source
-	${CMAKE_CURRENT_SOURCE_DIR}/../libs/iovm/source
+	${COROUTINE_SOURCE_DIR}
+	${BASEKIT_SOURCE_DIR}
+	${GARBAGECOLLECTOR_SOURCE_DIR}
+	${IOVM_SOURCE_DIR}
 )
 
 # Only one file, main.c
@@ -43,9 +45,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|Linux|SunOS|syllable)")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|Linux|SunOS|syllable)")
 
 # Add math library for those who need it
-if(${CMAKE_SYSTEM_NAME} MATCHES "(OpenBSD|FreeBSD|Linux|NetBSD|DragonFly)")
-	list(APPEND LIBS "-lm")
-endif(${CMAKE_SYSTEM_NAME} MATCHES "(OpenBSD|FreeBSD|Linux|NetBSD|DragonFly)")
+find_library(MATH_LIBRARY m)
+if(MATH_LIBRARY)
+	list(APPEND LIBS ${MATH_LIBRARY})
+endif()
 
 # Add curses library for readline needs it
 if(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
