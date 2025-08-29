@@ -12,12 +12,13 @@ add_definitions("-DBUILDING_BASEKIT_DLL")
 # Include dirs, -I flags and whatnot
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/simd_cph/include)
 
-set(BASEKIT_LIBS)
+set(BASEKIT_LIBS ${CMAKE_DL_LIBS})
 
-# Add dynamic loader library for those who need it
-if(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|Linux|SunOS|syllable)")
-	list(APPEND BASEKIT_LIBS dl m)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|Linux|SunOS|syllable)")
+# Add math library for those who need it
+find_library(MATH_LIBRARY m)
+if(MATH_LIBRARY)
+	list(APPEND BASEKIT_LIBS ${MATH_LIBRARY})
+endif()
 
 # Our library sources.
 file(GLOB SRCS "source/*.c")

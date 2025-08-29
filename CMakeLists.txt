@@ -38,7 +38,7 @@ project(IoLanguage C)
 enable_language(ASM)
 
 # Default config when building with gcc variants
-IF(CMAKE_COMPILER_IS_GNUCC OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
+IF((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
     SET(CMAKE_BUILD_TYPE_DebugFast)
     SET(CMAKE_CXX_FLAGS_DEBUGFAST "-g -O0")
     SET(CMAKE_C_FLAGS_DEBUGFAST "-g -O0")
@@ -51,7 +51,7 @@ IF(CMAKE_COMPILER_IS_GNUCC OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
     if(NOT CMAKE_BUILD_TYPE)
             SET(CMAKE_BUILD_TYPE "DebugFast")
     endif(NOT CMAKE_BUILD_TYPE)
-ENDIF(CMAKE_COMPILER_IS_GNUCC OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
+ENDIF((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
 
 MESSAGE(STATUS "Configuration set to: ${CMAKE_BUILD_TYPE}")
 
@@ -70,34 +70,12 @@ macro(make_build_bundle NAME)
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/binaries ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/objs ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/headers ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/lib ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/dll)
 endmacro(make_build_bundle)
 
-# Generic macro to copy files mattching GLOBPAT in the current source
-# directory into another directory.
-macro(copy_files NAME GLOBPAT DSTDIR)
-	# Get a list of the filenames mattching the pattern GLOBPAT
-	file(GLOB ${NAME} ${GLOBPAT})
-
-	# Create a custom copy target and display a message
-	add_custom_target(copy_${NAME} ALL COMMENT "Copying files: ${CMAKE_CURRENT_SOURCE_DIR}/${GLOBPAT} to ${DSTDIR}")
-
-	foreach(FILENAME ${${NAME}})
-		# Finally, copy the files.
-		add_custom_command(
-		  TARGET copy_${NAME}
-		  PRE_BUILD
-		  COMMAND ${CMAKE_COMMAND} -E copy ${FILENAME} ${DSTDIR}
-		)
-	endforeach(FILENAME)
-endmacro(copy_files)
-
-# Binary suffix is used to append things like .exe to binary names, for
-# windows support.
+# Set library prefix to "lib" on Windows
+# to match unix.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	set(BINARY_SUFFIX ".exe")
 	set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
 	set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
 	set(CMAKE_IMPORT_LIBRARY_PREFIX "lib")
-else()
-	set(BINARY_SUFFIX "")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # Definitions on where we can find headers and whatnot. Convenience definitions.
@@ -116,10 +94,12 @@ add_subdirectory(tools)
 make_build_bundle(_build)
 
 # Next we NEED to copy all the libs headers into one single dir in the bundle.
-copy_files(coroutine_headers ${PROJECT_SOURCE_DIR}/libs/coroutine/source/*.h ${CMAKE_CURRENT_BINARY_DIR}/_build/headers)
-copy_files(basekit_headers ${PROJECT_SOURCE_DIR}/libs/basekit/source/*.h ${CMAKE_CURRENT_BINARY_DIR}/_build/headers)
-copy_files(garbagecollector_headers ${PROJECT_SOURCE_DIR}/libs/garbagecollector/source/*.h ${CMAKE_CURRENT_BINARY_DIR}/_build/headers)
-copy_files(iovm_headers ${PROJECT_SOURCE_DIR}/libs/iovm/source/*.h ${CMAKE_CURRENT_BINARY_DIR}/_build/headers)
+file(COPY ${COROUTINE_SOURCE_DIR}
+		  ${BASEKIT_SOURCE_DIR}
+		  ${GARBAGECOLLECTOR_SOURCE_DIR}
+		  ${IOVM_SOURCE_DIR}
+	 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/_build/headers 
+	 FILES_MATCHING PATTERN "*.h")
 
 # Packaging stuff
 
