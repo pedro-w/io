@@ -22,7 +22,7 @@ file(GLOB SRCS "source/*.c")
 file(GLOB HEADERS "source/*.h")
 
 # This has changed, policy CMP0119
-list(APPEND SRCS source/asm.s)
+list(APPEND SRCS source/asm.S)
 
 
 # Now build the shared library

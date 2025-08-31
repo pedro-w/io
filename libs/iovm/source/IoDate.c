@@ -361,11 +361,11 @@ IO_METHOD(IoDate, isDST) {
     Returns true if the Date is set to use DST.  Posix only.
     */
 
-    struct timezone tz = Date_timeZone(DATA(self));
 #if defined(__CYGWIN__) || defined(_WIN32)
     IoState_error_(IOSTATE, m, "Not implemented on Windows.");
     return IONIL(self);
 #else
+    struct timezone tz = Date_timeZone(DATA(self));
     return IOBOOL(self, tz.tz_dsttime);
 #endif
 }

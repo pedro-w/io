@@ -160,8 +160,8 @@ BASEKIT_API void UArray_sizeTo_(UArray *self, size_t size);
 BASEKIT_API UArray UArray_stackRange(const UArray *self, size_t start,
                                      size_t size);
 BASEKIT_API UArray *UArray_range(const UArray *self, size_t start, size_t size);
-BASEKIT_API UArray UArray_stackSlice(const UArray *self, long start, long end);
-BASEKIT_API UArray *UArray_slice(const UArray *self, long start, long end);
+BASEKIT_API UArray UArray_stackSlice(const UArray *self, ssize_t start, ssize_t end);
+BASEKIT_API UArray *UArray_slice(const UArray *self, ssize_t start, ssize_t end);
 
 // compare
 
@@ -177,23 +177,23 @@ BASEKIT_API bool UArray_isZero(const UArray *self);
 
 // contains
 
-BASEKIT_API int UArray_contains_(const UArray *self, const UArray *other);
-BASEKIT_API int UArray_containsAnyCase_(const UArray *self,
+BASEKIT_API bool UArray_contains_(const UArray *self, const UArray *other);
+BASEKIT_API bool UArray_containsAnyCase_(const UArray *self,
                                         const UArray *other);
-BASEKIT_API int UArray_containsDouble_(const UArray *self, double other);
-BASEKIT_API int UArray_containsLong_(const UArray *self, long other);
+BASEKIT_API bool UArray_containsDouble_(const UArray *self, double other);
+BASEKIT_API bool UArray_containsLong_(const UArray *self, long other);
 
 // find
 
-BASEKIT_API long UArray_find_(const UArray *self, const UArray *other);
-BASEKIT_API long UArray_findAnyCase_(const UArray *self, const UArray *other);
-BASEKIT_API long UArray_find_from_(const UArray *self, const UArray *other,
+BASEKIT_API ssize_t UArray_find_(const UArray *self, const UArray *other);
+BASEKIT_API ssize_t UArray_findAnyCase_(const UArray *self, const UArray *other);
+BASEKIT_API ssize_t UArray_find_from_(const UArray *self, const UArray *other,
                                    size_t from);
-BASEKIT_API long UArray_rFind_from_(const UArray *self, const UArray *other,
+BASEKIT_API ssize_t UArray_rFind_from_(const UArray *self, const UArray *other,
                                     size_t from);
-BASEKIT_API long UArray_rFind_(const UArray *self, const UArray *other);
-BASEKIT_API long UArray_rFindAnyCase_(const UArray *self, const UArray *other);
-BASEKIT_API long UArray_rFindAnyValue_(const UArray *self, const UArray *other);
+BASEKIT_API ssize_t UArray_rFind_(const UArray *self, const UArray *other);
+BASEKIT_API ssize_t UArray_rFindAnyCase_(const UArray *self, const UArray *other);
+BASEKIT_API ssize_t UArray_rFindAnyValue_(const UArray *self, const UArray *other);
 
 // insert
 
@@ -269,10 +269,10 @@ BASEKIT_API long UArray_firstLong(const UArray *self);
 
 // types
 
-BASEKIT_API int UArray_isFloatType(const UArray *self);
-BASEKIT_API int UArray_isSignedType(const UArray *self);
+BASEKIT_API bool UArray_isFloatType(const UArray *self);
+BASEKIT_API bool UArray_isSignedType(const UArray *self);
 
-BASEKIT_API size_t UArray_wrapPos_(const UArray *self, long pos);
+BASEKIT_API size_t UArray_wrapPos_(const UArray *self, ssize_t pos);
 
 // sort
 
@@ -483,7 +483,7 @@ BASEKIT_API void UArray_sortBy_(UArray *self, UArraySortCallback *cmp);
 
 #define UARRAY_RFOREACHTYPE(self, i, v, code, TYPE)                            \
     {                                                                          \
-        size_t i;                                                              \
+        ssize_t i;                                                              \
         for (i = self->size - 1; i >= 0; i--) {                                \
             TYPE v = ((TYPE *)self->data)[i];                                  \
             code;                                                              \

@@ -15,7 +15,7 @@ license: See _BSDLicense.txt.
 #include <stdbool.h>
 #include <limits.h>
 
-size_t CTYPE_size(CTYPE type) {
+static size_t CTYPE_size(CTYPE type) {
     switch (type) {
     case CTYPE_uint8_t:
         return sizeof(uint8_t);
@@ -179,11 +179,11 @@ void UArray_rawSetItemType_(UArray *self, CTYPE type) {
 
 void UArray_setItemType_(UArray *self, CTYPE type) {
     int itemSize = (int)CTYPE_size(type);
-    div_t q = div((int)UArray_sizeInBytes(self), (int)itemSize);
+    div_t q = div((int)UArray_sizeInBytes(self), itemSize);
 
     if (q.rem != 0) {
         q.quot += 1;
-        UArray_setSize_(self, (q.quot * itemSize) / self->itemSize);
+        UArray_setSize_(self, (q.quot * CTYPE_size(type)) / self->itemSize);
     }
 
     self->itemType = type;
@@ -261,16 +261,20 @@ UArray *UArray_newWithData_type_encoding_size_copy_(void *bytes, CTYPE type,
                                                     CENCODING encoding,
                                                     size_t size, int copy) {
     UArray *self = (UArray *)io_calloc(1, sizeof(UArray));
-    UArray_setData_type_size_copy_(self, bytes, type, size, copy);
-    self->encoding = encoding;
+    if (self) {
+        UArray_setData_type_size_copy_(self, bytes, type, size, copy);
+        self->encoding = encoding;
+    }
     return self;
 }
 
 UArray *UArray_newWithData_type_size_copy_(void *bytes, CTYPE type, size_t size,
                                            int copy) {
     UArray *self = (UArray *)io_calloc(1, sizeof(UArray));
-    UArray_setData_type_size_copy_(self, bytes, type, size, copy);
-    self->encoding = CENCODING_ASCII;
+    if (self) {
+        UArray_setData_type_size_copy_(self, bytes, type, size, copy);
+        self->encoding = CENCODING_ASCII;
+    }
     return self;
 }
 
@@ -534,7 +538,7 @@ UArray *UArray_range(const UArray *self, size_t start, size_t size) {
     return UArray_clone(&out);
 }
 
-UArray UArray_stackSlice(const UArray *self, long start, long end) {
+UArray UArray_stackSlice(const UArray *self, ssize_t start, ssize_t end) {
     start = UArray_wrapPos_(self, start);
     end = UArray_wrapPos_(self, end);
     if (end < start)
@@ -542,7 +546,7 @@ UArray UArray_stackSlice(const UArray *self, long start, long end) {
     return UArray_stackRange(self, start, end - start);
 }
 
-BASEKIT_API UArray *UArray_slice(const UArray *self, long start, long end) {
+BASEKIT_API UArray *UArray_slice(const UArray *self, ssize_t start, ssize_t end) {
     UArray out = UArray_stackSlice(self, start, end);
     return UArray_clone(&out);
 }
@@ -1051,16 +1055,16 @@ bool UArray_isZero(const UArray *self) {
         return -1;                                                             \
     }
 
-long UArray_find_(const UArray *self, const UArray *other) {
+ssize_t UArray_find_(const UArray *self, const UArray *other) {
     DUARRAY_OP(UARRAY_FIND_TYPES, NULL, self, other);
     return -1;
 }
 
-int UArray_contains_(const UArray *self, const UArray *other) {
+bool UArray_contains_(const UArray *self, const UArray *other) {
     return UArray_find_(self, other) != -1;
 }
 
-long UArray_find_from_(const UArray *self, const UArray *other, size_t from) {
+ssize_t UArray_find_from_(const UArray *self, const UArray *other, size_t from) {
     UArray s;
     long i;
     if (self->size < from)
@@ -1093,37 +1097,37 @@ long UArray_find_from_(const UArray *self, const UArray *other, size_t from) {
         return -1;                                                             \
     }
 
-long UArray_findAnyCase_(const UArray *self, const UArray *other) {
+ssize_t UArray_findAnyCase_(const UArray *self, const UArray *other) {
     DUARRAY_OP(UARRAY_FINDANYCASE_TYPES, NULL, self, other);
     return -1;
 }
 
-int UArray_containsAnyCase_(const UArray *self, const UArray *other) {
+bool UArray_containsAnyCase_(const UArray *self, const UArray *other) {
     long i = UArray_findAnyCase_(self, other);
     return i != -1;
 }
 
-long UArray_findLongValue_(const UArray *self, long value) {
+ssize_t UArray_findLongValue_(const UArray *self, long value) {
     UARRAY_FOREACH(self, i, v, if (v == value) return i);
     return -1;
 }
 
-int UArray_containsLong_(const UArray *self, long value) {
+bool UArray_containsLong_(const UArray *self, long value) {
     return UArray_findLongValue_(self, value) != -1;
 }
 
-long UArray_findDoubleValue_(const UArray *self, double value) {
+ssize_t UArray_findDoubleValue_(const UArray *self, double value) {
     UARRAY_FOREACH(self, i, v, if (v == value) return i);
     return -1;
 }
 
-int UArray_containsDouble_(const UArray *self, double value) {
+bool UArray_containsDouble_(const UArray *self, double value) {
     return UArray_findDoubleValue_(self, value) != -1;
 }
 
 #define UARRAY_RFIND_TYPES(OP2, TYPE1, self, TYPE2, other)                     \
     {                                                                          \
-        long i, j;                                                             \
+        ssize_t i, j;                                                             \
         if (self->size < other->size)                                          \
             return -1;                                                         \
         for (i = self->size - other->size + 1; i > -1; i--) {                  \
@@ -1143,16 +1147,15 @@ int UArray_containsDouble_(const UArray *self, double value) {
         return -1;                                                             \
     }
 
-long UArray_rFind_(const UArray *self, const UArray *other) {
+ssize_t UArray_rFind_(const UArray *self, const UArray *other) {
     DUARRAY_OP(UARRAY_RFIND_TYPES, NULL, self, other);
     return -1;
 }
 
-BASEKIT_API long UArray_rFind_from_(const UArray *self, const UArray *other,
+BASEKIT_API ssize_t UArray_rFind_from_(const UArray *self, const UArray *other,
                                     size_t from) {
     UArray s = UArray_stackRange(self, 0, from);
-    long i = UArray_rFind_(&s, other);
-    return i;
+    return UArray_rFind_(&s, other);
 }
 
 #define UARRAY_RFINDANYCASE_TYPES(OP2, TYPE1, self, TYPE2, other)              \
@@ -1160,7 +1163,8 @@ BASEKIT_API long UArray_rFind_from_(const UArray *self, const UArray *other,
         size_t i, j;                                                           \
         if (self->size < other->size)                                          \
             return -1;                                                         \
-        for (i = self->size - other->size + 1; i > -1; i--) {                  \
+        i = self->size - other->size + 1;                                      \
+        while (i-- > 0) {                                                      \
             int match = 1;                                                     \
             for (j = 0; j < other->size; j++) {                                \
                 int v1 = (int)((TYPE1 *)self->data)[i + j];                    \
@@ -1176,14 +1180,14 @@ BASEKIT_API long UArray_rFind_from_(const UArray *self, const UArray *other,
         return -1;                                                             \
     }
 
-long UArray_rFindAnyCase_(const UArray *self, const UArray *other) {
+ssize_t UArray_rFindAnyCase_(const UArray *self, const UArray *other) {
     DUARRAY_OP(UARRAY_RFINDANYCASE_TYPES, NULL, self, other);
     return -1;
 }
 
 #define UARRAY_RFINDANYVALUE_TYPES(OP2, TYPE1, self, TYPE2, other)             \
     {                                                                          \
-        long i, j;                                                             \
+        ssize_t i, j;                                                             \
         if (self->size < other->size)                                          \
             return -1;                                                         \
         for (i = self->size - 1; i > -1; i--) {                                \
@@ -1198,19 +1202,19 @@ long UArray_rFindAnyCase_(const UArray *self, const UArray *other) {
         return -1;                                                             \
     }
 
-long UArray_rFindAnyValue_(const UArray *self, const UArray *other) {
+ssize_t UArray_rFindAnyValue_(const UArray *self, const UArray *other) {
     DUARRAY_OP(UARRAY_RFINDANYVALUE_TYPES, NULL, self, other);
     return -1;
 }
 
 // types
 
-int UArray_isFloatType(const UArray *self) {
+bool UArray_isFloatType(const UArray *self) {
     return self->itemType == CTYPE_float32_t ||
            self->itemType == CTYPE_float64_t;
 }
 
-int UArray_isSignedType(const UArray *self) {
+bool UArray_isSignedType(const UArray *self) {
     switch (self->itemType) {
     case CTYPE_uint8_t:
         return 0;
@@ -1238,8 +1242,8 @@ int UArray_isSignedType(const UArray *self) {
     return 0;
 }
 
-size_t UArray_wrapPos_(const UArray *self, long pos) {
-    long size = self->size;
+size_t UArray_wrapPos_(const UArray *self, ssize_t pos) {
+    ssize_t size = self->size;
 
     if (pos > size - 1) {
         return size;

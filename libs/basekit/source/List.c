@@ -8,9 +8,11 @@
 
 List *List_new(void) {
     List *self = (List *)io_calloc(1, sizeof(List));
-    self->size = 0;
-    self->memSize = sizeof(void *) * LIST_START_SIZE;
-    self->items = (void **)io_calloc(1, self->memSize);
+    if (self != NULL) {
+        self->size = 0;
+        self->memSize = sizeof(void *) * LIST_START_SIZE;
+        self->items = (void **)io_calloc(1, self->memSize);
+    }
     return self;
 }
 

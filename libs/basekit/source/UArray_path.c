@@ -94,8 +94,8 @@ UArray *UArray_pathExtension(UArray *self) {
 
 UArray *UArray_fileName(UArray *self) {
     // it looks like there is a memory stomping bug in this method...
-    long extPos = UArray_findLastPathComponent(self);
-    long dotPos = UArray_findPathExtension(self);
+    ssize_t extPos = UArray_findLastPathComponent(self);
+    ssize_t dotPos = UArray_findPathExtension(self);
 
     if (dotPos == -1 || dotPos < extPos) {
         dotPos = self->size - 1;

@@ -225,7 +225,7 @@ IOINLINE void List_at_put_(List *self, size_t index, void *item) {
     }
 }
 
-IOINLINE void List_swap_with_(List *self, long index1, long index2) {
+IOINLINE void List_swap_with_(List *self, ssize_t index1, ssize_t index2) {
     if (index1 < 0 || index2 < 0) {
         return;
     }

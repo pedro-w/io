@@ -208,8 +208,8 @@ BASEKIT_API void UArray_swapIndex_withIndex_(UArray *self, size_t i, size_t j) {
 // reverse
 
 BASEKIT_API void UArray_reverse(UArray *self) {
-    long i = 0;
-    long j = self->size - 1;
+    size_t i = 0;
+    size_t j = self->size - 1;
     UArrayValueUnion b;
     size_t itemSize = self->itemSize;
     uint8_t *data = self->data;
@@ -467,18 +467,19 @@ void UArray_translate(UArray *self, UArray *fromChars, UArray *toChars) {
     if ((0 < fromMax && fromMax < max) && (0 < toMax && toMax < 256)) {
         size_t i;
         uint8_t *map = io_calloc(1, fromMax);
-        memset(map, 0x0, fromMax);
+        if (map) {
+            memset(map, 0x0, fromMax);
 
-        for (i = 0; i < UArray_size(fromChars); i++) {
-            map[UArray_longAt_(fromChars, i)] = UArray_longAt_(toChars, i);
+            for (i = 0; i < UArray_size(fromChars); i++) {
+                map[UArray_longAt_(fromChars, i)] = UArray_longAt_(toChars, i);
+            }
+
+            for (i = 0; i < UArray_size(self); i++) {
+                self->data[i] = map[self->data[i]];
+            }
+
+            io_free(map);
         }
-
-        for (i = 0; i < UArray_size(self); i++) {
-            self->data[i] = map[self->data[i]];
-        }
-
-        io_free(map);
-        return;
     }
 
     /*
@@ -497,7 +498,7 @@ void UArray_translate(UArray *self, UArray *fromChars, UArray *toChars) {
 }
 
 size_t UArray_count_(const UArray *self, const UArray *other) {
-    long i = 0;
+    ssize_t i = 0;
     size_t count = 0;
 
     while ((i = UArray_find_from_(self, other, i)) != -1) {

@@ -379,8 +379,8 @@ IO_METHOD(IoSeq, exclusiveSlice) {
     one beyond the end of the string.
     */
 
-    long fromIndex = IoMessage_locals_longArgAt_(m, locals, 0);
-    long last = UArray_size(DATA(self));
+    size_t fromIndex = IoMessage_locals_longArgAt_(m, locals, 0);
+    size_t last = UArray_size(DATA(self));
     UArray *ba;
 
     if (IoMessage_argCount(m) > 1) {
@@ -405,7 +405,7 @@ IO_METHOD(IoSeq, inclusiveSlice) {
     */
 
     long fromIndex = IoMessage_locals_longArgAt_(m, locals, 0);
-    long last = UArray_size(DATA(self));
+    ssize_t last = UArray_size(DATA(self));
     UArray *ba;
 
     if (IoMessage_argCount(m) > 1) {
@@ -436,8 +436,8 @@ IO_METHOD(IoSeq, between) {
     equivalent to afterSeq(aSequence). nil is returned if no match is found.
     */
 
-    long start = 0;
-    long end = 0;
+    ssize_t start = 0;
+    ssize_t end = 0;
     IoSeq *fromSeq, *toSeq;
 
     fromSeq = (IoSeq *)IoMessage_locals_valueArgAt_(m, locals, 0);
@@ -566,8 +566,8 @@ IO_METHOD(IoSeq, reverseFindSeq) {
     */
 
     IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-    long from = UArray_size(DATA(self));
-    long index;
+    size_t from = UArray_size(DATA(self));
+    ssize_t index;
 
     if (IoMessage_argCount(m) > 1) {
         from = IoMessage_locals_intArgAt_(m, locals, 1);
@@ -1142,7 +1142,7 @@ IO_METHOD(IoSeq, afterSeq) {
     */
 
     IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-    long pos = UArray_find_(DATA(self), DATA(other));
+    ssize_t pos = UArray_find_(DATA(self), DATA(other));
 
     if (pos != -1) {
         UArray *ba = UArray_slice(DATA(self), pos + UArray_size(DATA(other)),
@@ -1429,25 +1429,27 @@ static char to_hex(char code) {
 /* Returns a url-encoded version of str */
 /* IMPORTANT: be sure to free() the returned string after use */
 static char *url_encode(const char *str, int isPercentEncoded) {
-    const char *pstr = str;
-    char *buf = (char *)malloc(strlen(str) * 3 + 1);
-    char *pbuf = buf;
+    char *buf = (char *)io_malloc(strlen(str) * 3 + 1);
+    if (buf) {
+        const char *pstr = str;
+        char *pbuf = buf;
 
-    while (*pstr) {
-        if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' ||
-            *pstr == '~') {
-            *pbuf++ = *pstr;
-        } else if (!isPercentEncoded && *pstr == ' ') {
-            *pbuf++ = '+';
-        } else {
-            *pbuf++ = '%', *pbuf++ = to_hex(*pstr >> 4),
-            *pbuf++ = to_hex(*pstr & 15);
+        while (*pstr) {
+            if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' ||
+                *pstr == '.' || *pstr == '~') {
+                *pbuf++ = *pstr;
+            } else if (!isPercentEncoded && *pstr == ' ') {
+                *pbuf++ = '+';
+            } else {
+                *pbuf++ = '%', *pbuf++ = to_hex(*pstr >> 4),
+                *pbuf++ = to_hex(*pstr & 15);
+            }
+
+            pstr++;
         }
 
-        pstr++;
+        *pbuf = '\0';
     }
-
-    *pbuf = '\0';
     return buf;
 }
 
@@ -1650,9 +1652,9 @@ IO_METHOD(IoSeq, pack) {
             }
 
             {
-                long inc = doBigEndian ? -1 : 1;
-                long pos = doBigEndian ? size - 1 : 0;
-                int j = 0;
+                ssize_t inc = doBigEndian ? -1 : 1;
+                ssize_t pos = doBigEndian ? size - 1 : 0;
+                size_t j;
 
                 for (j = 0; j < size; j++, pos += inc) {
                     UArray_appendLong_(ua, from[pos]);

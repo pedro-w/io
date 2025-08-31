@@ -31,6 +31,10 @@ Contains methods related to the IoVM.
 //#define WIN32
 #if defined(__CYGWIN__) || defined(_WIN32)
 #include <windows.h>
+// For getcwd
+#include <direct.h>
+// For getpid
+#include <process.h>
 #endif
 
 #ifdef WIN32
@@ -322,7 +326,7 @@ IO_METHOD(IoObject, platform) {
 
 #elif defined(_WIN32)
 
-    OSVERSIONINFO os;
+    OSVERSIONINFO os = {0};
 
     os.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     GetVersionEx(&os);
@@ -392,7 +396,7 @@ IO_METHOD(IoObject, platformVersion) {
 
 #if defined(_WIN32)
 
-    OSVERSIONINFO os;
+    OSVERSIONINFO os = {0};
 
     os.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     GetVersionEx(&os);

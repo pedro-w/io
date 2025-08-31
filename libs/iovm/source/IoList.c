@@ -213,7 +213,7 @@ void IoList_rawAddIoList_(IoList *self, IoList *other) {
 
 size_t IoList_rawSize(IoList *self) { return List_size(DATA(self)); }
 
-long IoList_rawIndexOf_(IoList *self, IoObject *v) {
+static ssize_t IoList_rawIndexOf_(IoList *self, IoObject *v) {
     List *list = DATA(self);
 
     LIST_FOREACH(
@@ -343,7 +343,7 @@ IO_METHOD(IoList, last) {
     return result ? result : IONIL(self);
 }
 
-void IoList_sliceIndex(int *index, int step, int size) {
+static void IoList_sliceIndex(int *index, int step, int size) {
     /* The following code mimics Python's slicing behaviour. */
     if (*index < 0) {
         *index += size;
@@ -355,14 +355,16 @@ void IoList_sliceIndex(int *index, int step, int size) {
     }
 }
 
-void IoList_sliceArguments(IoList *self, IoObject *locals, IoMessage *m,
+static void IoList_sliceArguments(IoList *self, IoObject *locals, IoMessage *m,
                            int *start, int *end, int *step) {
+    IOASSERT(start != NULL && end != NULL && step != NULL,
+             "start, end and step cannot be null pointers");
     size_t size = IoList_rawSize(self);
     /* Checking step, before any other arguments. */
     *step = (IoMessage_argCount(m) == 3)
                 ? IoMessage_locals_intArgAt_(m, locals, 2)
                 : 1;
-    IOASSERT(step != 0, "step cannot be equal to zero");
+    IOASSERT(*step != 0, "step cannot be equal to zero");
 
     *start = IoMessage_locals_intArgAt_(m, locals, 0);
     *end = (IoMessage_argCount(m) >= 2)
@@ -492,7 +494,7 @@ IO_METHOD(IoList, reverseForeach) {
     IoObject *result = IONIL(self);
     IoSymbol *slotName, *valueName;
     IoMessage *doMessage;
-    long i;
+    ssize_t i;
 
     IoMessage_foreachArgs(m, self, &slotName, &valueName, &doMessage);
 
@@ -691,7 +693,7 @@ IO_METHOD(IoList, removeAt) {
     return (v) ? v : IONIL(self);
 }
 
-void IoList_rawAtPut(IoList *self, int i, IoObject *v) {
+static void IoList_rawAtPut(IoList *self, int i, IoObject *v) {
     while (List_size(DATA(self)) < i) /* not efficient */
     {
         List_append_(DATA(self), IONIL(self));
@@ -1058,8 +1060,8 @@ IO_METHOD(IoList, join) {
     size_t itemCount = List_size(items);
     IoSeq *separator = IoMessage_locals_seqArgAt_(m, locals, 0);
     UArray *out = UArray_new();
-    int totalSize = 0;
-    int hasSeparator = !ISNIL(separator);
+    size_t totalSize = 0;
+    bool hasSeparator = !ISNIL(separator);
     size_t separatorSize = hasSeparator ? IOSEQ_LENGTH(separator) : 0;
     uint8_t *bytes;
     IOASSERT(ISSEQ(separator), "separator must be of type Sequence");

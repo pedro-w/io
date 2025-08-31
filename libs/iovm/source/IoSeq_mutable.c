@@ -226,7 +226,7 @@ IO_METHOD(IoSeq, removeAt) {
     Removes the item at index. Returns self.
     */
 
-    long i = IoMessage_locals_longArgAt_(m, locals, 0);
+    ssize_t i = IoMessage_locals_longArgAt_(m, locals, 0);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -242,8 +242,8 @@ IO_METHOD(IoSeq, removeSlice) {
     Returns self.
     */
 
-    long start = IoMessage_locals_longArgAt_(m, locals, 0);
-    long end = IoMessage_locals_longArgAt_(m, locals, 1);
+    ssize_t start = IoMessage_locals_longArgAt_(m, locals, 0);
+    ssize_t end = IoMessage_locals_longArgAt_(m, locals, 1);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -745,7 +745,7 @@ IO_METHOD(IoSeq, interpolateInPlace) {
     IoSeq *codeString;
     UArray *evaluatedCodeAsString = NULL;
     // const char *label;
-    long from, to;
+    size_t from = 0, to = 0;
     UArray begin = UArray_stackAllocedWithCString_("#{");
     UArray end = UArray_stackAllocedWithCString_("}");
 
@@ -753,8 +753,6 @@ IO_METHOD(IoSeq, interpolateInPlace) {
 
     context = IoMessage_locals_valueArgAt_(m, locals, 0);
     string = DATA(self);
-    // label = "IoSeq_interpolateInPlace()";
-    from = 0;
 
     context = (context == IONIL(self)) ? locals : context;
 
@@ -798,7 +796,7 @@ IO_METHOD(IoSeq, interpolateInPlace) {
 
         UArray_removeRange(string, from, to - from + 1);
         UArray_at_putAll_(string, from, evaluatedCodeAsString);
-        from = from + UArray_size(evaluatedCodeAsString);
+        from += UArray_size(evaluatedCodeAsString);
     }
 
     IoState_popRetainPool(IOSTATE);
