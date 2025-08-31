@@ -12,12 +12,8 @@ add_definitions("-DBUILDING_IOVMALL_DLL")
 # Output our static library to the top-level _build hierarchy
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/lib)
 
+# This has changed, policy CMP0119
 # Hackery for CMake's horrible ASM support
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    # Always include asm.S for all architectures
-    set(ASM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/coroutine/source/asm.S)
-    set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE C)
-endif()
 
 # Define the subdirectories we can reach from here that we want
 # to go into and build stuff.

@@ -21,12 +21,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../basekit/source)
 file(GLOB SRCS "source/*.c")
 file(GLOB HEADERS "source/*.h")
 
-# Hackery for CMake's horrible ASM support... but not on Windows
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(ASM_SOURCES source/asm.S)
-    set_source_files_properties(${ASM_SOURCES} PROPERTIES LANGUAGE C)
-    list(APPEND SRCS ${ASM_SOURCES})
-endif(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+# This has changed, policy CMP0119
+list(APPEND SRCS source/asm.s)
+
 
 # Now build the shared library
 add_library(coroutine SHARED ${SRCS})
