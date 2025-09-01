@@ -22,18 +22,20 @@
 # due to the use of the FILE command we use when creating the bundle
 # hierarchy.
 cmake_minimum_required(VERSION 3.10)
-cmake_policy(VERSION 3.31)
+
 # Mac OS X: Setting policy CMP0042 to the new behavior generates dylibs with
 # RPATH-relative install name that is better suited for Mac OS X applications
 # embedding Io in their bundle.
-if(POLICY CMP0042)
-	cmake_policy(SET CMP0042 NEW)
-endif()
+# This is set by default from 3.0
 	
 # Project name, this gets prefixed to a bunch of stuff under the hood. No
 # spaces, or anything silly like that please.
 # Enable ASM language for ARM64 coroutine support
-project(IoLanguage C ASM_MASM)
+project(IoLanguage C)
+
+IF(NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
+	enable_language(ASM)
+ENDIF()
 
 # Default config when building with gcc variants
 IF((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
