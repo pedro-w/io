@@ -29,9 +29,6 @@ add_library(basekit SHARED ${SRCS})
 set_target_properties(basekit PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(basekit ${BASEKIT_LIBS})
 
-# ...And the static library
-#add_library(basekit_static STATIC ${SRCS})
-
 # The following add the install target, so we put libbasekit.* in our
 # install prefix.
 if(WIN32)

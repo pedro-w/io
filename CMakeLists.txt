@@ -23,18 +23,19 @@
 # hierarchy.
 cmake_minimum_required(VERSION 3.10)
 
+# This is the default from cmake 3.0
 # Mac OS X: Setting policy CMP0042 to the new behavior generates dylibs with
 # RPATH-relative install name that is better suited for Mac OS X applications
 # embedding Io in their bundle.
-# This is set by default from 3.0
 	
 # Project name, this gets prefixed to a bunch of stuff under the hood. No
 # spaces, or anything silly like that please.
 # Enable ASM language for ARM64 coroutine support
 project(IoLanguage C)
 
-IF(NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
-	enable_language(ASM)
+# Enable ASM language for ARM64 coroutine support
+IF (NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
+    enable_language(ASM)
 ENDIF()
 
 # Default config when building with gcc variants
@@ -103,35 +104,10 @@ file(COPY ${COROUTINE_SOURCE_DIR}
 
 # Packaging stuff
 
-#Modified from: http://www.mail-archive.com/cmake@cmake.org/msg32916.html
-MACRO (TODAY RESULT)
-    IF (WIN32)
-        EXECUTE_PROCESS(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE ${RESULT})
-        string(REGEX REPLACE "(..)/(..)/(....).*" "\\1.\\2.\\3" ${RESULT} 
-${${RESULT}})
-    ELSEIF(UNIX)
-        EXECUTE_PROCESS(COMMAND "date" "+%d/%m/%Y" OUTPUT_VARIABLE ${RESULT})
-        string(REGEX REPLACE "(..)/(..)/(....).*" "\\1.\\2.\\3" ${RESULT} 
-${${RESULT}})
-    ELSE (WIN32)
-        MESSAGE(SEND_ERROR "date not implemented")
-        SET(${RESULT} 00.00.0000)
-    ENDIF (WIN32)
-ENDMACRO (TODAY)
-
-TODAY(CMD_DATE)
-STRING(SUBSTRING ${CMD_DATE} 0 2 CMD_DATE_DAY)
-STRING(SUBSTRING ${CMD_DATE} 3 2 CMD_DATE_MON)
-STRING(SUBSTRING ${CMD_DATE} 6 4 CMD_DATE_YEAR)
-SET(CMD_DATE "${CMD_DATE_YEAR}.${CMD_DATE_MON}.${CMD_DATE_DAY}")
-
-# If source tree is not a git repository this will not work
-#IF(WIN32 AND NOT CYGWIN)
-#	execute_process(COMMAND "cmd" " /C git rev-parse --short HEAD" OUTPUT_VARIABLE IO_GIT_REV)
-#ELSE(WIN32 AND NOT CYGWIN)
-#	execute_process(COMMAND git rev-parse --short HEAD OUTPUT_VARIABLE IO_GIT_REV)
-#ENDIF(WIN32 AND NOT CYGWIN)
-#string(REGEX REPLACE "(.......)." "\\1" IO_GIT_REV ${IO_GIT_REV})
+string(TIMESTAMP CMD_DATE_YEAR "%Y")
+string(TIMESTAMP CMD_DATE_MON "%m")
+string(TIMESTAMP CMD_DATE_DAY "%d")
+string(TIMESTAMP CMD_DATE "%Y.%m.%d")
 
 SET(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 SET(CPACK_PACKAGE_VENDOR "iolanguage.com")
