@@ -37,12 +37,8 @@ include_directories(
 set(SRCS source/main.c)
 
 # Set up an empty LIBS so we can append to it things we may need to link in.
-set(LIBS ${CMAKE_DL_LIBS})
-
 # Add dynamic loader library for those who need it
-if(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|Linux|SunOS|syllable)")
-	list(APPEND LIBS "-ldl")
-endif(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|Linux|SunOS|syllable)")
+set(LIBS ${CMAKE_DL_LIBS})
 
 # Add math library for those who need it
 find_library(MATH_LIBRARY m)
