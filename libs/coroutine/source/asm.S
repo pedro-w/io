@@ -224,6 +224,7 @@ SET:
 #endif
 
 #ifdef NEEDARMCONTEXT
+.text
 .globl GET
 GET:
 	str	r1, [r0,#4]
