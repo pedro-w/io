@@ -30,7 +30,7 @@ cmake_minimum_required(VERSION 3.5)
 if(POLICY CMP0042)
 	cmake_policy(SET CMP0042 NEW)
 endif()
-	
+
 # Project name, this gets prefixed to a bunch of stuff under the hood. No
 # spaces, or anything silly like that please.
 project(IoLanguage C)
@@ -45,7 +45,7 @@ IF(CMAKE_COMPILER_IS_GNUCC OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
     SET(CMAKE_C_FLAGS_DEBUGFAST "-g -O0")
     
     # Only use -msse2 flag for x86/x86_64 architectures.
-    if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+    if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
         SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
     endif()
     
