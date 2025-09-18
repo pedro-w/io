@@ -44,34 +44,30 @@
 
 #if TARGET_HOST_UNIX_X11
 
-struct freeglutStrokeFont
-{
-  const char *name ; 
-  int num_chars ; 
-  void *ch ; 
-  float top ; 
-  float bottom ; 
-}; 
+struct freeglutStrokeFont {
+    const char *name;
+    int num_chars;
+    void *ch;
+    float top;
+    float bottom;
+};
 
-struct freeglutBitmapFont
-{ 
-  const char *name ; 
-  const int num_chars ; 
-  const int first ; 
-  const void *ch ; 
-}; 
+struct freeglutBitmapFont {
+    const char *name;
+    const int num_chars;
+    const int first;
+    const void *ch;
+};
 
+struct freeglutStrokeFont glutStrokeRoman;
+struct freeglutStrokeFont glutStrokeMonoRoman;
 
-struct freeglutStrokeFont glutStrokeRoman ;
-struct freeglutStrokeFont glutStrokeMonoRoman ;
-
-struct freeglutBitmapFont glutBitmap9By15 ;
-struct freeglutBitmapFont glutBitmap8By13 ;
-struct freeglutBitmapFont glutBitmapTimesRoman10 ;
-struct freeglutBitmapFont glutBitmapTimesRoman24 ;
-struct freeglutBitmapFont glutBitmapHelvetica10 ;
-struct freeglutBitmapFont glutBitmapHelvetica12 ;
-struct freeglutBitmapFont glutBitmapHelvetica18 ;
+struct freeglutBitmapFont glutBitmap9By15;
+struct freeglutBitmapFont glutBitmap8By13;
+struct freeglutBitmapFont glutBitmapTimesRoman10;
+struct freeglutBitmapFont glutBitmapTimesRoman24;
+struct freeglutBitmapFont glutBitmapHelvetica10;
+struct freeglutBitmapFont glutBitmapHelvetica12;
+struct freeglutBitmapFont glutBitmapHelvetica18;
 
 #endif
-

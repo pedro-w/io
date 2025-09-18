@@ -24,12 +24,12 @@ jobs:
           submodules: 'recursive'
 
       - name: Check format
-        uses: DoozyX/clang-format-lint-action@v0.12
+        uses: DoozyX/clang-format-lint-action@v0.20
         with:
           source: 'libs'
           extensions: 'h,c'
           style: file
-          clangFormatVersion: 12
+          clangFormatVersion: 20
 
   unix:
     name: Unix Build (${{ matrix.os }} - ${{ matrix.build_type }})

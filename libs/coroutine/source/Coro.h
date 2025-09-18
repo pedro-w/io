@@ -29,19 +29,19 @@
 #endif
 
 #include "Common.h"
-//#include "PortableUContext.h"
+// #include "PortableUContext.h"
 #include "taskimpl.h"
 
 #if defined(__SYMBIAN32__)
 #define CORO_STACK_SIZE 8192
 #define CORO_STACK_SIZE_MIN 1024
 #else
-//#define CORO_DEFAULT_STACK_SIZE     (65536/2)
-//#define CORO_DEFAULT_STACK_SIZE  (65536*4)
+// #define CORO_DEFAULT_STACK_SIZE     (65536/2)
+// #define CORO_DEFAULT_STACK_SIZE  (65536*4)
 
 // 128k needed on PPC due to parser
 #define CORO_DEFAULT_STACK_SIZE (128 * 1024)
-//#define CORO_DEFAULT_STACK_SIZE (256*1024)
+// #define CORO_DEFAULT_STACK_SIZE (256*1024)
 #define CORO_STACK_SIZE_MIN 8192
 #endif
 
@@ -64,7 +64,7 @@
 #if defined(WIN32) && defined(HAS_FIBERS)
 #define USE_FIBERS
 #elif defined(HAS_UCONTEXT)
-//#elif defined(HAS_UCONTEXT) && !defined(__x86_64__)
+// #elif defined(HAS_UCONTEXT) && !defined(__x86_64__)
 #if !defined(USE_UCONTEXT)
 #define USE_UCONTEXT
 #endif

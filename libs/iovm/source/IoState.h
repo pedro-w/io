@@ -7,7 +7,7 @@
 
 #include "IoVMApi.h"
 
-//#include "Collector.h"
+// #include "Collector.h"
 #include "Stack.h"
 #include "PointerHash.h"
 #include "CHash.h"
@@ -22,8 +22,8 @@
 #include "IoCoroutine.h"
 
 #define IOMESSAGE_INLINE_PERFORM 1
-//#define IO_BLOCK_LOCALS_RECYCLING 1
-//#define IOSTATE_RECYCLING_ON 1
+// #define IO_BLOCK_LOCALS_RECYCLING 1
+// #define IOSTATE_RECYCLING_ON 1
 #define IOSTATE_DEFAULT_MAX_RECYCLED_OBJECTS 1000
 
 #ifdef __cplusplus

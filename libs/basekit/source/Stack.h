@@ -34,7 +34,7 @@ extern "C" {
 typedef void(StackDoCallback)(void *);
 typedef void(StackDoOnCallback)(void *, void *);
 
-//#define STACK_POP_CALLBACK
+// #define STACK_POP_CALLBACK
 
 #ifdef STACK_POP_CALLBACK
 typedef void(StackPopCallback)(void *);

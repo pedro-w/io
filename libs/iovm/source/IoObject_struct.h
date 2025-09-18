@@ -45,17 +45,17 @@ struct IoObjectData {
     IoObject **protos;
 
     unsigned int hasDoneLookup : 1; // used to avoid slot lookup loops
-    unsigned int
-        isActivatable : 1; // if true, upon activation, call activate slot
-    unsigned int
-        isDirty : 1; // set to true when the object changes its storable state
+    unsigned int isActivatable
+        : 1; // if true, upon activation, call activate slot
+    unsigned int isDirty
+        : 1; // set to true when the object changes its storable state
 
     // optimizations
 
     unsigned int ownsSlots : 1; // if true, io_free slots hash table when
                                 // io_freeing object
-    unsigned int
-        isSymbol : 1; // true if the object is a unqiue sequence - a symbol
+    unsigned int isSymbol
+        : 1; // true if the object is a unqiue sequence - a symbol
     unsigned int isLocals : 1;     // true if the Object is a locals object
     unsigned int isReferenced : 1; // 1 bit ref counter
     unsigned int sentWillFree : 1; // 1 is sent willFree mes
@@ -74,7 +74,7 @@ struct IoObjectData {
 
 #define IoObject_state(self) ((IoState *)(IoObject_tag(self)->state))
 #define IOSTATE ((IoState *)(IoObject_tag(self)->state))
-//#define IOSTATE IoObject_state(state)
+// #define IOSTATE IoObject_state(state)
 
 #define IoObject_dataPointer(self) IoObject_deref(self)->data.ptr
 #define IoObject_setDataPointer_(self, v)                                      \

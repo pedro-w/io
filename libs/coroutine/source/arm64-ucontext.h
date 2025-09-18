@@ -1,4 +1,5 @@
-// arm64-ucontext.h: Apple Silicon (ARM64) macOS context switching using ucontext
+// arm64-ucontext.h: Apple Silicon (ARM64) macOS context switching using
+// ucontext
 #ifndef ARM64_UCONTEXT_H
 #define ARM64_UCONTEXT_H
 

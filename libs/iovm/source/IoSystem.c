@@ -28,7 +28,7 @@ Contains methods related to the IoVM.
 #endif
 #endif
 
-//#define WIN32
+// #define WIN32
 #if defined(__CYGWIN__) || defined(_WIN32)
 #include <windows.h>
 #endif
@@ -68,9 +68,9 @@ static void setenv(const char *varName, const char *value, int force) {
     io_free(buf);
 }
 
-//#define setenv(k, v, o) SetEnvironmentVariable((k), (v)) // removed by james
-// burgess #define getpid GetCurrentProcessId  // removed by james burgess
-//#define setenv(k, v, o) SetEnvironmentVariable((k), (v))
+// #define setenv(k, v, o) SetEnvironmentVariable((k), (v)) // removed by james
+//  burgess #define getpid GetCurrentProcessId  // removed by james burgess
+// #define setenv(k, v, o) SetEnvironmentVariable((k), (v))
 #endif
 
 IO_METHOD(IoObject, installPrefix) {

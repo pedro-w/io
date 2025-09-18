@@ -48,48 +48,46 @@
  *
  * XXX Wouldn't this be simpler and clearer if we used strtok()?
  */
-int  glutExtensionSupported( const char* extension )
-{
-  const char *extensions, *start;
-  const int len = strlen( extension );
+int glutExtensionSupported(const char *extension) {
+    const char *extensions, *start;
+    const int len = strlen(extension);
 
-  /*
-   * Make sure there is a current window, and thus a current context available
-   */
-  freeglut_assert_ready;
-  freeglut_return_val_if_fail( fgStructure.Window != NULL, 0 );
+    /*
+     * Make sure there is a current window, and thus a current context available
+     */
+    freeglut_assert_ready;
+    freeglut_return_val_if_fail(fgStructure.Window != NULL, 0);
 
-  if (strchr(extension, ' '))
+    if (strchr(extension, ' '))
+        return 0;
+    start = extensions = (const char *)glGetString(GL_EXTENSIONS);
+
+    /* XXX consider printing a warning to stderr that there's no current
+     * rendering context.
+     */
+    freeglut_return_val_if_fail(extensions != NULL, 0);
+
+    while (1) {
+        const char *p = strstr(extensions, extension);
+        if (!p)
+            return 0; /* not found */
+        /* check that the match isn't a super string */
+        if ((p == start || p[-1] == ' ') && (p[len] == ' ' || p[len] == 0))
+            return 1;
+        /* skip the false match and continue */
+        extensions = p + len;
+    }
+
     return 0;
-  start = extensions = (const char *) glGetString(GL_EXTENSIONS);
-
-  /* XXX consider printing a warning to stderr that there's no current
-   * rendering context.
-   */
-  freeglut_return_val_if_fail( extensions != NULL, 0 );
-
-  while (1) {
-     const char *p = strstr(extensions, extension);
-     if (!p)
-        return 0;  /* not found */
-     /* check that the match isn't a super string */
-     if ((p == start || p[-1] == ' ') && (p[len] == ' ' || p[len] == 0))
-        return 1;
-     /* skip the false match and continue */
-     extensions = p + len;
-  }
-
-  return 0 ;
 }
 
 /*
  * This function reports all the OpenGL errors that happened till now
  */
-void  glutReportErrors( void )
-{
+void glutReportErrors(void) {
     GLenum error;
-    while( ( error = glGetError() ) != GL_NO_ERROR )
-        fgWarning( "GL error: %s", gluErrorString( error ) );
+    while ((error = glGetError()) != GL_NO_ERROR)
+        fgWarning("GL error: %s", gluErrorString(error));
 }
 
 /*
@@ -97,8 +95,7 @@ void  glutReportErrors( void )
  *
  * DEPRECATED 11/4/02 - Do not use
  */
-void  glutIgnoreKeyRepeat( int ignore )
-{
+void glutIgnoreKeyRepeat(int ignore) {
     fgState.IgnoreKeyRepeat = ignore ? GL_TRUE : GL_FALSE;
 }
 
@@ -108,30 +105,29 @@ void  glutIgnoreKeyRepeat( int ignore )
  *
  * XXX Is this also deprecated as of 20021104?
  */
-void  glutSetKeyRepeat( int repeatMode )
-{
+void glutSetKeyRepeat(int repeatMode) {
 #if TARGET_HOST_UNIX_X11
 
     freeglut_assert_ready;
 
-    switch( repeatMode )
-    {
-    case GLUT_KEY_REPEAT_OFF:   XAutoRepeatOff( fgDisplay.Display ); break;
-    case GLUT_KEY_REPEAT_ON:    XAutoRepeatOn( fgDisplay.Display );  break;
-    case GLUT_KEY_REPEAT_DEFAULT:
-        {
-            XKeyboardState keyboardState;
-
-            XGetKeyboardControl( fgDisplay.Display, &keyboardState );
-            glutSetKeyRepeat(
-                keyboardState.global_auto_repeat == AutoRepeatModeOn ?
-                GLUT_KEY_REPEAT_ON : GLUT_KEY_REPEAT_OFF
-            );
-        }
+    switch (repeatMode) {
+    case GLUT_KEY_REPEAT_OFF:
+        XAutoRepeatOff(fgDisplay.Display);
         break;
+    case GLUT_KEY_REPEAT_ON:
+        XAutoRepeatOn(fgDisplay.Display);
+        break;
+    case GLUT_KEY_REPEAT_DEFAULT: {
+        XKeyboardState keyboardState;
+
+        XGetKeyboardControl(fgDisplay.Display, &keyboardState);
+        glutSetKeyRepeat(keyboardState.global_auto_repeat == AutoRepeatModeOn
+                             ? GLUT_KEY_REPEAT_ON
+                             : GLUT_KEY_REPEAT_OFF);
+    } break;
 
     default:
-        fgError ("Invalid glutSetKeyRepeat mode: %d", repeatMode);
+        fgError("Invalid glutSetKeyRepeat mode: %d", repeatMode);
         break;
     }
 
@@ -141,19 +137,17 @@ void  glutSetKeyRepeat( int repeatMode )
 /*
  * Forces the joystick callback to be executed
  */
-void  glutForceJoystickFunc( void )
-{
+void glutForceJoystickFunc(void) {
     freeglut_assert_ready;
-    freeglut_return_if_fail( fgStructure.Window != NULL );
-    freeglut_return_if_fail( FETCH_WCB( *( fgStructure.Window ), Joystick ) );
-    fgJoystickPollWindow( fgStructure.Window );
+    freeglut_return_if_fail(fgStructure.Window != NULL);
+    freeglut_return_if_fail(FETCH_WCB(*(fgStructure.Window), Joystick));
+    fgJoystickPollWindow(fgStructure.Window);
 }
 
 /*
  *
  */
-void  glutSetColor( int nColor, GLfloat red, GLfloat green, GLfloat blue )
-{
+void glutSetColor(int nColor, GLfloat red, GLfloat green, GLfloat blue) {
     /*
      *
      */
@@ -162,19 +156,17 @@ void  glutSetColor( int nColor, GLfloat red, GLfloat green, GLfloat blue )
 /*
  *
  */
-GLfloat  glutGetColor( int color, int component )
-{
+GLfloat glutGetColor(int color, int component) {
     /*
      *
      */
-    return( 0.0f );
+    return (0.0f);
 }
 
 /*
  *
  */
-void  glutCopyColormap( int window )
-{
+void glutCopyColormap(int window) {
     /*
      *
      */

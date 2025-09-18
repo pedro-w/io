@@ -143,7 +143,7 @@ IO_METHOD(IoObject, for)
     }
 }
 
-IO_METHOD(IoObject, return ) {
+IO_METHOD(IoObject, return) {
     /*doc Object return(anObject)
     Return anObject from the current execution block.
     */

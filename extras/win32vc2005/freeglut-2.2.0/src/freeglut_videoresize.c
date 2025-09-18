@@ -38,17 +38,10 @@
 
 /* -- INTERFACE FUNCTIONS -------------------------------------------------- */
 
-int   glutVideoResizeGet( GLenum eWhat )            {    return( 0x00 );    }
-void  glutSetupVideoResizing( void )                { /* Not implemented */ }
-void  glutStopVideoResizing( void )                 { /* Not implemented */ }
-void  glutVideoResize( int x, int y, int w, int h ) { /* Not implemented */ }
-void  glutVideoPan( int x, int y, int w, int h )    { /* Not implemented */ }
+int glutVideoResizeGet(GLenum eWhat) { return (0x00); }
+void glutSetupVideoResizing(void) { /* Not implemented */ }
+void glutStopVideoResizing(void) { /* Not implemented */ }
+void glutVideoResize(int x, int y, int w, int h) { /* Not implemented */ }
+void glutVideoPan(int x, int y, int w, int h) { /* Not implemented */ }
 
 /*** END OF FILE ***/
-
-
-
-
-
-
-

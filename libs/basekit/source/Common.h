@@ -82,15 +82,15 @@ typedef long long int64_t;
 // this also includes windows.h
 #include <winsock2.h>
 
-//#if !defined(__MINGW32__)
+// #if !defined(__MINGW32__)
 #if defined(BUILDING_BASEKIT_DLL) || defined(BUILDING_IOVMALL_DLL)
 #define BASEKIT_API __declspec(dllexport)
 #else
 #define BASEKIT_API __declspec(dllimport)
 #endif
-//#else
-//#define BASEKIT_API
-//#endif
+// #else
+// #define BASEKIT_API
+// #endif
 
 /*
 #  ifndef _SYS_STDINT_H_
@@ -180,7 +180,7 @@ as errors in my dev settings */
 extern "C" {
 #endif
 
-//#define IO_CHECK_ALLOC
+// #define IO_CHECK_ALLOC
 
 #ifdef IO_CHECK_ALLOC
 BASEKIT_API size_t io_memsize(void *ptr);

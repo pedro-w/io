@@ -99,8 +99,8 @@ THE AUTHOR'S WRITTEN PERMISSION, WITH THE FOLLOWING EXCEPTIONS:
 
 #ifndef __FOUND
 #define __SIMD_EMU__
-//#warning simd_cp.h does not support or could not figure out your compiler
-// and/or CPU.
+// #warning simd_cp.h does not support or could not figure out your compiler
+//  and/or CPU.
 #endif
 
 #endif /* SIMD_NO_SIMD and SIMD_EMU */

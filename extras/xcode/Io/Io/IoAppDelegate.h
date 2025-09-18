@@ -8,12 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface IoAppDelegate : NSObject <NSApplicationDelegate> 
-{
-	NSWindow *window;
-	IBOutlet NSTextView *textView;
+@interface IoAppDelegate : NSObject <NSApplicationDelegate> {
+    NSWindow *window;
+    IBOutlet NSTextView *textView;
 }
 
-@property (assign) IBOutlet NSWindow *window;
+@property(assign) IBOutlet NSWindow *window;
 
 @end

@@ -309,7 +309,7 @@ int Levels_isAssignOperator(Levels *self, IoSymbol *operator) {
 }
 
 IoSymbol *Levels_nameForAssignOperator(Levels *self, IoState *state,
-                                       IoSymbol *operator, IoSymbol * slotName,
+                                       IoSymbol *operator, IoSymbol *slotName,
                                        IoMessage *msg) {
     IoObject *value = IoMap_rawAt(self->assignOperatorTable, operator);
     const char *operatorString = CSTRING(operator);
