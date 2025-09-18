@@ -16,7 +16,7 @@ extern "C" {
 
 #define IoObject_clean(self) PHash_clean(IoObject_slots(self));
 #define IOREF(value) IoObject_addingRef_((IoObject *)self, (IoObject *)value)
-//#define IOALLOCREF(value) IoObject_isReferenced_(value, 1)
+// #define IOALLOCREF(value) IoObject_isReferenced_(value, 1)
 
 #define IOOBJECT_ISTYPE(self, typeName)                                        \
     IoObject_hasCloneFunc_(self, (IoTagCloneFunc *)Io##typeName##_rawClone)

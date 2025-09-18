@@ -7,9 +7,9 @@ license
 
 #include "Base.h"
 
-//#define BStream_C
+// #define BStream_C
 #include "BStream.h"
-//#undef BStream_C
+// #undef BStream_C
 
 #include <string.h>
 #include <ctype.h>

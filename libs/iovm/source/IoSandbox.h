@@ -9,7 +9,7 @@
 #include "IoObject.h"
 #include "UArray.h"
 #include "IoNumber.h"
-//#include "IoSeq.h"
+// #include "IoSeq.h"
 
 #ifdef __cplusplus
 extern "C" {

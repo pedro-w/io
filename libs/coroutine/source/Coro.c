@@ -542,7 +542,7 @@ void Coro_setup(Coro *self, void *arg) {
     globalCallbackBlock.context = ((CallbackBlock *)arg)->context;
     globalCallbackBlock.func = ((CallbackBlock *)arg)->func;
     setjmp(self->env);
-end : {
+end: {
     uintptr_t i;
     uintptr_t *sav = (uintptr_t *)self->env;
     size_t sz = sizeof(self->env) / sizeof(sav[0]);
@@ -550,7 +550,7 @@ end : {
     // Try to guess PC index
     i = sz;
     while (i--)
-        if (sav[i] == (uintptr_t) && end)
+        if (sav[i] == (uintptr_t)&&end)
             break;
     assert(i < sz);
     sav[i] = start;

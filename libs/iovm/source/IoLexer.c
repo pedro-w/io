@@ -12,9 +12,9 @@ Aug 2004 - removed {} from op chars
 #include <ctype.h>
 #include <stddef.h>
 
-//#define LEXER_DEBUG
-//#define LEXER_DEBUG_TOKENS
-//#define TEST_INLINE inline
+// #define LEXER_DEBUG
+// #define LEXER_DEBUG_TOKENS
+// #define TEST_INLINE inline
 #define TEST_INLINE
 
 static IoToken *IoLexer_currentToken(IoLexer *self) {

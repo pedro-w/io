@@ -13,7 +13,7 @@
 #include <ctype.h>
 
 #define DATA(self) ((UArray *)(IoObject_dataPointer(self)))
-//#define HASHIVAR(self) ((self)->extraData)
+// #define HASHIVAR(self) ((self)->extraData)
 static const char *protoId = "Sequence";
 
 int ISMUTABLESEQ(IoObject *self) {

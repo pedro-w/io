@@ -15,7 +15,7 @@ Object wrapper for an Io coroutine.
 #include "IoList.h"
 #include "IoBlock.h"
 
-//#define DEBUG
+// #define DEBUG
 
 static const char *protoId = "Coroutine";
 

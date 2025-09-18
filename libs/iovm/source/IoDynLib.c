@@ -314,46 +314,43 @@ intptr_t IoDynLib_rawNonVoidCall(void *f, int argCount, intptr_t *params) {
 
     switch (argCount - 1) {
     case 0:
-        rc = ((intptr_t(*)(void))f)();
+        rc = ((intptr_t (*)(void))f)();
         break;
     case 1:
-        rc = ((intptr_t(*)(intptr_t))f)(params[0]);
+        rc = ((intptr_t (*)(intptr_t))f)(params[0]);
         break;
     case 2:
-        rc = ((intptr_t(*)(intptr_t, intptr_t))f)(params[0], params[1]);
+        rc = ((intptr_t (*)(intptr_t, intptr_t))f)(params[0], params[1]);
         break;
     case 3:
-        rc =
-            ((intptr_t(*)(intptr_t, intptr_t, intptr_t))f)(params[0], params[1],
-                                                           params[2]);
+        rc = ((intptr_t (*)(intptr_t, intptr_t, intptr_t))f)(
+            params[0], params[1], params[2]);
         break;
     case 4:
-        rc = ((intptr_t(*)(intptr_t, intptr_t, intptr_t,
-                           intptr_t))f)(params[0], params[1], params[2],
-                                        params[3]);
+        rc = ((intptr_t (*)(intptr_t, intptr_t, intptr_t, intptr_t))f)(
+            params[0], params[1], params[2], params[3]);
         break;
     case 5:
-        rc = ((intptr_t(*)(intptr_t, intptr_t, intptr_t, intptr_t,
-                           intptr_t))f)(params[0], params[1], params[2],
-                                        params[3], params[4]);
+        rc =
+            ((intptr_t (*)(intptr_t, intptr_t, intptr_t, intptr_t, intptr_t))f)(
+                params[0], params[1], params[2], params[3], params[4]);
         break;
     case 6:
-        rc = ((intptr_t(*)(intptr_t, intptr_t, intptr_t, intptr_t, intptr_t,
-                           intptr_t))f)(params[0], params[1], params[2],
-                                        params[3], params[4], params[5]);
+        rc = ((intptr_t (*)(intptr_t, intptr_t, intptr_t, intptr_t, intptr_t,
+                            intptr_t))f)(params[0], params[1], params[2],
+                                         params[3], params[4], params[5]);
         break;
     case 7:
-        rc = ((intptr_t(*)(intptr_t, intptr_t, intptr_t, intptr_t, intptr_t,
-                           intptr_t, intptr_t))f)(params[0], params[1],
-                                                  params[2], params[3],
-                                                  params[4], params[5],
-                                                  params[6]);
+        rc = ((intptr_t (*)(intptr_t, intptr_t, intptr_t, intptr_t, intptr_t,
+                            intptr_t, intptr_t))f)(
+            params[0], params[1], params[2], params[3], params[4], params[5],
+            params[6]);
         break;
     case 8:
-        rc = ((intptr_t(*)(
-            intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t,
-            intptr_t, intptr_t))f)(params[0], params[1], params[2], params[3],
-                                   params[4], params[5], params[6], params[7]);
+        rc = ((intptr_t (*)(intptr_t, intptr_t, intptr_t, intptr_t, intptr_t,
+                            intptr_t, intptr_t, intptr_t))f)(
+            params[0], params[1], params[2], params[3], params[4], params[5],
+            params[6], params[7]);
         break;
     }
 
@@ -476,7 +473,7 @@ IoDynLib *IoDynLib_callPluginInitFunc(IoDynLib *self, IoObject *locals,
 
     params[0] = (intptr_t)IOSTATE;
     params[1] = (intptr_t)IOSTATE->lobby;
-    rc = ((intptr_t(*)(intptr_t, intptr_t))f)(params[0], params[1]);
+    rc = ((intptr_t (*)(intptr_t, intptr_t))f)(params[0], params[1]);
     io_free(params);
 
     return IONUMBER(rc);

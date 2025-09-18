@@ -14,7 +14,7 @@
 #endif
 #endif
 
-//#define USE_UCONTEXT 1
+// #define USE_UCONTEXT 1
 
 #if defined __OpenBSD__
 #undef USE_UCONTEXT
@@ -56,7 +56,7 @@
 #include <ucontext.h>
 #endif
 
-//#include "task.h"
+// #include "task.h"
 
 #ifndef nil
 #define nil ((void *)0)

@@ -41,34 +41,28 @@
  *  glutGameModeGet()       -- is that correct?
  */
 
-
 /* -- PRIVATE FUNCTIONS ---------------------------------------------------- */
 
 /*
  * Remembers the current visual settings, so that
  * we can change them and restore later...
  */
-void fghRememberState( void )
-{
+void fghRememberState(void) {
 #if TARGET_HOST_UNIX_X11
 
     /*
      * This highly depends on the XFree86 extensions,
      * not approved as X Consortium standards
      */
-#   ifdef X_XF86VidModeGetModeLine
-
+#ifdef X_XF86VidModeGetModeLine
 
     /*
      * Remember the current ViewPort location of the screen to be able to
      * restore the ViewPort on LeaveGameMode():
      */
-    XF86VidModeGetViewPort(
-        fgDisplay.Display,
-        fgDisplay.Screen,
-        &fgDisplay.DisplayViewPortX,
-        &fgDisplay.DisplayViewPortY
-    );
+    XF86VidModeGetViewPort(fgDisplay.Display, fgDisplay.Screen,
+                           &fgDisplay.DisplayViewPortX,
+                           &fgDisplay.DisplayViewPortY);
 
     /*
      * Remember the current pointer location before going fullscreen
@@ -78,36 +72,30 @@ void fghRememberState( void )
         Window junk_window;
         unsigned int mask;
 
-        XQueryPointer(
-            fgDisplay.Display, fgDisplay.RootWindow,
-            &junk_window, &junk_window,
-            &fgDisplay.DisplayPointerX, &fgDisplay.DisplayPointerY,
-            &fgDisplay.DisplayPointerX, &fgDisplay.DisplayPointerY, &mask
-        );
+        XQueryPointer(fgDisplay.Display, fgDisplay.RootWindow, &junk_window,
+                      &junk_window, &fgDisplay.DisplayPointerX,
+                      &fgDisplay.DisplayPointerY, &fgDisplay.DisplayPointerX,
+                      &fgDisplay.DisplayPointerY, &mask);
     }
 
     /*
      * Query the current display settings:
      */
-    fgDisplay.DisplayModeValid = 
-      XF86VidModeGetModeLine(
-        fgDisplay.Display,
-        fgDisplay.Screen,
-        &fgDisplay.DisplayModeClock,
-        &fgDisplay.DisplayMode
-    );
+    fgDisplay.DisplayModeValid = XF86VidModeGetModeLine(
+        fgDisplay.Display, fgDisplay.Screen, &fgDisplay.DisplayModeClock,
+        &fgDisplay.DisplayMode);
 
-    if( !fgDisplay.DisplayModeValid )
-            fgWarning( "Runtime use of XF86VidModeGetModeLine failed.\n" );
+    if (!fgDisplay.DisplayModeValid)
+        fgWarning("Runtime use of XF86VidModeGetModeLine failed.\n");
 
-#   else
-#       warning fghRememberState: missing XFree86 video mode extensions, game mode will not change screen resolution when activated
-#   endif
+#else
+#warning fghRememberState: missing XFree86 video mode extensions, game mode will not change screen resolution when activated
+#endif
 
 #elif TARGET_HOST_WIN32
 
-/*    DEVMODE devMode; */
-    
+    /*    DEVMODE devMode; */
+
     /*
      * Grab the current desktop settings...
      */
@@ -115,8 +103,8 @@ void fghRememberState( void )
 /* hack to get around my stupid cross-gcc headers */
 #define FREEGLUT_ENUM_CURRENT_SETTINGS -1
 
-    EnumDisplaySettings( NULL, FREEGLUT_ENUM_CURRENT_SETTINGS,
-                         &fgDisplay.DisplayMode );
+    EnumDisplaySettings(NULL, FREEGLUT_ENUM_CURRENT_SETTINGS,
+                        &fgDisplay.DisplayMode);
 
     /*
      * Make sure we will be restoring all settings needed
@@ -130,80 +118,64 @@ void fghRememberState( void )
 /*
  * Restores the previously remembered visual settings
  */
-void fghRestoreState( void )
-{
+void fghRestoreState(void) {
 #if TARGET_HOST_UNIX_X11
 
-#   ifdef X_XF86VidModeGetAllModeLines
+#ifdef X_XF86VidModeGetAllModeLines
     /*
      * Restore the remembered pointer position:
      */
-    XWarpPointer(
-        fgDisplay.Display, None, fgDisplay.RootWindow, 0, 0, 0, 0,
-        fgDisplay.DisplayPointerX, fgDisplay.DisplayPointerY
-    );
+    XWarpPointer(fgDisplay.Display, None, fgDisplay.RootWindow, 0, 0, 0, 0,
+                 fgDisplay.DisplayPointerX, fgDisplay.DisplayPointerY);
 
     /*
      * This highly depends on the XFree86 extensions,
      * not approved as X Consortium standards
      */
 
-    if( fgDisplay.DisplayModeValid )
-    {
-        XF86VidModeModeInfo** displayModes;
+    if (fgDisplay.DisplayModeValid) {
+        XF86VidModeModeInfo **displayModes;
         int i, displayModesCount;
 
-        XF86VidModeGetAllModeLines(
-            fgDisplay.Display,
-            fgDisplay.Screen,
-            &displayModesCount,
-            &displayModes
-        );
+        XF86VidModeGetAllModeLines(fgDisplay.Display, fgDisplay.Screen,
+                                   &displayModesCount, &displayModes);
 
         /*
          * Check every of the modes looking for one that matches our demands.
          * If we find one, switch to it and restore the remembered viewport.
          */
-        for( i = 0; i < displayModesCount; i++ )
-        {
-            if(displayModes[ i ]->hdisplay == fgDisplay.DisplayMode.hdisplay &&
-               displayModes[ i ]->vdisplay == fgDisplay.DisplayMode.vdisplay &&
-               displayModes[ i ]->dotclock == fgDisplay.DisplayModeClock )
-            {
-                XF86VidModeSwitchToMode(
-                    fgDisplay.Display,
-                    fgDisplay.Screen,
-                    displayModes[ i ]
-                );
-                XF86VidModeSetViewPort(
-                     fgDisplay.Display,
-                     fgDisplay.Screen,
-                     fgDisplay.DisplayViewPortX,
-                     fgDisplay.DisplayViewPortY
-                );
+        for (i = 0; i < displayModesCount; i++) {
+            if (displayModes[i]->hdisplay == fgDisplay.DisplayMode.hdisplay &&
+                displayModes[i]->vdisplay == fgDisplay.DisplayMode.vdisplay &&
+                displayModes[i]->dotclock == fgDisplay.DisplayModeClock) {
+                XF86VidModeSwitchToMode(fgDisplay.Display, fgDisplay.Screen,
+                                        displayModes[i]);
+                XF86VidModeSetViewPort(fgDisplay.Display, fgDisplay.Screen,
+                                       fgDisplay.DisplayViewPortX,
+                                       fgDisplay.DisplayViewPortY);
 
                 /*
                  * For the case this would be the last X11 call the application
                  * calls exit() we've to flush the X11 output queue to have the
                  * commands sent to the X server before the application exits.
                  */
-                XFlush( fgDisplay.Display );
+                XFlush(fgDisplay.Display);
 
                 return;
             }
         }
     }
 
-#   else
-#       warning fghRestoreState: missing XFree86 video mode extensions, game mode will not change screen resolution when activated
-#   endif
+#else
+#warning fghRestoreState: missing XFree86 video mode extensions, game mode will not change screen resolution when activated
+#endif
 
 #elif TARGET_HOST_WIN32
 
     /*
      * Restore the previously rememebered desktop display settings
      */
-    ChangeDisplaySettings( &fgDisplay.DisplayMode, 0 );
+    ChangeDisplaySettings(&fgDisplay.DisplayMode, 0);
 
 #endif
 }
@@ -211,66 +183,53 @@ void fghRestoreState( void )
 /*
  * Checks the display mode settings against user's preferences
  */
-GLboolean fghCheckDisplayMode( int width, int height, int depth, int refresh )
-{
+GLboolean fghCheckDisplayMode(int width, int height, int depth, int refresh) {
     /*
      * The desired values should be stored in fgState structure...
      */
-    return ( width == fgState.GameModeSize.X ) &&
-           ( height == fgState.GameModeSize.Y ) &&
-           ( depth == fgState.GameModeDepth ) &&
-           (refresh == fgState.GameModeRefresh );
+    return (width == fgState.GameModeSize.X) &&
+           (height == fgState.GameModeSize.Y) &&
+           (depth == fgState.GameModeDepth) &&
+           (refresh == fgState.GameModeRefresh);
 }
 
 /*
  * Changes the current display mode to match user's settings
  */
-GLboolean fghChangeDisplayMode( GLboolean haveToTest )
-{
+GLboolean fghChangeDisplayMode(GLboolean haveToTest) {
 #if TARGET_HOST_UNIX_X11
 
     /*
      * This highly depends on the XFree86 extensions,
      * not approved as X Consortium standards
      */
-#   ifdef X_XF86VidModeGetAllModeLines
+#ifdef X_XF86VidModeGetAllModeLines
 
     /*
      * This is also used by applcations which check modes by calling
      * glutGameModeGet(GLUT_GAME_MODE_POSSIBLE), so allow the check:
      */
-    if( haveToTest || fgDisplay.DisplayModeValid )
-    {
-        XF86VidModeModeInfo** displayModes;
+    if (haveToTest || fgDisplay.DisplayModeValid) {
+        XF86VidModeModeInfo **displayModes;
         int i, displayModesCount;
 
-        XF86VidModeGetAllModeLines(
-            fgDisplay.Display,
-            fgDisplay.Screen,
-            &displayModesCount,
-            &displayModes
-        );
+        XF86VidModeGetAllModeLines(fgDisplay.Display, fgDisplay.Screen,
+                                   &displayModesCount, &displayModes);
 
         /*
          * Check every of the modes looking for one that matches our demands
          */
-        for( i = 0; i < displayModesCount; i++ )
-        {
-            if( fghCheckDisplayMode( displayModes[ i ]->hdisplay,
-                                     displayModes[ i ]->vdisplay,
-                                     fgState.GameModeDepth,
-                                     fgState.GameModeRefresh ) )
-            {
-                if( haveToTest )
+        for (i = 0; i < displayModesCount; i++) {
+            if (fghCheckDisplayMode(
+                    displayModes[i]->hdisplay, displayModes[i]->vdisplay,
+                    fgState.GameModeDepth, fgState.GameModeRefresh)) {
+                if (haveToTest)
                     return GL_TRUE;
                 /*
                  * OKi, this is the display mode we have been looking for...
                  */
-                XF86VidModeSwitchToMode(
-                    fgDisplay.Display,
-                    fgDisplay.Screen,
-                    displayModes[ i ]
-                );
+                XF86VidModeSwitchToMode(fgDisplay.Display, fgDisplay.Screen,
+                                        displayModes[i]);
                 return GL_TRUE;
             }
         }
@@ -281,52 +240,46 @@ GLboolean fghChangeDisplayMode( GLboolean haveToTest )
      */
     return GL_FALSE;
 
-#   else
-#       warning fghChangeDisplayMode: missing XFree86 video mode extensions, game mode will not change screen resolution when activated
-#   endif
+#else
+#warning fghChangeDisplayMode: missing XFree86 video mode extensions, game mode will not change screen resolution when activated
+#endif
 
 #elif TARGET_HOST_WIN32
 
-    unsigned int    displayModes = 0, mode = 0xffffffff;
+    unsigned int displayModes = 0, mode = 0xffffffff;
     GLboolean success = GL_FALSE;
     /* HDC      desktopDC; */
-    DEVMODE  devMode;
+    DEVMODE devMode;
 
     /*
      * Enumerate the available display modes
      * Try to get a complete match
      */
-    while( EnumDisplaySettings( NULL, displayModes, &devMode ) )
-    {
+    while (EnumDisplaySettings(NULL, displayModes, &devMode)) {
         /*
          * Does the enumerated display mode match the user's preferences?
          */
-        if( fghCheckDisplayMode( devMode.dmPelsWidth,  devMode.dmPelsHeight,
-                                 devMode.dmBitsPerPel,
-                                 devMode.dmDisplayFrequency ) )
-        {
+        if (fghCheckDisplayMode(devMode.dmPelsWidth, devMode.dmPelsHeight,
+                                devMode.dmBitsPerPel,
+                                devMode.dmDisplayFrequency)) {
             mode = displayModes;
             break;
         }
         displayModes++;
     }
 
-    if( mode == 0xffffffff )
-    {
+    if (mode == 0xffffffff) {
         /* then try without Display Frequency */
         displayModes = 0;
 
         /*
          * Enumerate the available display modes
          */
-        while( EnumDisplaySettings( NULL, displayModes, &devMode ) )
-        {
+        while (EnumDisplaySettings(NULL, displayModes, &devMode)) {
             /* then try without Display Frequency */
-            if( fghCheckDisplayMode( devMode.dmPelsWidth,
-                                     devMode.dmPelsHeight,
-                                     devMode.dmBitsPerPel,
-                                     fgState.GameModeRefresh ) )
-            {
+            if (fghCheckDisplayMode(devMode.dmPelsWidth, devMode.dmPelsHeight,
+                                    devMode.dmBitsPerPel,
+                                    fgState.GameModeRefresh)) {
                 mode = displayModes;
                 break;
             }
@@ -337,8 +290,7 @@ GLboolean fghChangeDisplayMode( GLboolean haveToTest )
     /*
      * Did we find a matching display mode?
      */
-    if( mode != 0xffffffff )
-    {
+    if (mode != 0xffffffff) {
         int retVal = DISP_CHANGE_SUCCESSFUL;
 
         /*
@@ -347,19 +299,18 @@ GLboolean fghChangeDisplayMode( GLboolean haveToTest )
         devMode.dmFields |=
             DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL | DM_DISPLAYFREQUENCY;
 
-        retVal = ChangeDisplaySettings( &devMode, haveToTest ? CDS_TEST : 0 );
+        retVal = ChangeDisplaySettings(&devMode, haveToTest ? CDS_TEST : 0);
 
         /*
          * I don't know if it's really needed, but looks nice:
          */
         success = (retVal == DISP_CHANGE_SUCCESSFUL) ||
-            (retVal == DISP_CHANGE_NOTUPDATED);
+                  (retVal == DISP_CHANGE_NOTUPDATED);
 
-        if( !haveToTest && success )
-        {
-            fgState.GameModeSize.X  = devMode.dmPelsWidth;
-            fgState.GameModeSize.Y  = devMode.dmPelsHeight;
-            fgState.GameModeDepth   = devMode.dmBitsPerPel;
+        if (!haveToTest && success) {
+            fgState.GameModeSize.X = devMode.dmPelsWidth;
+            fgState.GameModeSize.Y = devMode.dmPelsHeight;
+            fgState.GameModeDepth = devMode.dmBitsPerPel;
             fgState.GameModeRefresh = devMode.dmDisplayFrequency;
         }
     }
@@ -369,14 +320,12 @@ GLboolean fghChangeDisplayMode( GLboolean haveToTest )
 #endif
 }
 
-
 /* -- INTERFACE FUNCTIONS -------------------------------------------------- */
 
 /*
  * Sets the game mode display string
  */
-void  glutGameModeString( const char* string )
-{
+void glutGameModeString(const char *string) {
     int width = 640, height = 480, depth = 16, refresh = 72;
 
     /*
@@ -385,70 +334,60 @@ void  glutGameModeString( const char* string )
      * that I assumed it is: "[width]x[height]:[depth]@[refresh rate]", which
      * appears in all GLUT game mode programs I have seen to date.
      */
-    if( sscanf( string, "%ix%i:%i@%i", &width, &height, &depth, &refresh ) !=
-        4 )
-        if( sscanf( string, "%ix%i:%i", &width, &height, &depth ) != 3 )
-            if( sscanf( string, "%ix%i@%i", &width, &height, &refresh ) != 3 )
-                if( sscanf( string, "%ix%i", &width, &height ) != 2 )
-                    if( sscanf( string, ":%i@%i", &depth, &refresh ) != 2 )
-                        if( sscanf( string, ":%i", &depth ) != 1 )
-                            if( sscanf( string, "@%i", &refresh ) != 1 )
+    if (sscanf(string, "%ix%i:%i@%i", &width, &height, &depth, &refresh) != 4)
+        if (sscanf(string, "%ix%i:%i", &width, &height, &depth) != 3)
+            if (sscanf(string, "%ix%i@%i", &width, &height, &refresh) != 3)
+                if (sscanf(string, "%ix%i", &width, &height) != 2)
+                    if (sscanf(string, ":%i@%i", &depth, &refresh) != 2)
+                        if (sscanf(string, ":%i", &depth) != 1)
+                            if (sscanf(string, "@%i", &refresh) != 1)
                                 fgWarning(
                                     "unable to parse game mode string `%s'",
-                                    string
-                                );
+                                    string);
 
     /*
      * Hopefully it worked, and if not, we still have the default values
      */
-    fgState.GameModeSize.X  = width;
-    fgState.GameModeSize.Y  = height;
-    fgState.GameModeDepth   = depth;
+    fgState.GameModeSize.X = width;
+    fgState.GameModeSize.Y = height;
+    fgState.GameModeDepth = depth;
     fgState.GameModeRefresh = refresh;
 }
 
 /*
  * Enters the game mode
  */
-int  glutEnterGameMode( void )
-{
-    if( fgStructure.GameMode )
-        fgAddToWindowDestroyList( fgStructure.GameMode );
+int glutEnterGameMode(void) {
+    if (fgStructure.GameMode)
+        fgAddToWindowDestroyList(fgStructure.GameMode);
     else
-        fghRememberState( );
+        fghRememberState();
 
-    if( ! fghChangeDisplayMode( GL_FALSE ) )
-    {
-        fgWarning( "failed to change screen settings" );
+    if (!fghChangeDisplayMode(GL_FALSE)) {
+        fgWarning("failed to change screen settings");
         return FALSE;
     }
 
-    fgStructure.GameMode = fgCreateWindow( 
-        NULL, "FREEGLUT", 0, 0,
-        fgState.GameModeSize.X, fgState.GameModeSize.Y, GL_TRUE, GL_FALSE
-    );
+    fgStructure.GameMode =
+        fgCreateWindow(NULL, "FREEGLUT", 0, 0, fgState.GameModeSize.X,
+                       fgState.GameModeSize.Y, GL_TRUE, GL_FALSE);
 
     fgStructure.GameMode->State.IsGameMode = GL_TRUE;
 
 #if TARGET_HOST_UNIX_X11
 
     /* Move the window up to the topleft corner */
-    XMoveWindow( fgDisplay.Display, fgStructure.Window->Window.Handle, 0, 0 );
+    XMoveWindow(fgDisplay.Display, fgStructure.Window->Window.Handle, 0, 0);
 
     /*
      * Sync needed to avoid a real race, the Xserver must have really created
      * the window before we can grab the pointer into it:
      */
-    XSync( fgDisplay.Display, False );
+    XSync(fgDisplay.Display, False);
 
     /* Move the Pointer to the middle of the fullscreen window */
-    XWarpPointer(
-        fgDisplay.Display,
-        None, 
-        fgDisplay.RootWindow,
-        0, 0, 0, 0,
-        fgState.GameModeSize.X/2, fgState.GameModeSize.Y/2
-    );
+    XWarpPointer(fgDisplay.Display, None, fgDisplay.RootWindow, 0, 0, 0, 0,
+                 fgState.GameModeSize.X / 2, fgState.GameModeSize.Y / 2);
 
     /*
      * Grab the pointer to confine it into the window after the calls to
@@ -459,37 +398,32 @@ int  glutEnterGameMode( void )
      * (XSetInputFocus) is called with a not yet viewable window, it will exit
      * the application which we have to aviod, so wait until it's viewable:
      */
-    while( GrabSuccess != XGrabPointer(
-               fgDisplay.Display, fgStructure.GameMode->Window.Handle,
-               TRUE,
-               ButtonPressMask | ButtonReleaseMask | ButtonMotionMask
-               | PointerMotionMask,
-               GrabModeAsync, GrabModeAsync,
-               fgStructure.GameMode->Window.Handle, None, CurrentTime) )
-        usleep( 100 );
-    
+    while (GrabSuccess !=
+           XGrabPointer(fgDisplay.Display, fgStructure.GameMode->Window.Handle,
+                        TRUE,
+                        ButtonPressMask | ButtonReleaseMask | ButtonMotionMask |
+                            PointerMotionMask,
+                        GrabModeAsync, GrabModeAsync,
+                        fgStructure.GameMode->Window.Handle, None, CurrentTime))
+        usleep(100);
+
     /*
      * Change input focus to the new window. This will exit the application
      * if the new window is not viewable yet, see the XGrabPointer loop above.
      */
-    XSetInputFocus(
-        fgDisplay.Display,
-        fgStructure.GameMode->Window.Handle,
-        RevertToNone,
-        CurrentTime
-    );
+    XSetInputFocus(fgDisplay.Display, fgStructure.GameMode->Window.Handle,
+                   RevertToNone, CurrentTime);
 
-#   ifdef X_XF86VidModeSetViewPort
+#ifdef X_XF86VidModeSetViewPort
 
-    if( fgDisplay.DisplayModeValid )
-    {
+    if (fgDisplay.DisplayModeValid) {
         int x, y;
         Window child;
 
         /*
          * Change to viewport to the window topleft edge:
          */
-        XF86VidModeSetViewPort( fgDisplay.Display, fgDisplay.Screen, 0, 0 );
+        XF86VidModeSetViewPort(fgDisplay.Display, fgDisplay.Screen, 0, 0);
 
         /*
          * Final window repositioning: It could be avoided using an undecorated
@@ -498,17 +432,13 @@ int  glutEnterGameMode( void )
          */
 
         /* Get the current postion of the drawable area on screen */
-        XTranslateCoordinates(
-            fgDisplay.Display,
-            fgStructure.Window->Window.Handle,
-            fgDisplay.RootWindow,
-            0, 0, &x, &y,
-            &child
-        );
+        XTranslateCoordinates(fgDisplay.Display,
+                              fgStructure.Window->Window.Handle,
+                              fgDisplay.RootWindow, 0, 0, &x, &y, &child);
 
         /* Move the decorataions out of the topleft corner of the display */
-        XMoveWindow( fgDisplay.Display, fgStructure.Window->Window.Handle,
-                     -x, -y);
+        XMoveWindow(fgDisplay.Display, fgStructure.Window->Window.Handle, -x,
+                    -y);
     }
 
 #endif
@@ -516,13 +446,8 @@ int  glutEnterGameMode( void )
     /*
      * Grab the keyboard, too
      */
-    XGrabKeyboard(
-        fgDisplay.Display,
-        fgStructure.GameMode->Window.Handle,
-        FALSE,
-        GrabModeAsync, GrabModeAsync,
-        CurrentTime
-    );
+    XGrabKeyboard(fgDisplay.Display, fgStructure.GameMode->Window.Handle, FALSE,
+                  GrabModeAsync, GrabModeAsync, CurrentTime);
 
 #endif
 
@@ -532,18 +457,17 @@ int  glutEnterGameMode( void )
 /*
  * Leaves the game mode
  */
-void  glutLeaveGameMode( void )
-{
-    freeglut_return_if_fail( fgStructure.GameMode );
+void glutLeaveGameMode(void) {
+    freeglut_return_if_fail(fgStructure.GameMode);
 
     fgStructure.GameMode->State.IsGameMode = GL_FALSE;
 
-    fgAddToWindowDestroyList( fgStructure.GameMode );
+    fgAddToWindowDestroyList(fgStructure.GameMode);
 
 #if TARGET_HOST_UNIX_X11
 
-    XUngrabPointer( fgDisplay.Display, CurrentTime );
-    XUngrabKeyboard( fgDisplay.Display, CurrentTime );
+    XUngrabPointer(fgDisplay.Display, CurrentTime);
+    XUngrabKeyboard(fgDisplay.Display, CurrentTime);
 
 #endif
 
@@ -553,15 +477,13 @@ void  glutLeaveGameMode( void )
 /*
  * Returns information concerning the freeglut game mode
  */
-int  glutGameModeGet( GLenum eWhat )
-{
-    switch( eWhat )
-    {
+int glutGameModeGet(GLenum eWhat) {
+    switch (eWhat) {
     case GLUT_GAME_MODE_ACTIVE:
         return !!fgStructure.GameMode;
 
     case GLUT_GAME_MODE_POSSIBLE:
-        return fghChangeDisplayMode( GL_TRUE );
+        return fghChangeDisplayMode(GL_TRUE);
 
     case GLUT_GAME_MODE_WIDTH:
         return fgState.GameModeSize.X;

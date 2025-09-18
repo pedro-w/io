@@ -380,8 +380,7 @@ double UArray_arithmeticMeanSquareAsDouble(const UArray *self) {
 double UArray_maxAsDouble(const UArray *self) {
     if (self->size > 0) {
         double max = DBL_MIN;
-        UARRAY_FOREACH(
-            self, i, v, if (v > max) { max = v; });
+        UARRAY_FOREACH(self, i, v, if (v > max) { max = v; });
         return max;
     }
 
@@ -391,8 +390,7 @@ double UArray_maxAsDouble(const UArray *self) {
 double UArray_minAsDouble(const UArray *self) {
     if (self->size > 0) {
         double max = DBL_MAX;
-        UARRAY_FOREACH(
-            self, i, v, if (v < max) { max = v; });
+        UARRAY_FOREACH(self, i, v, if (v < max) { max = v; });
         return max;
     }
 

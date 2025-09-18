@@ -444,7 +444,7 @@ IO_METHOD(IoMessage, doInContext) {
     return IoMessage_locals_performOn_(self, locals, context);
 }
 
-//#define IO_DEBUG_STACK
+// #define IO_DEBUG_STACK
 
 IoObject *IoMessage_locals_performOn_(IoMessage *self, IoObject *locals,
                                       IoObject *target) {
