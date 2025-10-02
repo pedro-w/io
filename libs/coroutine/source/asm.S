@@ -292,6 +292,11 @@ coro_arm64_getcontext:
     stp x29, x30, [x0, #80]
     mov x2, sp
     str x2, [x0, #96]
+    stp d8, d9, [x0, #112]
+    stp d10,d11, [x0, #128]
+    stp d12,d13, [x0, #144]
+    stp d14,d15, [x0, #160]
+
     mov x0, #0
     ret
 
@@ -305,6 +310,11 @@ coro_arm64_setcontext:
     ldp x29, x30, [x0, #80]
     ldr x2, [x0, #96]
     mov sp, x2
+    ldp d8,d9, [x0, #112]
+    ldp d10,d11, [x0, #128]
+    ldp d12,d13, [x0, #144]
+    ldp d14,d15, [x0, #160]
+  
     mov x0, #1
     ret
 #endif
