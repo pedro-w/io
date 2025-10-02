@@ -38,9 +38,19 @@
 #define GET getmcontext
 #endif
 
+#if defined(__linux__) && defined(__aarch64__)
+#define NEEDARM64CONTEXT 1
+#define SET coro_arm64_setcontext
+#define GET coro_arm64_getcontext
+#endif
+
+
+/* Make data and stack non-executable */
 #if defined(__linux__) && defined(__ELF__)
 .section .note.GNU-stack,"",%progbits
 #endif
+
+.text
 
 #ifdef NEEDX86CONTEXT
 .globl SET
@@ -143,7 +153,6 @@ GET:
 /* get FPR and VR use flags with sc 0x7FF3 */
 /* get vsave with mfspr reg, 256 */
 
-.text
 .align 2
 
 .globl GET
