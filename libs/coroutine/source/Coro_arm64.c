@@ -17,6 +17,8 @@ typedef struct {
     unsigned long x27_x28[2];  // x27, x28
     unsigned long fp_lr[2];    // x29 (fp), x30 (lr)
     unsigned long sp;          // stack pointer
+    unsigned long dummy;
+    unsigned long v8_v15[8];    // Floating point reg
 } arm64_context_t;
 
 typedef struct CallbackBlock {
