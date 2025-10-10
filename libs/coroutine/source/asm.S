@@ -224,8 +224,10 @@ SET:
 #endif
 
 #ifdef NEEDARMCONTEXT
+.syntax unified
 .text
 .globl GET
+.type GET, %function
 GET:
 	str	r1, [r0,#4]
 	str	r2, [r0,#8]
@@ -249,6 +251,7 @@ GET:
 	mov	pc, lr
 
 .globl SET
+.type SET, %function
 SET:
 	ldr	r1, [r0,#4]
 	ldr	r2, [r0,#8]
