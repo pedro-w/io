@@ -32,29 +32,26 @@ cmake_minimum_required(VERSION 3.10)
 # spaces, or anything silly like that please.
 project(IoLanguage C)
 
-# Enable ASM language for ARM64 coroutine support
-project(IoLanguage C)
-
-# Enable ASM language for ARM64 coroutine support
+# Enable ASM language for coroutine support
 IF (NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
     enable_language(ASM)
 ENDIF()
 
 # Default config when building with gcc variants
 IF((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
-    SET(CMAKE_BUILD_TYPE_DebugFast)
-    SET(CMAKE_CXX_FLAGS_DEBUGFAST "-g -O0")
-    SET(CMAKE_C_FLAGS_DEBUGFAST "-g -O0")
-    
+    SET(CMAKE_C_FLAGS_DEBUGFAST "-g -O")
+    if (NOT DEFINED HAS_SSE2)
+      cmake_host_system_information(RESULT HAS_SSE2 QUERY HAS_SSE2)
+    endif()
     # Only use -msse2 flag for x86/x86_64 architectures.
-    if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+    if(HAS_SSE2)
         SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
     endif()
     
     if(NOT CMAKE_BUILD_TYPE)
             SET(CMAKE_BUILD_TYPE "DebugFast")
     endif(NOT CMAKE_BUILD_TYPE)
-ENDIF((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang"))
+ENDIF()
 
 MESSAGE(STATUS "Configuration set to: ${CMAKE_BUILD_TYPE}")
 
@@ -62,16 +59,13 @@ MESSAGE(STATUS "Configuration set to: ${CMAKE_BUILD_TYPE}")
 # so dark it's illegible.
 set(CMAKE_COLOR_MAKEFILE off)
 
-# We want our binaries to go here
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/binaries)
-
 # Macro to create the _build directory hierarchy.
 # Note: I'm not sure we need lib/ or objs/ in there. But I'll leave them in
 # anyway, I'm just not going to do anything with them unless it breaks doing
 # nothing breaks something.
-macro(make_build_bundle NAME)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/binaries ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/objs ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/headers ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/lib ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/dll)
-endmacro(make_build_bundle)
+#macro(make_build_bundle NAME)
+#	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/binaries ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/objs ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/headers ${CMAKE_CURRENT_BINARY_DIR}/${NAME}/lib ${#CMAKE_CURRENT_BINARY_DIR}/${NAME}/dll)
+#endmacro(make_build_bundle)
 
 # Set library prefix to "lib" on Windows
 # to match unix.
@@ -91,20 +85,6 @@ set(PARSON_SOURCE_DIR ${PROJECT_SOURCE_DIR}/deps/parson)
 # Subdirectories. These directories should have their own CMakeLists.txt.
 add_subdirectory(libs)
 add_subdirectory(tools)
-
-# Ensure the _build hierarchy is created top-level, this is where our
-# binaries go.
-make_build_bundle(_build)
-
-# Next we NEED to copy all the libs headers into one single dir in the bundle.
-file(COPY ${COROUTINE_SOURCE_DIR}
-		  ${BASEKIT_SOURCE_DIR}
-		  ${GARBAGECOLLECTOR_SOURCE_DIR}
-		  ${IOVM_SOURCE_DIR}
-	 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/_build/headers 
-	 FILES_MATCHING PATTERN "*.h")
-
-# Packaging stuff
 
 string(TIMESTAMP CMD_DATE_YEAR "%Y")
 string(TIMESTAMP CMD_DATE_MON "%m")

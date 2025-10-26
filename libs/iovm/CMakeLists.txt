@@ -8,9 +8,6 @@
 # Need to go in and build io2c first. We need it to build our library.
 add_subdirectory(tools)
 
-# Output our dynamic library to the top-level _build hierarchy
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/dll)
-
 # Our Io source files to be "compiled" into a C source file.
 set(IO_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/io/A0_List.io
@@ -117,18 +114,10 @@ set(IOVMALL_STATIC_SRCS
 
 # Now build the static library
 add_library(iovmall_static STATIC ${IOVMALL_STATIC_SRCS})
-#add_dependencies(iovmall_static io2c basekit coroutine garbagecollector iovmall)
 
 # The following add the install target, so we put libvmall.* in our
 # install prefix.
-if(WIN32)
-    install(TARGETS iovmall 
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
-        PUBLIC_HEADER DESTINATION include/io
-        )
-else()
-    install(TARGETS iovmall 
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/io
-        )
-endif(WIN32)
+install (
+  TARGETS iovmall
+  FILE_SET HEADERS
+)

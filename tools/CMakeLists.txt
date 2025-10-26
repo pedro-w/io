@@ -23,7 +23,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|FreeBSD|NetBSD)")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "(Darwin|FreeBSD|NetBSD)")
 
 # We want the binaries to go other places than here.
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/binaries)
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/binaries)
 
 # Include locations
 include_directories(
@@ -66,11 +66,13 @@ target_link_libraries(io basekit coroutine garbagecollector iovmall ${LIBS})
 
 # The following add the install target, so we put io and io_static in our
 # install prefix.
-if(WIN32)
-    install(TARGETS io io_static DESTINATION ${CMAKE_INSTALL_PREFIX})
-else()
-    install(TARGETS io io_static DESTINATION bin)
-endif(WIN32)
+install(TARGETS io io_static)
+
+#if(WIN32)
+#    install(TARGETS io io_static DESTINATION ${CMAKE_INSTALL_PREFIX})
+#else()
+#    install(TARGETS io io_static DESTINATION bin)
+#endif(WIN32)
 
 # Eerie
 

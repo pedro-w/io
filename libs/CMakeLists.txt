@@ -9,9 +9,6 @@
 # hurt other platforms. If it does, let me know.
 add_definitions("-DBUILDING_IOVMALL_DLL")
 
-# Output our static library to the top-level _build hierarchy
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/_build/lib)
-
 # Hackery for CMake's horrible ASM support
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # Always include asm.S for all architectures
