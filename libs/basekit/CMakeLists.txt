@@ -13,7 +13,9 @@ set(BASEKIT_LIBS ${CMAKE_DL_LIBS})
 
 # Add math library for those who need it
 find_library(MATH_LIBRARY m)
-list(APPEND BASEKIT_LIBS ${MATH_LIBRARY})
+if (MATH_LIBRARY)
+  list(APPEND BASEKIT_LIBS ${MATH_LIBRARY})
+endif()
 
 # Our library sources.
 file(GLOB SRCS "source/*.c")
