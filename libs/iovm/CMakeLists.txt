@@ -10,37 +10,39 @@ add_subdirectory(tools)
 
 # Our Io source files to be "compiled" into a C source file.
 set(IO_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/A0_List.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/A0_Object.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/A1_OperatorTable.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/A2_Object.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/A3_List.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/A4_Exception.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Actor.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/AddonLoader.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/B_Sequence.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Block.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/CFunction.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Date.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Debugger.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Directory.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/DynLib.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Error.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/File.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/List_schwartzian.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Map.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Message.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Number.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Profiler.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Sandbox.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Serialize.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/System.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/UnitTest.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Vector.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Y_Path.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Z_CLI.io
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/Z_Importer.io
+    A0_List.io
+    A0_Object.io
+    A1_OperatorTable.io
+    A2_Object.io
+    A3_List.io
+    A4_Exception.io
+    Actor.io
+    AddonLoader.io
+    B_Sequence.io
+    Block.io
+    CFunction.io
+    Date.io
+    Debugger.io
+    Directory.io
+    DynLib.io
+    Error.io
+    File.io
+    List_schwartzian.io
+    Map.io
+    Message.io
+    Number.io
+    Profiler.io
+    Sandbox.io
+    Serialize.io
+    System.io
+    UnitTest.io
+    Vector.io
+    Y_Path.io
+    Z_CLI.io
+    Z_Importer.io
     )
+# Prepend the source location to every file
+list(TRANSFORM IO_SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/io/)
 
 # Create a header file which defines our install prefix. This is
 # only needed because GCC is batshit insane.
@@ -52,7 +54,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/source)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
     COMMAND io2c VMCode IoState_doString_ ${IO_SRCS} > ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
-    DEPENDS io2c
+    DEPENDS io2c ${IO_SRCS}
     )
 
 # Handle annoying NAN
