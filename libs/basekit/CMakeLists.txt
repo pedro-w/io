@@ -26,6 +26,11 @@ add_library(basekit SHARED ${SRCS})
 set_target_properties(basekit PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(basekit ${BASEKIT_LIBS})
 
+# Now build the static library
+add_library(basekit_static STATIC ${SRCS})
+set_target_properties(basekit_static PROPERTIES PUBLIC_HEADER "${HEADERS}")
+target_link_libraries(basekit_static ${BASEKIT_LIBS})
+
 # The following add the install target, so we put libbasekit.* in our
 # install prefix.
   install (
