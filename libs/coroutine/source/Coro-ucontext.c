@@ -1,0 +1,104 @@
+/*
+ Credits
+
+        Originally based on Edgar Toernig's Minimalistic cooperative
+ multitasking http://www.goron.de/~froese/ reorg by Steve Dekorte and Chis
+ Double Symbian and Cygwin support by Chis Double Linux/PCC, Linux/Opteron, Irix
+ and FreeBSD/Alpha, ucontext support by Austin Kurahone FreeBSD/Intel support by
+ Faried Nawaz Mingw support by Pit Capitain Visual C support by Daniel Vollmer
+        Solaris support by Manpreet Singh
+        Fibers support by Jonas Eschenburg
+        Ucontext arg support by Olivier Ansaldi
+        Ucontext x86-64 support by James Burgess and Jonathan Wright
+        Russ Cox for the newer portable ucontext implementions.
+        Mac OS X support by Jorge Acereda
+        Guessed setjmp support (Android/Mac OS X/others?) by Jorge Acereda
+
+ Notes
+
+        This is the system dependent coro code.
+        Setup a jmp_buf so when we longjmp, it will invoke 'func' using 'stack'.
+        Important: 'func' must not return!
+
+        Usually done by setting the program counter and stack pointer of a new,
+ empty stack. If you're adding a new platform, look in the setjmp.h for PC and
+ SP members of the stack structure
+
+        If you don't see those members, Kentaro suggests writting a simple
+        test app that calls setjmp and dumps out the contents of the jmp_buf.
+        (The PC and SP should be in jmp_buf->__jmpbuf).
+
+        Using something like GDB to be able to peek into register contents right
+        before the setjmp occurs would be helpful also.
+ */
+
+#include "Base.h"
+#include "Coro.h"
+#include "Coro-internal.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+#include <ucontext.h>
+
+struct Coro_ucontext {
+    struct Coro base;
+    ucontext_t env;
+};
+typedef struct Coro_ucontext Coro_ucontext;
+
+static ucontext_t* Coro_env(Coro* self) {
+    return &((Coro_ucontext*) self)->env;
+}
+
+// ---- Make --------------------------------------
+
+Coro* Coro_new(void) {
+    Coro_ucontext* self = io_calloc(1, sizeof *self);
+    memset(&self->env, 0, sizeof self->env);
+    return Coro_initBase(&self->base);
+}
+
+// ---- switch to --------------------------------------
+
+void Coro_switchTo_(Coro *self, Coro *next) {
+    ucontext_t* self_env = Coro_env(self);
+    ucontext_t* next_env = Coro_env(next);
+    swapcontext(self_env, next_env);
+}
+
+// ---- setup ------------------------------------------
+
+typedef void (*makecontext_func)(void);
+
+/* According to makecontext(3) the args passed to `func' have to be int-sized. 
+ * To pass a pointer to Coro_startWithArg, split it up into high and low
+ * ints and re-assemble with this wrapper function. On 32-bit a pointer does
+ * fit into an int so this is not strictly necessary but does no harm
+*/
+static void start_with_arg_wrapper(unsigned int hi, unsigned int lo) {
+    long long iptr = (long long) lo;
+    iptr |= ((long long) hi) << 32; 
+    Coro_StartWithArg((void*) iptr);
+}
+
+
+void Coro_setup(Coro *self, void *arg) {
+    Coro_ucontext* uself = (Coro_ucontext*) self;
+    ucontext_t *ucp = &uself->env;
+
+    getcontext(ucp);
+
+    ucp->uc_stack.ss_sp = Coro_stack(self);
+    ucp->uc_stack.ss_size = Coro_stackSize(self);
+#if !defined(__APPLE__)
+    ucp->uc_stack.ss_flags = 0;
+    ucp->uc_link = NULL;
+#endif
+
+    unsigned int hiArg = (unsigned int)((long long)arg >> 32);
+    unsigned int loArg = (unsigned int)((long long)arg & 0xFFFFFFFF);
+    makecontext(ucp, (makecontext_func)start_with_arg_wrapper, 2, hiArg, loArg);
+}
+
+
