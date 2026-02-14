@@ -86,16 +86,14 @@ void Coro_allocStackIfNeeded(Coro *self) {
     }
 }
 
-void Coro_free(Coro *self) {
+Coro* Coro_deinitBase(Coro *self) {
 
     STACK_DEREGISTER(self);
     if (self->stack) {
         io_free(self->stack);
     }
-
-    // printf("Coro_%p io_free\n", (void *)self);
-
-    io_free(self);
+    self->stack = NULL;
+    return self;
 }
 
 
@@ -160,18 +158,6 @@ int Coro_stackSpaceAlmostGone(Coro *self) {
 
 void Coro_initializeMainCoro(Coro *self) {
     self->isMain = 1;
-#ifdef USE_FIBERS
-    // We must convert the current thread into a fiber if it hasn't already been
-    // done.
-    if ((LPVOID)0x1e00 == GetCurrentFiber()) // value returned when not a fiber
-    {
-        // Make this thread a fiber and set its data field to the main coro's
-        // address
-        ConvertThreadToFiber(self);
-    }
-    // Make the main coro represent the current fiber
-    self->fiber = GetCurrentFiber();
-#endif
 }
 
 void Coro_startCoro_(Coro *self, Coro *other, void *context,
@@ -182,11 +168,7 @@ void Coro_startCoro_(Coro *self, Coro *other, void *context,
     block->context = context;
     block->func = callback;
 
-#ifdef USE_FIBERS
-    block->associatedCoro = other;
-#else
     Coro_allocStackIfNeeded(other);
-#endif
     Coro_setup(other, block);
     Coro_switchTo_(self, other);
 }

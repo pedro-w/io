@@ -14,7 +14,6 @@ methods that require the speed of C or binding to a C library.
 
 #include "IoState.h"
 #include "IoNumber.h"
-#include <time.h>
 #include <stddef.h>
 
 static const char *protoId = "CFunction";

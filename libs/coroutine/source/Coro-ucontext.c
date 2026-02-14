@@ -39,6 +39,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+/* for MacOS */
+#define _XOPEN_SOURCE
 #include <ucontext.h>
 
 struct Coro_ucontext {
@@ -51,7 +53,7 @@ static ucontext_t* Coro_env(Coro* self) {
     return &((Coro_ucontext*) self)->env;
 }
 
-// ---- Make --------------------------------------
+// ---- New and free --------------------------------
 
 Coro* Coro_new(void) {
     Coro_ucontext* self = io_calloc(1, sizeof *self);
@@ -59,6 +61,11 @@ Coro* Coro_new(void) {
     return Coro_initBase(&self->base);
 }
 
+void Coro_free(Coro* self) {
+    self = Coro_deinitBase(self);
+    /* Don't need any specific deallocs for Coro_ucontext */
+    io_free(self);
+}
 // ---- switch to --------------------------------------
 
 void Coro_switchTo_(Coro *self, Coro *next) {

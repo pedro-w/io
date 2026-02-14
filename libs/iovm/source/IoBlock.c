@@ -15,7 +15,6 @@ They are typically used to represent object methods.
 #include "IoNumber.h"
 #include "IoList.h"
 #include "UArray.h"
-#include <time.h>
 
 static const char *protoId = "Block";
 

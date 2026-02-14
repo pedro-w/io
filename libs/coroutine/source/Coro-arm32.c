@@ -1,15 +1,12 @@
 /*
 * Coroutine implementation for ARM32
+* This is a 'bare-metal' version that uses ASM
 */
 
 #include <stdio.h>
 
 #include "Coro.h"
 #include "Coro-internal.h"
-
-#ifndef __has_builtin
-#define __has_builtin(x) 0
-#endif
 
 // TODO these are implemented for Valgrind
 #define STACK_REGISTER(coro)
@@ -32,16 +29,16 @@ typedef struct {
     unsigned int r12;
 	union {
 		unsigned int sp;// stack pointer
-    unsigned int r13; 
+    	unsigned int r13; 
 	};
 	union {
 		unsigned int lr;// link register
-    unsigned int r14; 
+    	unsigned int r14; 
 	};
 } arm32_context_t;
 
 __attribute__((naked, noinline))
-int coro_arm32_getcontext(void* context) {
+static int coro_arm32_getcontext(arm32_context_t* context) {
 asm (
 	"str r1, [r0,#4]\n"
 	"str r2, [r0,#8]\n"
@@ -66,7 +63,7 @@ asm (
 }
 
 __attribute__((naked, noinline))
-int coro_arm32_setcontext(void* context) {
+static int coro_arm32_setcontext(arm32_context_t* context) {
 	asm(
 	"ldr r1, [r0,#4]\n"
 	"ldr r2, [r0,#8]\n"
@@ -86,16 +83,34 @@ int coro_arm32_setcontext(void* context) {
 	"bx lr\n");
 }
 
+typedef struct {
+	Coro base;
+	arm32_context_t env;
+} Coro_arm32;
 
+arm32_context_t* env(Coro* coro) {
+	Coro_arm32* acoro = (Coro_arm32*) coro;
+	return &acoro->env;
+}
 
+// ---- New and free --------------------------------
 
+Coro* Coro_new(void) {
+    Coro_arm32* self = io_calloc(1, sizeof *self);
+    memset(&self->env, 0xCC, sizeof self->env);
+    return Coro_initBase(&self->base);
+}
 
+void Coro_free(Coro* self) {
+    self = Coro_deinitBase(self);
+    /* Don't need any specific deallocs for Coro_arm32 */
+    io_free(self);
+}
+
+// --------------------------------------------------------------------
 
 void Coro_setup(Coro *self, void *arg) {
-    arm32_context_t *context = (arm32_context_t *)&self->env;
-    memset(context, 0xCC, sizeof *context);
-    
-    Coro_allocStackIfNeeded(self);
+    arm32_context_t *context = env(self);
     
     // Initialize stack pointer to top of stack (ARM32 descending stack)
     unsigned int sp = (unsigned int)self->stack + self->allocatedStackSize - 16;
@@ -109,22 +124,17 @@ void Coro_setup(Coro *self, void *arg) {
     context->lr = (unsigned int)Coro_StartWithArg;
 }
 
-
-
 // --------------------------------------------------------------------
-
-
 
 void Coro_switchTo_(Coro *self, Coro *next) {
     // Get the context pointers
-    arm32_context_t *from_context = (arm32_context_t *)&self->env;
-    arm32_context_t *to_context = (arm32_context_t *)&next->env;
+    arm32_context_t *from_context = env(self);
+    arm32_context_t *to_context = env(next);
     
     // Save current context, if successful (returns 0), then restore the next context
-    if (coro_arm32_getcontext((void*)from_context) == 0) {
-        coro_arm32_setcontext((void*)to_context);
+    if (coro_arm32_getcontext(from_context) == 0) {
+        coro_arm32_setcontext(to_context);
     }
-    
 }
 
 
