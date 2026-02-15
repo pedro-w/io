@@ -52,7 +52,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
 
 
-add_definitions("-DBUILDING_IOVMALL_DLL")
+add_compile_definitions("-DBUILDING_IOVMALL_DLL")
 
 # Produce the executables!
 add_executable(io_static ${SRCS})

@@ -3,9 +3,6 @@
 #
 # Build the garbage collector library.
 
-# Marvelous flags, likely compiler dependent.
-add_definitions("-DBUILDING_COLLECTOR_DLL")
-
 # Include dirs, -I flags and whatnot
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../basekit/source)
 
@@ -18,6 +15,9 @@ add_library(garbagecollector SHARED ${SRCS})
 add_dependencies(garbagecollector basekit)
 set_target_properties(garbagecollector PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(garbagecollector basekit)
+# Marvelous flags, likely compiler dependent.
+target_compile_definitions(garbagecollector PRIVATE BUILDING_COLLECTOR_DLL)
+
 
 # Now build the static library
 add_library(garbagecollector_static STATIC ${SRCS})

@@ -3,9 +3,6 @@
 #
 # Build the coroutine library.
 
-# Definitions, love them.
-add_definitions("-DBUILDING_CORO_DLL")
-
 # Set up Coroutine include dirs, -I args to compiler.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../basekit/source)
 
@@ -25,6 +22,8 @@ set(HEADERS "source/Coro.h")
 # Now build the shared library
 add_library(coroutine SHARED ${SRCS})
 set_target_properties(coroutine PROPERTIES PUBLIC_HEADER "${HEADERS}")
+# Definitions, love them.
+target_compile_definitions(coroutine PRIVATE "BUILDING_CORO_DLL")
 
 # Now build the static library
 add_library(coroutine_static STATIC ${SRCS})

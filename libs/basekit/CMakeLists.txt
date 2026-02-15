@@ -4,7 +4,7 @@
 # Build the garbage collector library.
 
 # Marvelous flags, likely compiler dependent.
-add_definitions("-DBUILDING_BASEKIT_DLL")
+add_compile_definitions("BUILDING_BASEKIT_DLL")
 
 # Include dirs, -I flags and whatnot
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/simd_cph/include)
@@ -25,6 +25,9 @@ file(GLOB HEADERS "source/*.h")
 add_library(basekit SHARED ${SRCS})
 set_target_properties(basekit PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(basekit ${BASEKIT_LIBS})
+# Marvelous flags, likely compiler dependent.
+target_compile_definitions(basekit PRIVATE "BUILDING_BASEKIT_DLL")
+
 
 # Now build the static library
 add_library(basekit_static STATIC ${SRCS})

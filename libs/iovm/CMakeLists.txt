@@ -72,11 +72,8 @@ int main(){
 }
 " HAVE_POSITIVE_NAN)
 if (NOT HAVE_POSITIVE_NAN)
-	add_definitions(-DUSE_BUILTIN_NAN)
+	add_compile_definitions(USE_BUILTIN_NAN)
 endif()
-
-# Marvelous flags, likely compiler dependent.
-add_definitions("-DBUILDING_IOVM_DLL")# -DINSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
 
 # Include dirs, -I flags and whatnot
 include_directories(
@@ -100,6 +97,9 @@ file(GLOB HEADERS "source/*.h")
 add_library(iovmall SHARED ${SRCS})
 set_target_properties(iovmall PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(iovmall basekit coroutine garbagecollector)
+# Marvelous flags, likely compiler dependent.
+target_compile_definitions(iovmall PRIVATE BUILDING_IOVM_DLL)
+
 
 # Now build the static library
 add_library(iovmall_static STATIC ${IOVM_SRCS})
