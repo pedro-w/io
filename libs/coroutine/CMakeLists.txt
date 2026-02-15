@@ -6,18 +6,21 @@
 # Definitions, love them.
 add_definitions("-DBUILDING_CORO_DLL")
 
-# Check if we're on FreeBSD, if so, use ucontext.
-if(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-    add_definitions("-DUSE_UCONTEXT")
-endif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-
 # Set up Coroutine include dirs, -I args to compiler.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../basekit/source)
 
 # Sources... in all their wondrous glory!
-set(SRCS Coro.c Coro-ucontext.c)
+set(SRCS Coro.c)
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+  list(APPEND SRCS "Coro-fibers.c")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  list(APPEND SRCS "Coro-arm64.c")
+else()
+  list(APPEND SRCS "Coro-ucontext.c")
+endif()
+
 list(TRANSFORM SRCS PREPEND "source/")
-file(GLOB HEADERS "source/*.h")
+set(HEADERS "source/Coro.h")
 
 # Now build the shared library
 add_library(coroutine SHARED ${SRCS})

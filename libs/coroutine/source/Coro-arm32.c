@@ -3,8 +3,6 @@
 * This is a 'bare-metal' version that uses ASM
 */
 
-#include <stdio.h>
-
 #include "Coro.h"
 #include "Coro-internal.h"
 
@@ -96,9 +94,8 @@ arm32_context_t* env(Coro* coro) {
 // ---- New and free --------------------------------
 
 Coro* Coro_new(void) {
-    Coro_arm32* self = io_calloc(1, sizeof *self);
-    memset(&self->env, 0xCC, sizeof self->env);
-    return Coro_initBase(&self->base);
+    Coro_arm32* coro = io_calloc(1, sizeof *coro);
+    return Coro_initBase(&coro->base);
 }
 
 void Coro_free(Coro* self) {

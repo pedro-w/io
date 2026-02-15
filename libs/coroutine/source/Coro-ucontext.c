@@ -32,14 +32,10 @@
         before the setjmp occurs would be helpful also.
  */
 
-#include "Base.h"
 #include "Coro.h"
 #include "Coro-internal.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
-/* for MacOS */
+#include <PortableStdint.h>
+/* Define XOPEN for MacOS */
 #define _XOPEN_SOURCE
 #include <ucontext.h>
 
@@ -78,17 +74,18 @@ void Coro_switchTo_(Coro *self, Coro *next) {
 
 typedef void (*makecontext_func)(void);
 
+#if UINTPTR_MAX > UINT_MAX
+#define BIG_POINTER
 /* According to makecontext(3) the args passed to `func' have to be int-sized. 
  * To pass a pointer to Coro_startWithArg, split it up into high and low
- * ints and re-assemble with this wrapper function. On 32-bit a pointer does
- * fit into an int so this is not strictly necessary but does no harm
+ * ints and re-assemble with this wrapper function. 
 */
 static void start_with_arg_wrapper(unsigned int hi, unsigned int lo) {
-    long long iptr = (long long) lo;
-    iptr |= ((long long) hi) << 32; 
+    uintptr_t iptr = (uintptr_t) lo;
+    iptr |= ((uintptr_t) hi) << 32; 
     Coro_StartWithArg((void*) iptr);
 }
-
+#endif
 
 void Coro_setup(Coro *self, void *arg) {
     Coro_ucontext* uself = (Coro_ucontext*) self;
@@ -102,10 +99,13 @@ void Coro_setup(Coro *self, void *arg) {
     ucp->uc_stack.ss_flags = 0;
     ucp->uc_link = NULL;
 #endif
-
-    unsigned int hiArg = (unsigned int)((long long)arg >> 32);
-    unsigned int loArg = (unsigned int)((long long)arg & 0xFFFFFFFF);
+    #ifdef BIG_POINTER
+    unsigned int hiArg = (unsigned int)((uintptr_t)arg >> 32);
+    unsigned int loArg = (unsigned int)((uintptr_t)arg & 0xFFFFFFFF);
     makecontext(ucp, (makecontext_func)start_with_arg_wrapper, 2, hiArg, loArg);
+    #else
+    makecontext(ucp, (makecontext_func)Coro_StartWithArg, 1, (unsigned int)arg);
+    #endif
 }
 
 
