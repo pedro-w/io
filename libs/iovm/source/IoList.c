@@ -998,7 +998,8 @@ IO_METHOD(IoList, fromEncodedList) {
             if (index + sizeof(float32_t) > uSize) {
                 break;
             }
-            float32_t f = *((float32_t *)(d + index));
+            float32_t f;
+            memcpy(&f, &d[index], sizeof f);
 
             index += sizeof(float32_t);
             List_append_(list, IONUMBER(f));

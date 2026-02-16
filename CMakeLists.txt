@@ -27,7 +27,10 @@ cmake_minimum_required(VERSION 3.10)
 # Mac OS X: Setting policy CMP0042 to the new behavior generates dylibs with
 # RPATH-relative install name that is better suited for Mac OS X applications
 # embedding Io in their bundle.
-	
+if(POLICY CMP0042)
+	cmake_policy(SET CMP0042 NEW)
+endif()
+
 # Project name, this gets prefixed to a bunch of stuff under the hood. No
 # spaces, or anything silly like that please.
 project(IoLanguage C)

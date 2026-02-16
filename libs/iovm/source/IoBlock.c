@@ -7,6 +7,7 @@ They are typically used to represent object methods.
 // metadoc Block category Core
 
 #include "IoBlock.h"
+
 #include "IoMessage.h"
 #include "IoMessage_parser.h"
 #include "IoCFunction.h"

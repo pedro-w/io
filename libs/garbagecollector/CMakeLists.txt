@@ -19,6 +19,12 @@ add_dependencies(garbagecollector basekit)
 set_target_properties(garbagecollector PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(garbagecollector basekit)
 
+# Now build the static library
+add_library(garbagecollector_static STATIC ${SRCS})
+add_dependencies(garbagecollector_static basekit_static)
+set_target_properties(garbagecollector_static PROPERTIES PUBLIC_HEADER "${HEADERS}")
+target_link_libraries(garbagecollector_static basekit_static)
+
 # The following add the install target, so we put libgarbagecollector.*
 # in our install prefix.
 install(

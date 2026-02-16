@@ -38,9 +38,19 @@
 #define GET getmcontext
 #endif
 
+#if defined(__linux__) && defined(__aarch64__)
+#define NEEDARM64CONTEXT 1
+#define SET coro_arm64_setcontext
+#define GET coro_arm64_getcontext
+#endif
+
+
+/* Make data and stack non-executable */
 #if defined(__linux__) && defined(__ELF__)
 .section .note.GNU-stack,"",%progbits
 #endif
+
+.text
 
 #ifdef NEEDX86CONTEXT
 .globl SET
@@ -143,7 +153,6 @@ GET:
 /* get FPR and VR use flags with sc 0x7FF3 */
 /* get vsave with mfspr reg, 256 */
 
-.text
 .align 2
 
 .globl GET
@@ -224,7 +233,10 @@ SET:
 #endif
 
 #ifdef NEEDARMCONTEXT
+.syntax unified
+.text
 .globl GET
+.type GET, %function
 GET:
 	str	r1, [r0,#4]
 	str	r2, [r0,#8]
@@ -248,6 +260,7 @@ GET:
 	mov	pc, lr
 
 .globl SET
+.type SET, %function
 SET:
 	ldr	r1, [r0,#4]
 	ldr	r2, [r0,#8]
@@ -279,6 +292,11 @@ coro_arm64_getcontext:
     stp x29, x30, [x0, #80]
     mov x2, sp
     str x2, [x0, #96]
+    stp d8, d9, [x0, #112]
+    stp d10,d11, [x0, #128]
+    stp d12,d13, [x0, #144]
+    stp d14,d15, [x0, #160]
+
     mov x0, #0
     ret
 
@@ -292,6 +310,11 @@ coro_arm64_setcontext:
     ldp x29, x30, [x0, #80]
     ldr x2, [x0, #96]
     mov sp, x2
+    ldp d8,d9, [x0, #112]
+    ldp d10,d11, [x0, #128]
+    ldp d12,d13, [x0, #144]
+    ldp d14,d15, [x0, #160]
+  
     mov x0, #1
     ret
 #endif

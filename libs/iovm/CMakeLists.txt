@@ -89,10 +89,6 @@ include_directories(
     )
 
 # Our library sources.
-file(GLOB COROUTINE_SRCS "${COROUTINE_SOURCE_DIR}/*.c")
-list(APPEND COROUTINE_SRCS "${COROUTINE_SOURCE_DIR}/asm.S")
-file(GLOB BASEKIT_SRCS "${BASEKIT_SOURCE_DIR}/*.c")
-file(GLOB GARBAGECOLLECTOR_SRCS "${GARBAGECOLLECTOR_SOURCE_DIR}/*.c")
 file(GLOB IOVM_SRCS "${IOVM_SOURCE_DIR}/*.c")
 list(APPEND IOVM_SRCS 
     ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
@@ -105,22 +101,15 @@ add_library(iovmall SHARED ${SRCS})
 set_target_properties(iovmall PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(iovmall basekit coroutine garbagecollector)
 
-
-
-set(IOVMALL_STATIC_SRCS
-	${COROUTINE_SRCS}
-	${ASM_SOURCES}
-	${BASEKIT_SRCS}
-	${GARBAGECOLLECTOR_SRCS}
-	${IOVM_SRCS}
-)
-
 # Now build the static library
-add_library(iovmall_static STATIC ${IOVMALL_STATIC_SRCS})
+add_library(iovmall_static STATIC ${IOVM_SRCS})
+target_link_libraries(iovmall_static coroutine_static)
+target_link_libraries(iovmall_static basekit_static)
+target_link_libraries(iovmall_static garbagecollector_static)
 
 # The following add the install target, so we put libvmall.* in our
 # install prefix.
 install (
-  TARGETS iovmall
+  TARGETS iovmall iovmall_static
   FILE_SET HEADERS
 )
