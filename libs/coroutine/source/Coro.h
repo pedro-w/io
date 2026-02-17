@@ -28,6 +28,7 @@ struct Coro {
     size_t requestedStackSize;
     size_t allocatedStackSize;
     void *stack;
+    void *stackBase;
 
     unsigned char isMain;
 };

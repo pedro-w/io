@@ -92,6 +92,7 @@ void Coro_setup(Coro *self, void *arg) {
     ucontext_t *ucp = &uself->env;
 
     getcontext(ucp);
+    Coro_allocStackIfNeeded(self);
 
     ucp->uc_stack.ss_sp = Coro_stack(self);
     ucp->uc_stack.ss_size = Coro_stackSize(self);

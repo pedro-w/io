@@ -108,7 +108,8 @@ void Coro_free(Coro* self) {
 
 void Coro_setup(Coro *self, void *arg) {
     arm32_context_t *context = env(self);
-    
+    Coro_allocStackIfNeeded(self);
+
     // Initialize stack pointer to top of stack (ARM32 descending stack)
     unsigned int sp = (unsigned int)self->stack + self->allocatedStackSize - 16;
     // Ensure 16-byte alignment

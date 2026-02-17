@@ -96,9 +96,6 @@ Coro* Coro_deinitBase(Coro *self) {
     return self;
 }
 
-
-static CallbackBlock globalCallbackBlock;
-
 void Coro_StartWithArg(void* ptr) {
     CallbackBlock *block = ptr;
     block->func(block->context);
@@ -128,7 +125,7 @@ ptrdiff_t *Coro_CurrentStackPointer(void) {
 #if __has_builtin(__builtin_stack_address) 
     return __builtin_stack_address();
 #else
-    ptrdiff_t a;
+    ptrdiff_t a = 0;
     ptrdiff_t *b = &a; // to avoid compiler warning about unused variables
     // ptrdiff_t *c = a ^ (b ^ a); // to avoid
     return b;
@@ -162,14 +159,8 @@ void Coro_initializeMainCoro(Coro *self) {
 
 void Coro_startCoro_(Coro *self, Coro *other, void *context,
                      CoroStartCallback *callback) {
-    CallbackBlock sblock;
-    CallbackBlock *block = &sblock;
-    // CallbackBlock *block = malloc(sizeof(CallbackBlock)); // memory leak
-    block->context = context;
-    block->func = callback;
-
-    Coro_allocStackIfNeeded(other);
-    Coro_setup(other, block);
+    CallbackBlock sblock={context, callback};
+    Coro_setup(other, &sblock);
     Coro_switchTo_(self, other);
 }
 

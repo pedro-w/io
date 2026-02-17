@@ -91,11 +91,12 @@ Coro *Coro_new(void) {
 // This function initializes the context with a new stack and entry point
 void Coro_setup(Coro *self, void *arg) {
     arm64_context_t* context = env(self);
+    Coro_allocStackIfNeeded(self);
+
     // Initialize stack pointer to top of stack (ARM64 full descending stack)
     unsigned long sp = (unsigned long)self->stack + self->allocatedStackSize - 16;
     // Ensure 16-byte alignment
     sp &= ~15UL;
-    
     // Store stack pointer in context
     context->sp = sp;
     
