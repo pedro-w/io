@@ -60,7 +60,7 @@ Coro* Coro_new(void) {
 }
 
 void Coro_free(Coro* self) {
-    self = Coro_deinitBase(self);
+    Coro_freeStack(self);
     /* Don't need any specific deallocs for Coro_ucontext */
     io_free(self);
 }
