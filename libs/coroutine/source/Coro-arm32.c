@@ -5,6 +5,8 @@
 
 #include "Coro.h"
 #include "Coro-internal.h"
+const char *Coro_Implementation = "arm32-native"; 
+
 
 // TODO these are implemented for Valgrind
 #define STACK_REGISTER(coro)

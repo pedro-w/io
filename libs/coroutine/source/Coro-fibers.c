@@ -5,61 +5,67 @@
 #include "Coro.h"
 #include "Coro-internal.h"
 #include "Windows.h"
-#include <stdio.h>
+#include <intrin.h>
 
 struct Coro_fiber {
     struct Coro base;
     void *fiber;
+    void *startArg;
 };
 typedef struct Coro_fiber Coro_fiber;
-static void *fiber(Coro *coro) { return ((Coro_fiber *)coro)->fiber; }
+static Coro_fiber *DATA(Coro *coro) { return (Coro_fiber *)coro; }
+const char *Coro_Implementation ="fibers"; 
 
 
 // ---- New and free --------------------------------
 
-Coro* Coro_new(void) {
-    Coro_fiber* self = io_calloc(1, sizeof *self);
-    if (self) return Coro_initBase(&self->base);
-    return NULL;
+Coro *Coro_new(void) {
+    Coro_fiber *self = io_calloc(1, sizeof *self);
+    if (self) {
+        return Coro_initBase(&self->base);
+    } else {
+        return NULL;
+    }
 }
 
 void Coro_free(Coro* self) {
-    self = Coro_deinitBase(self);
-    void * f=fiber(self);
-    if (f!=GetCurrentFiber()) {
-        DeleteFiber(f);
+    // Didn't allocate stack so don't free it.
+    Coro_fiber *uself = DATA(self);
+    // Delete the fiber but not if it's the current one
+    if (uself->fiber!=GetCurrentFiber()) {
+        DeleteFiber(uself->fiber);
     }
     io_free(self);
 }
 // ---- switch to --------------------------------------
 
 void Coro_switchTo_(Coro *self, Coro *next) {
-    void *nfiber = fiber(next);
+    void *nfiber = DATA(next)->fiber;
     SwitchToFiber(nfiber);
 }
 
 // ---- setup ------------------------------------------
-struct FiberCallbackBlock {
-    void *arg;
-    Coro_fiber *coro;
-};
-extern ptrdiff_t *Coro_CurrentStackPointer(void);
-void fiber_start_wrapper(struct FiberCallbackBlock *fcb) {
-    fcb->coro->base.stackBase = Coro_CurrentStackPointer();
-    Coro_StartWithArg(fcb->arg);
+static void fiber_start_wrapper(Coro_fiber *fcb) {
+    fcb->base.stack = _AddressOfReturnAddress();
+    Coro_StartWithArg(fcb->startArg);
 }
 void Coro_setup(Coro *self, void *arg) {
-    Coro_fiber* uself = (Coro_fiber*) self;
-    // Make sure we are in a fiber.
-    if (!IsThreadAFiber()) {
-        ConvertThreadToFiber(self);
-    }
+    Coro_fiber *uself = DATA(self);
+
     // For Fibers we don't alloc our own stack
-    static struct FiberCallbackBlock fcb;
-    fcb.arg = arg;
-    fcb.coro = uself;
+    uself->startArg = arg;
     uself->fiber =
-        CreateFiber(uself->base.requestedStackSize, fiber_start_wrapper, &fcb);
+        CreateFiber(self->requestedStackSize, fiber_start_wrapper, uself);
 }
 
 
+void Coro_initializeMainCoro(Coro *self) {
+    Coro_fiber *uself = DATA(self);
+    self->isMain = 1;
+    // Make sure we are in a fiber.
+    if (IsThreadAFiber()) {
+        uself->fiber = GetCurrentFiber();
+    } else {
+        uself->fiber = ConvertThreadToFiber(self);
+    }
+}

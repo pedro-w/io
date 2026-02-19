@@ -86,14 +86,12 @@ void Coro_allocStackIfNeeded(Coro *self) {
     }
 }
 
-Coro* Coro_deinitBase(Coro *self) {
-
+void Coro_freeStack(Coro *self) {
     STACK_DEREGISTER(self);
     if (self->stack) {
         io_free(self->stack);
     }
     self->stack = NULL;
-    return self;
 }
 
 void Coro_StartWithArg(void* ptr) {
@@ -113,14 +111,14 @@ void Coro_setStackSize_(Coro *self, size_t sizeInBytes) {
     self->requestedStackSize = sizeInBytes;
 }
 
-#if __GNUC__ >= 4
-ptrdiff_t *Coro_CurrentStackPointer(void) __attribute__((noinline));
-#endif
-
+#ifdef _MSC_VER
+#include <intrin.h>
+ptrdiff_t *Coro_CurrentStackPointer(void) { return _AddressOfReturnAddress(); }
+#else
 #ifndef __has_builtin
 #define __has_builtin(x) 0
 #endif
-ptrdiff_t *Coro_CurrentStackPointer(void) {
+[[noinline]] ptrdiff_t *Coro_CurrentStackPointer(void) {
     // Use the built-in if we have it
 #if __has_builtin(__builtin_stack_address) 
     return __builtin_stack_address();
@@ -131,9 +129,10 @@ ptrdiff_t *Coro_CurrentStackPointer(void) {
     return b;
 #endif
 }
+#endif
 
 size_t Coro_bytesLeftOnStack(Coro *self) {
-    unsigned char dummy;
+    unsigned char dummy = 0;
     ptrdiff_t p1 = (ptrdiff_t)(&dummy);
     ptrdiff_t p2 = (ptrdiff_t)Coro_CurrentStackPointer();
     int stackMovesUp = p2 > p1;
@@ -151,10 +150,6 @@ size_t Coro_bytesLeftOnStack(Coro *self) {
 
 int Coro_stackSpaceAlmostGone(Coro *self) {
     return Coro_bytesLeftOnStack(self) < CORO_STACK_SIZE_MIN;
-}
-
-void Coro_initializeMainCoro(Coro *self) {
-    self->isMain = 1;
 }
 
 void Coro_startCoro_(Coro *self, Coro *other, void *context,

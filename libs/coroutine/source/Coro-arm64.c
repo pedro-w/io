@@ -6,6 +6,8 @@
 #include "Coro.h"
 #include "Coro-internal.h"
 
+const char *Coro_Implementation="arm64-native"; 
+
 
 // Custom context implementation for ARM64
 typedef struct {

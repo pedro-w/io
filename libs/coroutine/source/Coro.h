@@ -5,7 +5,6 @@
 // 128k needed on PPC due to parser
 #define CORO_DEFAULT_STACK_SIZE (128 * 1024)
 #define CORO_STACK_SIZE_MIN 8192
-#define CORO_IMPLEMENTATION "ANY~~"
 
 #if defined(WIN32)
 #if defined(BUILDING_CORO_DLL) || defined(BUILDING_IOVMALL_DLL)
@@ -21,6 +20,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern CORO_API const char *Coro_Implementation;
 
 typedef struct Coro Coro;
 
@@ -28,8 +28,6 @@ struct Coro {
     size_t requestedStackSize;
     size_t allocatedStackSize;
     void *stack;
-    void *stackBase;
-
     unsigned char isMain;
 };
 

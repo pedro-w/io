@@ -489,7 +489,7 @@ IO_METHOD(IoCoroutine, implementation) {
     Returns coroutine implementation type: "fibers", "ucontext" or "setjmp"
     */
 
-    return IOSYMBOL(CORO_IMPLEMENTATION);
+    return IOSYMBOL(Coro_Implementation);
 }
 
 IO_METHOD(IoCoroutine, isCurrent) {

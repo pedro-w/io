@@ -38,6 +38,8 @@
 /* Define XOPEN for MacOS */
 #define _XOPEN_SOURCE
 #include <ucontext.h>
+const char *Coro_Implementation= "ucontext"; 
+
 
 struct Coro_ucontext {
     struct Coro base;
