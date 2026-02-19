@@ -118,7 +118,7 @@ ptrdiff_t *Coro_CurrentStackPointer(void) { return _AddressOfReturnAddress(); }
 #ifndef __has_builtin
 #define __has_builtin(x) 0
 #endif
-[[noinline]] ptrdiff_t *Coro_CurrentStackPointer(void) {
+__attribute__((noinline)) ptrdiff_t *Coro_CurrentStackPointer(void) {
     // Use the built-in if we have it
 #if __has_builtin(__builtin_stack_address) 
     return __builtin_stack_address();

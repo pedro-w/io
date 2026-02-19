@@ -111,4 +111,6 @@ void Coro_setup(Coro *self, void *arg) {
     #endif
 }
 
-
+void Coro_initializeMainCoro(Coro *self) {
+    self->isMain = 1;
+}

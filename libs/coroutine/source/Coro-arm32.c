@@ -137,7 +137,9 @@ void Coro_switchTo_(Coro *self, Coro *next) {
     }
 }
 
-
+void Coro_initializeMainCoro(Coro *self) {
+    self->isMain = 1;
+}
 
 
 

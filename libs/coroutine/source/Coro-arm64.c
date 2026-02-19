@@ -18,7 +18,7 @@ typedef struct {
     unsigned long x27_x28[2];  // x27, x28
     unsigned long fp_lr[2];    // x29 (fp), x30 (lr)
     unsigned long sp;          // stack pointer
-    unsigned long dummy;
+    unsigned long retval;
     unsigned long v8_v15[8];    // Floating point reg
 } arm64_context_t;
 
@@ -76,12 +76,12 @@ asm(
     "ldp d12,d13, [x0, #144]\n"
     "ldp d14,d15, [x0, #160]\n"
   
-    "mov x0, #1\n"
+    "ldr x0, [x0, #104]\n"
     "ret\n");
 }
 
 void Coro_free(Coro *self) {
-    Coro_deinitBase(self);
+    Coro_freeStack(self);
     io_free(self);
 }
 
@@ -104,6 +104,8 @@ void Coro_setup(Coro *self, void *arg) {
     
     // Store entry point in link register (x30)
     context->fp_lr[1] = (unsigned long)Coro_StartWithArg;
+    // and first arg
+    context->retval = (unsigned long) arg;
 }
 
 void Coro_switchTo_(Coro *self, Coro *next) {
@@ -116,4 +118,8 @@ void Coro_switchTo_(Coro *self, Coro *next) {
         coro_arm64_setcontext(to_context);
     }
     
+}
+
+void Coro_initializeMainCoro(Coro *self) {
+    self->isMain = 1;
 }
