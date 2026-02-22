@@ -23,12 +23,16 @@ extern "C" {
 extern CORO_API const char *Coro_Implementation;
 
 typedef struct Coro Coro;
+typedef void(CoroStartCallback)(void *);
+
 
 struct Coro {
     size_t requestedStackSize;
     size_t allocatedStackSize;
     void *stack;
     unsigned char isMain;
+    CoroStartCallback* callback;
+    void* context;
 };
 
 CORO_API Coro *Coro_new(void);
@@ -44,12 +48,9 @@ CORO_API int Coro_stackSpaceAlmostGone(Coro *self);
 
 CORO_API void Coro_initializeMainCoro(Coro *self);
 
-typedef void(CoroStartCallback)(void *);
-
 CORO_API void Coro_startCoro_(Coro *self, Coro *other, void *context,
                               CoroStartCallback *callback);
 CORO_API void Coro_switchTo_(Coro *self, Coro *next);
-CORO_API void Coro_setup(Coro *self, void *arg); // private
 
 #ifdef __cplusplus
 }

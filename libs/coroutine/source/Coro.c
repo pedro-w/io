@@ -58,14 +58,6 @@
 #define STACK_DEREGISTER(coro)
 #endif
 
-typedef struct CallbackBlock {
-    void *context;
-    CoroStartCallback *func;
-#ifdef USE_FIBERS
-    Coro *associatedCoro;
-#endif
-} CallbackBlock;
-
 Coro *Coro_initBase(Coro* self) {
     self->requestedStackSize = CORO_DEFAULT_STACK_SIZE;
     self->allocatedStackSize = 0;
@@ -95,8 +87,8 @@ void Coro_freeStack(Coro *self) {
 }
 
 void Coro_StartWithArg(void* ptr) {
-    CallbackBlock *block = ptr;
-    block->func(block->context);
+    Coro* coro = ptr;
+    coro->callback(coro->context);
     fprintf(stderr, "Scheduler error: returned from coro start function\n");
     exit(-1);
 }
@@ -154,8 +146,7 @@ int Coro_stackSpaceAlmostGone(Coro *self) {
 
 void Coro_startCoro_(Coro *self, Coro *other, void *context,
                      CoroStartCallback *callback) {
-    CallbackBlock sblock={context, callback};
-    Coro_setup(other, &sblock);
+  Coro_setup(other, context, callback);
     Coro_switchTo_(self, other);
 }
 

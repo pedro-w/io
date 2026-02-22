@@ -31,13 +31,6 @@ arm64_context_t* env(Coro* coro) {
     return &((Coro_arm64*) coro)->env;
 }
 
-typedef struct CallbackBlock {
-    void *context;
-    CoroStartCallback *func;
-} CallbackBlock;
-
-static CallbackBlock globalCallbackBlock;
-
 __attribute__((naked,noinline))
 static int coro_arm64_getcontext(arm64_context_t* context) {
     // x0 contains the context pointer
@@ -91,8 +84,10 @@ Coro *Coro_new(void) {
 }
 
 // This function initializes the context with a new stack and entry point
-void Coro_setup(Coro *self, void *arg) {
-    arm64_context_t* context = env(self);
+void Coro_setup(Coro *self, void *context, CoroStartCallback* callback) {
+    arm64_context_t* cenv = env(self);
+    self->callback = callback;
+    self->context = context;
     Coro_allocStackIfNeeded(self);
 
     // Initialize stack pointer to top of stack (ARM64 full descending stack)
@@ -100,12 +95,12 @@ void Coro_setup(Coro *self, void *arg) {
     // Ensure 16-byte alignment
     sp &= ~15UL;
     // Store stack pointer in context
-    context->sp = sp;
+    cenv->sp = sp;
     
     // Store entry point in link register (x30)
-    context->fp_lr[1] = (unsigned long)Coro_StartWithArg;
+    cenv->fp_lr[1] = (unsigned long)Coro_StartWithArg;
     // and first arg
-    context->retval = (unsigned long) arg;
+    cenv->retval = (unsigned long) self;
 }
 
 void Coro_switchTo_(Coro *self, Coro *next) {
@@ -122,4 +117,6 @@ void Coro_switchTo_(Coro *self, Coro *next) {
 
 void Coro_initializeMainCoro(Coro *self) {
     self->isMain = 1;
+    env(self)->retval = 1;
+
 }
