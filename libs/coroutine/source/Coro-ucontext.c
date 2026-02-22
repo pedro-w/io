@@ -35,19 +35,17 @@
 #include "Coro.h"
 #include "Coro-internal.h"
 #include <PortableStdint.h>
-/* Define XOPEN for MacOS */
+/* Define XOPEN as ucontext is not in posix (or whatever) */
 #define _XOPEN_SOURCE
 #include <ucontext.h>
 const char *Coro_Implementation= "ucontext"; 
 
-
-struct Coro_ucontext {
+typedef struct Coro_ucontext {
     struct Coro base;
     ucontext_t env;
-};
-typedef struct Coro_ucontext Coro_ucontext;
+} Coro_ucontext;
 
-static ucontext_t* Coro_env(Coro* self) {
+static ucontext_t* env(Coro* self) {
     return &((Coro_ucontext*) self)->env;
 }
 
@@ -55,7 +53,7 @@ static ucontext_t* Coro_env(Coro* self) {
 
 Coro* Coro_new(void) {
     Coro_ucontext* self = io_calloc(1, sizeof *self);
-    memset(&self->env, 0, sizeof self->env);
+    /* Don't need any specific allocations for Coro_ucontext */
     return Coro_initBase(&self->base);
 }
 
@@ -64,20 +62,13 @@ void Coro_free(Coro* self) {
     /* Don't need any specific deallocs for Coro_ucontext */
     io_free(self);
 }
-// ---- switch to --------------------------------------
-
-void Coro_switchTo_(Coro *self, Coro *next) {
-    ucontext_t* self_env = Coro_env(self);
-    ucontext_t* next_env = Coro_env(next);
-    swapcontext(self_env, next_env);
-}
 
 // ---- setup ------------------------------------------
 
 typedef void (*makecontext_func)(void);
 
 #if UINTPTR_MAX > UINT_MAX
-#define BIG_POINTER
+#define SPLIT_POINTER
 /* According to makecontext(3) the args passed to `func' have to be int-sized. 
  * To pass a pointer to Coro_startWithArg, split it up into high and low
  * ints and re-assemble with this wrapper function. 
@@ -89,28 +80,37 @@ static void start_with_arg_wrapper(unsigned int hi, unsigned int lo) {
 }
 #endif
 
-void Coro_setup(Coro *self, void *arg) {
+void Coro_setup(Coro *self, void *arg, CoroStartCallback* callback) {
     Coro_ucontext* uself = (Coro_ucontext*) self;
     ucontext_t *ucp = &uself->env;
-
+    self->callback = callback;
+    self->context = arg;
     getcontext(ucp);
     Coro_allocStackIfNeeded(self);
 
     ucp->uc_stack.ss_sp = Coro_stack(self);
     ucp->uc_stack.ss_size = Coro_stackSize(self);
-#if !defined(__APPLE__)
     ucp->uc_stack.ss_flags = 0;
     ucp->uc_link = NULL;
-#endif
-    #ifdef BIG_POINTER
+
+    #ifdef SPLIT_POINTER
     unsigned int hiArg = (unsigned int)((uintptr_t)arg >> 32);
     unsigned int loArg = (unsigned int)((uintptr_t)arg & 0xFFFFFFFF);
     makecontext(ucp, (makecontext_func)start_with_arg_wrapper, 2, hiArg, loArg);
     #else
-    makecontext(ucp, (makecontext_func)Coro_StartWithArg, 1, (unsigned int)arg);
+    makecontext(ucp, (makecontext_func)Coro_StartWithArg, 1, (unsigned int)self);
     #endif
 }
 
 void Coro_initializeMainCoro(Coro *self) {
     self->isMain = 1;
 }
+
+// ---- switch to --------------------------------------
+
+void Coro_switchTo_(Coro *self, Coro *next) {
+    ucontext_t* self_env = env(self);
+    ucontext_t* next_env = env(next);
+    swapcontext(self_env, next_env);
+}
+
