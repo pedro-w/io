@@ -73,6 +73,8 @@ asm(
     "ret\n");
 }
 
+// ---- New and free --------------------------------
+
 void Coro_free(Coro *self) {
     Coro_freeStack(self);
     io_free(self);
@@ -82,6 +84,8 @@ Coro *Coro_new(void) {
     Coro_arm64 *coro = io_calloc(1, sizeof *coro);
     return Coro_initBase(&coro->base);
 }
+
+// ---- setup ------------------------------------------
 
 // This function initializes the context with a new stack and entry point
 void Coro_setup(Coro *self, void *context, CoroStartCallback* callback) {
@@ -102,6 +106,8 @@ void Coro_setup(Coro *self, void *context, CoroStartCallback* callback) {
     // and first arg
     cenv->retval = (unsigned long) self;
 }
+
+// ---- switch to --------------------------------------
 
 void Coro_switchTo_(Coro *self, Coro *next) {
     // Get the context pointers
