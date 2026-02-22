@@ -52,8 +52,8 @@ configure_file(IoInstallPrefix.h.in IoInstallPrefix.h)
 # "compiled" Io to C source code.
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/source)
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
-    COMMAND io2c VMCode IoState_doString_ ${IO_SRCS} > ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
+    OUTPUT IoVMInit.c
+    COMMAND io2c VMCode IoState_doString_ ${IO_SRCS} > IoVMInit.c
     DEPENDS io2c ${IO_SRCS}
     )
 
@@ -90,7 +90,7 @@ include_directories(
 # Our library sources.
 file(GLOB IOVM_SRCS "${IOVM_SOURCE_DIR}/*.c")
 list(APPEND IOVM_SRCS 
-    ${CMAKE_CURRENT_BINARY_DIR}/source/IoVMInit.c
+    ${CMAKE_CURRENT_BINARY_DIR}/IoVMInit.c
     ${PARSON_SOURCE_DIR}/parson.c)
 set(SRCS ${IOVM_SRCS})
 file(GLOB HEADERS "source/*.h")
