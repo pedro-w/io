@@ -94,8 +94,8 @@ void Coro_setup(Coro *self, void *arg, CoroStartCallback* callback) {
     ucp->uc_link = NULL;
 
     #ifdef SPLIT_POINTER
-    unsigned int hiArg = (unsigned int)((uintptr_t)arg >> 32);
-    unsigned int loArg = (unsigned int)((uintptr_t)arg & 0xFFFFFFFF);
+    unsigned int hiArg = (unsigned int)((uintptr_t)self >> 32);
+    unsigned int loArg = (unsigned int)((uintptr_t)self & 0xFFFFFFFF);
     makecontext(ucp, (makecontext_func)start_with_arg_wrapper, 2, hiArg, loArg);
     #else
     makecontext(ucp, (makecontext_func)Coro_StartWithArg, 1, (unsigned int)self);
