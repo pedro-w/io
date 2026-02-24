@@ -10,7 +10,6 @@
 struct Coro_fiber {
     struct Coro base;
     void *fiber;
-    void *startArg;
 };
 typedef struct Coro_fiber Coro_fiber;
 static Coro_fiber *DATA(Coro *coro) { return (Coro_fiber *)coro; }
@@ -47,13 +46,14 @@ void Coro_switchTo_(Coro *self, Coro *next) {
 // ---- setup ------------------------------------------
 static void fiber_start_wrapper(Coro_fiber *fcb) {
     fcb->base.stack = _AddressOfReturnAddress();
-    Coro_StartWithArg(fcb->startArg);
+    Coro_StartWithArg(fcb);
 }
-void Coro_setup(Coro *self, void *arg) {
+void Coro_setup(Coro *self, void *arg, CoroStartCallback* callback) {
     Coro_fiber *uself = DATA(self);
 
     // For Fibers we don't alloc our own stack
-    uself->startArg = arg;
+    self->context = arg;
+    self->callback = callback;
     uself->fiber =
         CreateFiber(self->requestedStackSize, fiber_start_wrapper, uself);
 }
