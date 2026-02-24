@@ -19,7 +19,6 @@
 #include "IoFile.h"
 #include "IoDate.h"
 #include "IoDuration.h"
-#include "IoSeq.h"
 #include "IoMessage_parser.h"
 #include "IoDynLib.h"
 #include "IoWeakLink.h"
