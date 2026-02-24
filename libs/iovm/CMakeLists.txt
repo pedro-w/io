@@ -100,6 +100,7 @@ add_library(iovmall SHARED ${SRCS})
 set_target_properties(iovmall PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(iovmall basekit coroutine garbagecollector)
 target_include_directories(iovmall PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_compile_definitions(iovmall PRIVATE "CORO_DYNAMIC")
 
 # Now build the static library
 add_library(iovmall_static STATIC ${IOVM_SRCS})

@@ -6,7 +6,7 @@
 #include "Coro.h"
 #include "Coro-internal.h"
 
-const char *Coro_Implementation="arm64-native"; 
+CORO_API const char *Coro_Implementation="arm64-native"; 
 
 
 // Custom context implementation for ARM64

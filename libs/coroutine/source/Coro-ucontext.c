@@ -38,7 +38,7 @@
 /* Define XOPEN as ucontext is not in posix (or whatever) */
 #define _XOPEN_SOURCE
 #include <ucontext.h>
-const char *Coro_Implementation= "ucontext"; 
+CORO_API const char *Coro_Implementation= "ucontext"; 
 
 typedef struct Coro_ucontext {
     struct Coro base;

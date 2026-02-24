@@ -13,7 +13,7 @@ struct Coro_fiber {
 };
 typedef struct Coro_fiber Coro_fiber;
 static Coro_fiber *DATA(Coro *coro) { return (Coro_fiber *)coro; }
-const char *Coro_Implementation ="fibers"; 
+CORO_API const char *Coro_Implementation ="fibers"; 
 
 
 // ---- New and free --------------------------------
