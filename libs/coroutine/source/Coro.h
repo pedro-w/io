@@ -6,7 +6,7 @@
 #define CORO_DEFAULT_STACK_SIZE (128 * 1024)
 #define CORO_STACK_SIZE_MIN 8192
 
-#if defined(WIN32) && defined(CORO_DYNAMIC)
+#if defined(WIN32) && defined(IO_DLL)
 #if defined(BUILDING_CORO_DLL) 
 #define CORO_API __declspec(dllexport)
 #else

@@ -18,6 +18,7 @@ add_library(garbagecollector SHARED ${SRCS})
 add_dependencies(garbagecollector basekit)
 set_target_properties(garbagecollector PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(garbagecollector basekit)
+target_compile_definitions(garbagecollector PRIVATE "IO_DLL")
 
 # Now build the static library
 add_library(garbagecollector_static STATIC ${SRCS})

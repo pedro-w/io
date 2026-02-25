@@ -12,13 +12,12 @@
 extern "C" {
 #endif
 
-#if defined(WIN32)
-#if defined(BUILDING_COLLECTOR_DLL) || defined(BUILDING_IOVMALL_DLL)
+#if defined(WIN32) && defined(IO_DLL)
+#if defined(BUILDING_COLLECTOR_DLL) 
 #define COLLECTOR_API __declspec(dllexport)
 #else
 #define COLLECTOR_API __declspec(dllimport)
 #endif
-
 #else
 #define COLLECTOR_API
 #endif

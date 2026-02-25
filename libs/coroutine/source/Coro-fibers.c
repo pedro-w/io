@@ -44,7 +44,8 @@ void Coro_switchTo_(Coro *self, Coro *next) {
 }
 
 // ---- setup ------------------------------------------
-static void fiber_start_wrapper(Coro_fiber *fcb) {
+static void WINAPI fiber_start_wrapper(void* pv) {
+    Coro_fiber *fcb = pv;
     fcb->base.stack = _AddressOfReturnAddress();
     Coro_StartWithArg(fcb);
 }
@@ -55,7 +56,7 @@ void Coro_setup(Coro *self, void *arg, CoroStartCallback* callback) {
     self->context = arg;
     self->callback = callback;
     uself->fiber =
-        CreateFiber(self->requestedStackSize, fiber_start_wrapper, uself);
+        CreateFiber(self->requestedStackSize, (LPFIBER_START_ROUTINE) fiber_start_wrapper, uself);
 }
 
 

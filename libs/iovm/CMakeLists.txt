@@ -76,7 +76,7 @@ if (NOT HAVE_POSITIVE_NAN)
 endif()
 
 # Marvelous flags, likely compiler dependent.
-add_definitions("-DBUILDING_IOVM_DLL")# -DINSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
+add_definitions("-DBUILDING_IOVM_DLL")
 
 # Include dirs, -I flags and whatnot
 include_directories(
@@ -100,7 +100,7 @@ add_library(iovmall SHARED ${SRCS})
 set_target_properties(iovmall PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(iovmall basekit coroutine garbagecollector)
 target_include_directories(iovmall PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_compile_definitions(iovmall PRIVATE "CORO_DYNAMIC")
+target_compile_definitions(iovmall PRIVATE "IO_DLL")
 
 # Now build the static library
 add_library(iovmall_static STATIC ${IOVM_SRCS})

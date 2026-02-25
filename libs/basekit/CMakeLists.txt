@@ -25,6 +25,7 @@ file(GLOB HEADERS "source/*.h")
 add_library(basekit SHARED ${SRCS})
 set_target_properties(basekit PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(basekit ${BASEKIT_LIBS})
+target_compile_definitions(basekit PRIVATE "IO_DLL")
 
 # Now build the static library
 add_library(basekit_static STATIC ${SRCS})

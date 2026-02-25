@@ -23,7 +23,7 @@ set(HEADERS "source/Coro.h")
 add_library(coroutine SHARED ${SRCS})
 set_target_properties(coroutine PROPERTIES PUBLIC_HEADER "${HEADERS}")
 # Definitions, love them.
-target_compile_definitions(coroutine PRIVATE "BUILDING_CORO_DLL" "CORO_DYNAMIC")
+target_compile_definitions(coroutine PRIVATE "BUILDING_CORO_DLL" "IO_DLL")
 
 
 # Now build the static library
