@@ -63,7 +63,7 @@ jobs:
 
       - name: Install
         run: |
-          cmake --install build
+          cmake --install build --prefix ${{ runner.temp }}
           
       - name: Test
         run: |
@@ -94,14 +94,12 @@ jobs:
 
       - name: Build
         run: |
-          mkdir build
-          cd build
           cmake -S . -B build
           cmake --build build
 
       - name: Install
         run: |
-          cmake --install install		
+          cmake --install build --prefix ${{ runner.temp }}
       - name: Test
         run: |
           cd build
