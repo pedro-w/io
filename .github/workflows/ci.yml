@@ -96,13 +96,12 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -S . -B build -G"MinGW Makefiles" 
+          cmake -S . -B build
           cmake --build build
 
       - name: Install
         run: |
-	  cmake --install install		
-
+          cmake --install install		
       - name: Test
         run: |
           cd build
