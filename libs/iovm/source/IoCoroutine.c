@@ -61,7 +61,8 @@ IoCoroutine *IoCoroutine_proto(void *state) {
 #endif
     IoState_registerProtoWithId_((IoState *)state, self, protoId);
 
-    // Main coroutine: frameStack is NULL (its frames live in state->currentFrame)
+    // Main coroutine: frameStack is NULL (its frames live in
+    // state->currentFrame)
     DATA(self)->frameStack = NULL;
     DATA(self)->stopStatus = MESSAGE_STOP_STATUS_NORMAL;
     DATA(self)->returnValue = NULL;
@@ -147,7 +148,6 @@ void IoCoroutine_mark(IoCoroutine *self) {
             IoObject_shouldMarkIfNonNull(state->callPool[i]);
         }
     }
-
 }
 
 // raw
@@ -334,14 +334,14 @@ void IoCoroutine_rawSetResult_(IoCoroutine *self, IoObject *v) {
 
 IoObject *IoCoroutine_rawResult(IoCoroutine *self) {
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_rawResult: self=%p\n", (void*)self);
+    fprintf(stderr, "IoCoroutine_rawResult: self=%p\n", (void *)self);
     fflush(stderr);
 #endif
 
     IoObject *result = IoObject_getSlot_(self, IOSYMBOL("result"));
 
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_rawResult: result=%p\n", (void*)result);
+    fprintf(stderr, "IoCoroutine_rawResult: result=%p\n", (void *)result);
     fflush(stderr);
 #endif
 
@@ -380,7 +380,8 @@ IO_METHOD(IoCoroutine, ioStack) {
  * the current CFunction returns, the eval loop will see the parent's frames.
  *
  * NOTE: This does NOT involve any C stack manipulation. It just swaps frame
- * stacks. The eval loop continues on the same C stack, processing parent's frames.
+ * stacks. The eval loop continues on the same C stack, processing parent's
+ * frames.
  */
 void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
     IoState *state = IOSTATE;
@@ -388,7 +389,7 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
     IoObject *exc = IoCoroutine_rawException(self);
 #ifdef DEBUG_CORO_EVAL
     fprintf(stderr, "IoCoroutine_rawReturnToParent: exception=%p, ioNil=%p\n",
-            (void*)exc, (void*)state->ioNil);
+            (void *)exc, (void *)state->ioNil);
     fflush(stderr);
 #endif
 
@@ -401,7 +402,8 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
         // error → rawReturnToParent → rawPrintBackTrace → ...
         if (state->nestedEvalDepth == 0) {
 #ifdef DEBUG_CORO_EVAL
-            fprintf(stderr, "IoCoroutine_rawReturnToParent: printing backtrace\n");
+            fprintf(stderr,
+                    "IoCoroutine_rawReturnToParent: printing backtrace\n");
             fflush(stderr);
 #endif
             IoCoroutine_rawPrintBackTrace(self);
@@ -420,8 +422,10 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
     //    after evalLoop_ returns) — just pop all frames and return.
     if (state->nestedEvalDepth > 0) {
 #ifdef DEBUG_CORO_EVAL
-        fprintf(stderr, "rawReturnToParent: nestedEvalDepth=%d>0, self=%p, popping all frames\n",
-                state->nestedEvalDepth, (void*)self);
+        fprintf(stderr,
+                "rawReturnToParent: nestedEvalDepth=%d>0, self=%p, popping all "
+                "frames\n",
+                state->nestedEvalDepth, (void *)self);
         fflush(stderr);
 #endif
         while (state->currentFrame) {
@@ -436,9 +440,11 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
             IoEvalFrameData *parentTopFd = FRAME_DATA(parentTopFrame);
             if (parentTopFrame &&
                 parentTopFd->state == FRAME_STATE_CORO_WAIT_CHILD &&
-                parentTopFd->controlFlow.coroInfo.childCoroutine == (IoObject *)self) {
+                parentTopFd->controlFlow.coroInfo.childCoroutine ==
+                    (IoObject *)self) {
 #ifdef DEBUG_CORO_EVAL
-                fprintf(stderr, "rawReturnToParent: CORO SWAP RESTORE — restoring parent coro\n");
+                fprintf(stderr, "rawReturnToParent: CORO SWAP RESTORE — "
+                                "restoring parent coro\n");
                 fflush(stderr);
 #endif
                 // Save child state (for exception inspection by tryToPerform)
@@ -451,16 +457,18 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
                 // Transition parent's CORO_WAIT_CHILD to CONTINUE_CHAIN
                 IoEvalFrame *parentFrame = state->currentFrame;
                 IoEvalFrameData *parentFd = FRAME_DATA(parentFrame);
-                if (parentFrame && parentFd->state == FRAME_STATE_CORO_WAIT_CHILD) {
+                if (parentFrame &&
+                    parentFd->state == FRAME_STATE_CORO_WAIT_CHILD) {
                     parentFd->result = DATA(self)->returnValue
-                                              ? DATA(self)->returnValue
-                                              : state->ioNil;
+                                           ? DATA(self)->returnValue
+                                           : state->ioNil;
                     parentFd->state = FRAME_STATE_CONTINUE_CHAIN;
                 }
-                // Don't return — let the eval loop continue with parent's frames
-                // But we DO need to return here because we're inside a CFunction
-                // that was called from the eval loop. The eval loop will pick up
-                // the restored parent frames on its next iteration.
+                // Don't return — let the eval loop continue with parent's
+                // frames But we DO need to return here because we're inside a
+                // CFunction that was called from the eval loop. The eval loop
+                // will pick up the restored parent frames on its next
+                // iteration.
                 return;
             }
         }
@@ -477,7 +485,8 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
     // Switch to parent coroutine
     IoCoroutine *parent = IoCoroutine_rawParentCoroutine(self);
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_rawReturnToParent: parent=%p\n", (void*)parent);
+    fprintf(stderr, "IoCoroutine_rawReturnToParent: parent=%p\n",
+            (void *)parent);
     fflush(stderr);
 #endif
 
@@ -493,23 +502,25 @@ void IoCoroutine_rawReturnToParent(IoCoroutine *self) {
         IoEvalFrame *parentFrame = state->currentFrame;
         IoEvalFrameData *parentFd = FRAME_DATA(parentFrame);
 #ifdef DEBUG_CORO_EVAL
-        fprintf(stderr, "IoCoroutine_rawReturnToParent: parentFrame=%p, state=%d\n",
-                (void*)parentFrame, parentFrame ? parentFd->state : -1);
+        fprintf(stderr,
+                "IoCoroutine_rawReturnToParent: parentFrame=%p, state=%d\n",
+                (void *)parentFrame, parentFrame ? parentFd->state : -1);
         fflush(stderr);
 #endif
 
         if (parentFrame && parentFd->state == FRAME_STATE_CORO_WAIT_CHILD) {
-            parentFd->result = DATA(self)->returnValue
-                                      ? DATA(self)->returnValue
-                                      : state->ioNil;
+            parentFd->result = DATA(self)->returnValue ? DATA(self)->returnValue
+                                                       : state->ioNil;
             parentFd->state = FRAME_STATE_CONTINUE_CHAIN;
         }
 
-        // Signal to eval loop that frame stack changed - don't process stale frame
+        // Signal to eval loop that frame stack changed - don't process stale
+        // frame
         state->needsControlFlowHandling = 1;
 
 #ifdef DEBUG_CORO_EVAL
-        fprintf(stderr, "IoCoroutine_rawReturnToParent: done, needsControlFlowHandling=1\n");
+        fprintf(stderr, "IoCoroutine_rawReturnToParent: done, "
+                        "needsControlFlowHandling=1\n");
         fflush(stderr);
 #endif
     } else {
@@ -586,14 +597,15 @@ void IoCoroutine_clearStack(IoCoroutine *self) {
  *   2. Save caller's frame stack
  *   3. Push child's initial frame
  *   4. Return - the eval loop continues with child's frames
- *   5. When child's stack empties, eval loop returns to parent (see IoState_evalLoop_)
+ *   5. When child's stack empties, eval loop returns to parent (see
+ * IoState_evalLoop_)
  */
 void IoCoroutine_rawRun(IoCoroutine *self) {
     IoState *state = IOSTATE;
 
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_rawRun: self=%p, mainCoro=%p\n",
-            (void*)self, (void*)state->mainCoroutine);
+    fprintf(stderr, "IoCoroutine_rawRun: self=%p, mainCoro=%p\n", (void *)self,
+            (void *)state->mainCoroutine);
     fflush(stderr);
 #endif
 
@@ -606,24 +618,27 @@ void IoCoroutine_rawRun(IoCoroutine *self) {
 
 #ifdef DEBUG_CORO_EVAL
     fprintf(stderr, "IoCoroutine_rawRun: target=%p, locals=%p, msg=%p\n",
-            (void*)runTarget, (void*)runLocals, (void*)runMessage);
+            (void *)runTarget, (void *)runLocals, (void *)runMessage);
     fflush(stderr);
 #endif
 
     if (!runTarget || !runLocals || !runMessage) {
-        printf("IoCoroutine_rawRun: missing runTarget, runLocals, or runMessage\n");
+        printf("IoCoroutine_rawRun: missing runTarget, runLocals, or "
+               "runMessage\n");
         return;
     }
 
     // Validate that runMessage is actually a Message
     if (!ISMESSAGE(runMessage)) {
-        fprintf(stderr, "BUG: IoCoroutine_rawRun: runMessage is NOT a Message!\n");
-        fprintf(stderr, "  runMessage=%p, tag=%s\n",
-                (void*)runMessage,
-                IoObject_tag((IoObject*)runMessage) ? IoObject_tag((IoObject*)runMessage)->name : "NULL");
-        fprintf(stderr, "  runTarget=%p, runLocals=%p\n",
-                (void*)runTarget, (void*)runLocals);
-        fprintf(stderr, "  self=%p (coro)\n", (void*)self);
+        fprintf(stderr,
+                "BUG: IoCoroutine_rawRun: runMessage is NOT a Message!\n");
+        fprintf(stderr, "  runMessage=%p, tag=%s\n", (void *)runMessage,
+                IoObject_tag((IoObject *)runMessage)
+                    ? IoObject_tag((IoObject *)runMessage)->name
+                    : "NULL");
+        fprintf(stderr, "  runTarget=%p, runLocals=%p\n", (void *)runTarget,
+                (void *)runLocals);
+        fprintf(stderr, "  self=%p (coro)\n", (void *)self);
         fflush(stderr);
         abort();
     }
@@ -632,7 +647,7 @@ void IoCoroutine_rawRun(IoCoroutine *self) {
 
 #ifdef DEBUG_CORO_EVAL
     fprintf(stderr, "IoCoroutine_rawRun: current=%p, currentFrame=%p\n",
-            (void*)current, (void*)state->currentFrame);
+            (void *)current, (void *)state->currentFrame);
     fflush(stderr);
 #endif
 
@@ -641,12 +656,12 @@ void IoCoroutine_rawRun(IoCoroutine *self) {
     // - This is the main coroutine being started
     // - No coroutine is current
     // - The current coroutine has no active frames (no eval loop running)
-    int needOwnEvalLoop = (self == state->mainCoroutine) ||
-                          (current == NULL) ||
+    int needOwnEvalLoop = (self == state->mainCoroutine) || (current == NULL) ||
                           (state->currentFrame == NULL);
 
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_rawRun: needOwnEvalLoop=%d\n", needOwnEvalLoop);
+    fprintf(stderr, "IoCoroutine_rawRun: needOwnEvalLoop=%d\n",
+            needOwnEvalLoop);
     fflush(stderr);
 #endif
 
@@ -701,7 +716,8 @@ void IoCoroutine_rawRun(IoCoroutine *self) {
     IoEvalFrame *callerFrame = state->currentFrame;
     IoEvalFrameData *callerFd = FRAME_DATA(callerFrame);
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_rawRun: callerFrame=%p\n", (void*)callerFrame);
+    fprintf(stderr, "IoCoroutine_rawRun: callerFrame=%p\n",
+            (void *)callerFrame);
     fflush(stderr);
 #endif
 
@@ -743,8 +759,11 @@ void IoCoroutine_rawRun(IoCoroutine *self) {
     fd->state = FRAME_STATE_START;
 
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "rawRun CHILD ROOT FRAME SET: frame=%p, msg=%p, target=%p, locals=%p\n",
-            (void*)frame, (void*)runMessage, (void*)runTarget, (void*)runLocals);
+    fprintf(
+        stderr,
+        "rawRun CHILD ROOT FRAME SET: frame=%p, msg=%p, target=%p, locals=%p\n",
+        (void *)frame, (void *)runMessage, (void *)runTarget,
+        (void *)runLocals);
     fflush(stderr);
 #endif
 
@@ -763,7 +782,7 @@ IO_METHOD(IoCoroutine, run) {
     IoState *state = IOSTATE;
 #ifdef DEBUG_CORO_EVAL
     fprintf(stderr, "IoCoroutine_run: calling rawRun, currentFrame=%p\n",
-            (void*)state->currentFrame);
+            (void *)state->currentFrame);
     fflush(stderr);
 #endif
     IoCoroutine_rawRun(self);
@@ -773,7 +792,8 @@ IO_METHOD(IoCoroutine, run) {
 #endif
     IoObject *result = IoCoroutine_rawResult(self);
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_run: got result=%p, returning\n", (void*)result);
+    fprintf(stderr, "IoCoroutine_run: got result=%p, returning\n",
+            (void *)result);
     fflush(stderr);
 #endif
     return result;
@@ -784,7 +804,7 @@ void IoCoroutine_try(IoCoroutine *self, IoObject *target, IoObject *locals,
     IoState *state = IOSTATE;
 
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_try: self=%p, entering\n", (void*)self);
+    fprintf(stderr, "IoCoroutine_try: self=%p, entering\n", (void *)self);
     fflush(stderr);
 #endif
 
@@ -793,9 +813,10 @@ void IoCoroutine_try(IoCoroutine *self, IoObject *target, IoObject *locals,
     // Validate message parameter
     if (!ISMESSAGE(message)) {
         fprintf(stderr, "BUG: IoCoroutine_try: message is NOT a Message!\n");
-        fprintf(stderr, "  message=%p, tag=%s\n",
-                (void*)message,
-                IoObject_tag((IoObject*)message) ? IoObject_tag((IoObject*)message)->name : "NULL");
+        fprintf(stderr, "  message=%p, tag=%s\n", (void *)message,
+                IoObject_tag((IoObject *)message)
+                    ? IoObject_tag((IoObject *)message)->name
+                    : "NULL");
         fflush(stderr);
         abort();
     }
@@ -809,10 +830,13 @@ void IoCoroutine_try(IoCoroutine *self, IoObject *target, IoObject *locals,
     IoMessage *storedMsg = IoCoroutine_rawRunMessage(self);
     if (storedMsg != message) {
         fprintf(stderr, "BUG: IoCoroutine_try: stored runMessage differs!\n");
-        fprintf(stderr, "  expected=%p, got=%p\n", (void*)message, (void*)storedMsg);
+        fprintf(stderr, "  expected=%p, got=%p\n", (void *)message,
+                (void *)storedMsg);
         if (storedMsg && !ISMESSAGE(storedMsg)) {
             fprintf(stderr, "  stored tag=%s\n",
-                    IoObject_tag((IoObject*)storedMsg) ? IoObject_tag((IoObject*)storedMsg)->name : "NULL");
+                    IoObject_tag((IoObject *)storedMsg)
+                        ? IoObject_tag((IoObject *)storedMsg)->name
+                        : "NULL");
         }
         fflush(stderr);
         abort();
@@ -820,12 +844,14 @@ void IoCoroutine_try(IoCoroutine *self, IoObject *target, IoObject *locals,
 
     // Check if we're inside an existing eval loop.
     // If so, we need to run a nested loop to ensure synchronous completion.
-    // IoCoroutine_try semantics require the coroutine to be done when this returns.
+    // IoCoroutine_try semantics require the coroutine to be done when this
+    // returns.
     int needNestedLoop = (state->currentFrame != NULL);
 
     if (needNestedLoop) {
 #ifdef DEBUG_CORO_EVAL
-        fprintf(stderr, "IoCoroutine_try: running nested eval for synchronous completion\n");
+        fprintf(stderr, "IoCoroutine_try: running nested eval for synchronous "
+                        "completion\n");
         fflush(stderr);
 #endif
 
@@ -853,12 +879,15 @@ void IoCoroutine_try(IoCoroutine *self, IoObject *target, IoObject *locals,
         fd->state = FRAME_STATE_START;
 
 #ifdef DEBUG_CORO_EVAL
-        fprintf(stderr, "try NESTED ROOT FRAME SET: frame=%p, msg=%p, target=%p, locals=%p\n",
-                (void*)frame, (void*)message, (void*)target, (void*)locals);
+        fprintf(stderr,
+                "try NESTED ROOT FRAME SET: frame=%p, msg=%p, target=%p, "
+                "locals=%p\n",
+                (void *)frame, (void *)message, (void *)target, (void *)locals);
         fflush(stderr);
 #endif
 
-        // Mark that we're in a nested eval - so evalLoop knows not to do coro switching.
+        // Mark that we're in a nested eval - so evalLoop knows not to do coro
+        // switching.
         state->nestedEvalDepth++;
 
         // Run nested eval loop - this will complete the try coroutine
@@ -873,9 +902,10 @@ void IoCoroutine_try(IoCoroutine *self, IoObject *target, IoObject *locals,
         IoCoroutine_restoreState_(currentCoro, state);
 
 #ifdef DEBUG_CORO_EVAL
-        fprintf(stderr, "IoCoroutine_try: nested eval completed, result=%p\n", (void*)result);
+        fprintf(stderr, "IoCoroutine_try: nested eval completed, result=%p\n",
+                (void *)result);
         fprintf(stderr, "IoCoroutine_try: restored to coro=%p, frame=%p\n",
-                (void*)currentCoro, (void*)state->currentFrame);
+                (void *)currentCoro, (void *)state->currentFrame);
         fflush(stderr);
 #endif
     } else {
@@ -899,8 +929,8 @@ IoCoroutine *IoCoroutine_newWithTry(void *state, IoObject *target,
 void IoCoroutine_raiseError(IoCoroutine *self, IoSymbol *description,
                             IoMessage *m) {
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "IoCoroutine_raiseError: self=%p, error=%s\n",
-            (void*)self, CSTRING(description));
+    fprintf(stderr, "IoCoroutine_raiseError: self=%p, error=%s\n", (void *)self,
+            CSTRING(description));
     fflush(stderr);
 #endif
 
@@ -964,13 +994,18 @@ IoObject *IoCoroutine_rawResume(IoCoroutine *self) {
             if (runTarget && runLocals && runMessage) {
                 if (!ISMESSAGE(runMessage)) {
                     // Can't start this coro - no valid runMessage.
-                    // This can happen if 'resume' is called on the Coroutine proto
-                    // (which has nil run parameters from ::= declarations).
-                    // Just restore the caller and skip.
+                    // This can happen if 'resume' is called on the Coroutine
+                    // proto (which has nil run parameters from ::=
+                    // declarations). Just restore the caller and skip.
 #ifdef DEBUG_CORO_EVAL
-                    fprintf(stderr, "WARNING: rawResume: can't start coro %p (runMessage not a Message, is %s). Restoring caller.\n",
-                            (void*)self,
-                            IoObject_tag((IoObject*)runMessage) ? IoObject_tag((IoObject*)runMessage)->name : "NULL");
+                    fprintf(
+                        stderr,
+                        "WARNING: rawResume: can't start coro %p (runMessage "
+                        "not a Message, is %s). Restoring caller.\n",
+                        (void *)self,
+                        IoObject_tag((IoObject *)runMessage)
+                            ? IoObject_tag((IoObject *)runMessage)->name
+                            : "NULL");
                     fflush(stderr);
 #endif
                     // Restore calling coroutine

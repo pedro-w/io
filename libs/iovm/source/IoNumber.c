@@ -512,7 +512,8 @@ IO_METHOD(IoNumber, asString) {
 
     if (IoMessage_argCount(m) >= 1) {
         int whole = IoMessage_locals_intArgAt_(m, locals, 0);
-        if (IOSTATE->errorRaised) return IONIL(self);
+        if (IOSTATE->errorRaised)
+            return IONIL(self);
         int part = 6;
         char *s;
         size_t length;
@@ -520,7 +521,8 @@ IO_METHOD(IoNumber, asString) {
 
         if (IoMessage_argCount(m) >= 2) {
             part = abs(IoMessage_locals_intArgAt_(m, locals, 1));
-            if (IOSTATE->errorRaised) return IONIL(self);
+            if (IOSTATE->errorRaised)
+                return IONIL(self);
         }
 
         part = abs(part);
@@ -1062,9 +1064,11 @@ IO_METHOD(IoNumber, between) {
     */
 
     double a = IoMessage_locals_doubleArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     double b = IoMessage_locals_doubleArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     double n = DATA(self);
 
     return IOBOOL(self, ((n >= a) && (n <= b)) || (n <= a && (n >= b)));
@@ -1078,9 +1082,11 @@ IO_METHOD(IoNumber, clip) {
     */
 
     double a = IoMessage_locals_doubleArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     double b = IoMessage_locals_doubleArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     double n = DATA(self);
 
     if (n < a)
@@ -1238,7 +1244,8 @@ IO_METHOD(IoNumber, repeat) {
     */
 
     IoMessage_assertArgCount_receiver_(m, 1, self);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     {
         IoState *state = IOSTATE;

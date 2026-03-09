@@ -7,10 +7,12 @@ All rights reserved. See _License.txt.
 #include <stdlib.h>
 
 void showUsage(void) {
-    fprintf(stderr, "usage: io2c ObjectName ParseFunctionName ioFile1 ioFile2 ...\n");
+    fprintf(stderr,
+            "usage: io2c ObjectName ParseFunctionName ioFile1 ioFile2 ...\n");
     fprintf(stderr, "output is sent to standard output\n");
-    fprintf(stderr, "ParseFunctionName is either IoState_on_doCString_withLabel_ or "
-           "IoState_on_doPackedCString_withLabel_\n\n");
+    fprintf(stderr,
+            "ParseFunctionName is either IoState_on_doCString_withLabel_ or "
+            "IoState_on_doPackedCString_withLabel_\n\n");
 }
 
 void quoteStream(FILE *in, FILE *out) {
@@ -42,7 +44,7 @@ void quoteStream(FILE *in, FILE *out) {
     fputs("\";\n\n", out);
 }
 
-void processFile(FILE* out, const char *objectName, const char *fileName,
+void processFile(FILE *out, const char *objectName, const char *fileName,
                  const char *parseFunctionName) {
     FILE *in = fopen(fileName, "r");
 

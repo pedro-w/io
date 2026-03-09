@@ -15,7 +15,8 @@ IoMessage *parseCode(IoState *state, const char *code) {
 
 IoObject *evalCode(IoState *state, const char *code) {
     IoMessage *msg = parseCode(state, code);
-    return IoMessage_locals_performOn_iterative(msg, state->lobby, state->lobby);
+    return IoMessage_locals_performOn_iterative(msg, state->lobby,
+                                                state->lobby);
 }
 
 int main(int argc, char **argv) {
@@ -40,7 +41,8 @@ int main(int argc, char **argv) {
     IoObject *result = evalCode(state, "counter");
 
     printf("\n=== Result ===\n");
-    printf("counter = %d (expected 1)\n", ISNUMBER(result) ? IoNumber_asInt(result) : -999);
+    printf("counter = %d (expected 1)\n",
+           ISNUMBER(result) ? IoNumber_asInt(result) : -999);
 
     return 0;
 }

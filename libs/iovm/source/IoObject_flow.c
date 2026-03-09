@@ -13,7 +13,8 @@ IO_METHOD(IoObject, while) {
     */
 
     IoMessage_assertArgCount_receiver_(m, 2, self);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IoState *state = IOSTATE;
 
@@ -27,10 +28,12 @@ IO_METHOD(IoObject, while) {
             IoState_clearTopPool(state);
             IoState_stackRetain_(state, result);
             v = IoMessage_locals_valueArgAt_(m, locals, 0);
-            if (!ISTRUE(IoMessage_locals_performOn_(state->asBooleanMessage, v, v)))
+            if (!ISTRUE(
+                    IoMessage_locals_performOn_(state->asBooleanMessage, v, v)))
                 break;
             result = IoMessage_locals_valueArgAt_(m, locals, 1);
-            if (IoState_handleStatus(state)) break;
+            if (IoState_handleStatus(state))
+                break;
         }
         IoState_popRetainPoolExceptFor_(state, result);
         return result;
@@ -63,7 +66,8 @@ IO_METHOD(IoObject, loop) {
     */
 
     IoMessage_assertArgCount_receiver_(m, 1, self);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IoState *state = IOSTATE;
 
@@ -75,7 +79,8 @@ IO_METHOD(IoObject, loop) {
         for (;;) {
             IoState_clearTopPool(state);
             result = IoMessage_locals_valueArgAt_(m, locals, 0);
-            if (IoState_handleStatus(state)) break;
+            if (IoState_handleStatus(state))
+                break;
         }
         IoState_popRetainPoolExceptFor_(state, result);
         return result;
@@ -108,7 +113,8 @@ IO_METHOD(IoObject, for)
     */
 
     IoMessage_assertArgCount_receiver_(m, 4, self);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IoState *state = IOSTATE;
 
@@ -134,13 +140,19 @@ IO_METHOD(IoObject, for)
         IoState_pushRetainPool(state);
 
         for (i = startValue;; i += increment) {
-            if (increment > 0) { if (i > endValue) break; }
-            else { if (i < endValue) break; }
+            if (increment > 0) {
+                if (i > endValue)
+                    break;
+            } else {
+                if (i < endValue)
+                    break;
+            }
             IoState_clearTopPool(state);
             IoObject_addingRef_(locals, IONUMBER(i));
             PHash_at_put_(IoObject_slots(locals), slotName, IONUMBER(i));
             result = IoMessage_locals_performOn_(doMessage, locals, self);
-            if (IoState_handleStatus(state)) break;
+            if (IoState_handleStatus(state))
+                break;
         }
         IoState_popRetainPoolExceptFor_(state, result);
         return result;
@@ -153,15 +165,18 @@ IO_METHOD(IoObject, for)
     IoSymbol *counterName = IoMessage_name(indexMessage);
 
     double startValue = IoMessage_locals_doubleArgAt_(m, locals, 1);
-    if (state->errorRaised) return IONIL(self);
+    if (state->errorRaised)
+        return IONIL(self);
     double endValue = IoMessage_locals_doubleArgAt_(m, locals, 2);
-    if (state->errorRaised) return IONIL(self);
+    if (state->errorRaised)
+        return IONIL(self);
     double increment = 1;
     IoMessage *doMessage;
 
     if (IoMessage_argCount(m) > 4) {
         increment = IoMessage_locals_doubleArgAt_(m, locals, 3);
-        if (state->errorRaised) return IONIL(self);
+        if (state->errorRaised)
+            return IONIL(self);
         doMessage = IoMessage_rawArgAt_(m, 4);
     } else {
         doMessage = IoMessage_rawArgAt_(m, 3);
@@ -276,7 +291,8 @@ IO_METHOD(IoObject, if) {
     // Get the argument messages (not evaluated yet)
     IoMessage *conditionMsg = IoMessage_rawArgAt_(m, 0);
     IoMessage *trueBranch = IoMessage_rawArgAt_(m, 1);
-    IoMessage *falseBranch = IoMessage_argCount(m) > 2 ? IoMessage_rawArgAt_(m, 2) : NULL;
+    IoMessage *falseBranch =
+        IoMessage_argCount(m) > 2 ? IoMessage_rawArgAt_(m, 2) : NULL;
 
     // DEBUG
     if (state->showAllMessages) {

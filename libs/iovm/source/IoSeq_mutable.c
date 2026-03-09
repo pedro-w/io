@@ -25,10 +25,12 @@ character encoding
 
 #define DATA(self) ((UArray *)IoObject_dataPointer(self))
 
-#define IO_ASSERT_NOT_SYMBOL(self) do { \
-    IoAssertNotSymbol(self, m); \
-    if (IOSTATE->errorRaised) return IONIL(self); \
-} while(0)
+#define IO_ASSERT_NOT_SYMBOL(self)                                             \
+    do {                                                                       \
+        IoAssertNotSymbol(self, m);                                            \
+        if (IOSTATE->errorRaised)                                              \
+            return IONIL(self);                                                \
+    } while (0)
 #define IO_ASSERT_NUMBER_ENCODING(self)                                        \
     IOASSERT(DATA(self)->encoding == CENCODING_NUMBER,                         \
              "operation not valid on non-number encodings")
@@ -128,7 +130,8 @@ IO_METHOD(IoSeq, copy) {
     IO_ASSERT_NOT_SYMBOL(self);
 
     IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoSeq_rawCopy_(self, other);
     return self;
 }
@@ -176,9 +179,11 @@ IO_METHOD(IoSeq, atInsertSeq) {
     */
 
     size_t n = IoMessage_locals_sizetArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoSeq *otherSeq = IoMessage_locals_valueAsStringArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -196,9 +201,11 @@ IO_METHOD(IoSeq, insertSeqEvery) {
     */
 
     IoSeq *otherSeq = IoMessage_locals_valueAsStringArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     size_t itemCount = IoMessage_locals_sizetArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -252,9 +259,11 @@ IO_METHOD(IoSeq, removeSlice) {
     */
 
     long start = IoMessage_locals_longArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     long end = IoMessage_locals_longArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -282,9 +291,11 @@ IO_METHOD(IoSeq, leaveThenRemove) {
     */
 
     size_t itemsToLeave = IoMessage_locals_sizetArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     size_t itemsToRemove = IoMessage_locals_sizetArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -339,9 +350,11 @@ IO_METHOD(IoSeq, replaceSeq) {
     */
 
     IoSeq *subSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoSeq *otherSeq = IoMessage_locals_seqArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_replace_with_(DATA(self), DATA(subSeq), DATA(otherSeq));
     return self;
@@ -353,7 +366,8 @@ IO_METHOD(IoSeq, removeSeq) {
     */
 
     IoSeq *subSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_remove_(DATA(self), DATA(subSeq));
     return self;
@@ -368,14 +382,17 @@ IO_METHOD(IoSeq, replaceFirstSeq) {
     */
 
     IoSeq *subSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoSeq *otherSeq = IoMessage_locals_seqArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     size_t startIndex = 0;
 
     if (IoMessage_argCount(m) > 2) {
         startIndex = IoMessage_locals_longArgAt_(m, locals, 2);
-        if (IOSTATE->errorRaised) return IONIL(self);
+        if (IOSTATE->errorRaised)
+            return IONIL(self);
     }
 
     IO_ASSERT_NOT_SYMBOL(self);
@@ -400,7 +417,8 @@ IO_METHOD(IoSeq, atPut) {
     */
 
     size_t i = IoMessage_locals_longArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     UArray *a = DATA(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
@@ -444,7 +462,8 @@ IO_METHOD(IoSeq, clipBeforeSeq) {
     */
 
     IoSeq *otherSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_clipBefore_(DATA(self), DATA(otherSeq));
     return self;
@@ -458,7 +477,8 @@ IO_METHOD(IoSeq, clipAfterSeq) {
     */
 
     IoSeq *otherSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_clipAfter_(DATA(self), DATA(otherSeq));
@@ -473,7 +493,8 @@ IO_METHOD(IoSeq, clipBeforeEndOfSeq) {
     */
 
     IoSeq *otherSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_clipBeforeEndOf_(DATA(self), DATA(otherSeq));
     return self;
@@ -487,7 +508,8 @@ IO_METHOD(IoSeq, clipAfterStartOfSeq) {
     */
 
     IoSeq *otherSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_clipAfterStartOf_(DATA(self), DATA(otherSeq));
     return self;
@@ -544,7 +566,8 @@ IO_METHOD(IoSeq, replaceMap) {
     */
 
     IoMap *map = IoMessage_locals_mapArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     UArray *ba = DATA(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
@@ -575,9 +598,11 @@ IO_METHOD(IoSeq, translate) {
     */
 
     IoSeq *fcSeq = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoSeq *tcSeq = IoMessage_locals_seqArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     UArray *ba = DATA(self);
     UArray *fc = DATA(fcSeq);
@@ -625,7 +650,8 @@ IO_METHOD(IoSeq, strip) {
 
     if (IoMessage_argCount(m) > 0) {
         IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-        if (IOSTATE->errorRaised) return IONIL(self);
+        if (IOSTATE->errorRaised)
+            return IONIL(self);
         UArray_strip_(DATA(self), DATA(other));
     } else {
         UArray space = UArray_stackAllocedWithCString_(WHITESPACE);
@@ -650,7 +676,8 @@ IO_METHOD(IoSeq, lstrip) {
 
     if (IoMessage_argCount(m) > 0) {
         IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-        if (IOSTATE->errorRaised) return IONIL(self);
+        if (IOSTATE->errorRaised)
+            return IONIL(self);
         UArray_lstrip_(DATA(self), DATA(other));
     } else {
         UArray space = UArray_stackAllocedWithCString_(WHITESPACE);
@@ -674,7 +701,8 @@ IO_METHOD(IoSeq, rstrip) {
 
     if (IoMessage_argCount(m) > 0) {
         IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-        if (IOSTATE->errorRaised) return IONIL(self);
+        if (IOSTATE->errorRaised)
+            return IONIL(self);
         UArray_rstrip_(DATA(self), DATA(other));
     } else {
         UArray space = UArray_stackAllocedWithCString_(WHITESPACE);
@@ -714,7 +742,8 @@ IO_METHOD(IoSeq, removePrefix) {
     */
 
     IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -731,7 +760,8 @@ IO_METHOD(IoSeq, removeSuffix) {
     */
 
     IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
 
@@ -763,7 +793,8 @@ IO_METHOD(IoSeq, appendPathSeq) {
     */
 
     IoSeq *component = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     IO_ASSERT_NOT_SYMBOL(self);
     UArray_appendPath_(DATA(self), DATA(component));
@@ -1039,7 +1070,8 @@ IO_METHOD(IoSeq, dotProduct) {
     */
 
     IoSeq *other = IoMessage_locals_seqArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IO_ASSERT_NOT_SYMBOL(self);
     return IONUMBER(UArray_dotProduct_(DATA(self), DATA(other)));
 }
@@ -1255,7 +1287,8 @@ IoSeqMutateNoArgNoResultOp(ceil)
 #define IoSeqLongArgNumberResultOp(name)                                       \
     IoObject *IoSeq_##name(IoSeq *self, IoObject *locals, IoMessage *m) {      \
         long arg = IoMessage_locals_longArgAt_(m, locals, 0);                  \
-        if (IOSTATE->errorRaised) return IONIL(self);                          \
+        if (IOSTATE->errorRaised)                                              \
+            return IONIL(self);                                                \
         return IONUMBER(UArray_##name(DATA(self), arg));                       \
     }
 
@@ -1279,8 +1312,9 @@ IoSeqMutateNoArgNoResultOp(ceil)
 #define IoSeqSeqArgNoResultOp(name)                                            \
     IoObject *IoSeq_##name(IoSeq *self, IoObject *locals, IoMessage *m) {      \
         IO_ASSERT_NOT_SYMBOL(self);                                            \
-        IoSeq *arg = IoMessage_locals_seqArgAt_(m, locals, 0);                \
-        if (IOSTATE->errorRaised) return IONIL(self);                          \
+        IoSeq *arg = IoMessage_locals_seqArgAt_(m, locals, 0);                 \
+        if (IOSTATE->errorRaised)                                              \
+            return IONIL(self);                                                \
         UArray_##name(DATA(self), DATA(arg));                                  \
         return self;                                                           \
     }

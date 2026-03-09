@@ -466,9 +466,10 @@ double Collector_timeUsed(Collector *self) {
 
 void Collector_rcEnqueue_(Collector *self, CollectorMarker *m) {
     if (self->rcFreeCount >= self->rcFreeCapacity) {
-        self->rcFreeCapacity = self->rcFreeCapacity ? self->rcFreeCapacity * 2 : 64;
-        self->rcFreeList = (CollectorMarker **)io_realloc(self->rcFreeList,
-            self->rcFreeCapacity * sizeof(CollectorMarker *));
+        self->rcFreeCapacity =
+            self->rcFreeCapacity ? self->rcFreeCapacity * 2 : 64;
+        self->rcFreeList = (CollectorMarker **)io_realloc(
+            self->rcFreeList, self->rcFreeCapacity * sizeof(CollectorMarker *));
     }
     self->rcFreeList[self->rcFreeCount++] = m;
 }
@@ -476,10 +477,14 @@ void Collector_rcEnqueue_(Collector *self, CollectorMarker *m) {
 void Collector_rcDrainFreeList_(Collector *self) {
     while (self->rcFreeCount > 0) {
         CollectorMarker *m = self->rcFreeList[--self->rcFreeCount];
-        if (m->refCount != 0) continue;
-        if (m->color == self->freed->color) continue;
-        if (m->color != self->whites->color) continue;
-        if (self->freeFunc) self->freeFunc(m);
+        if (m->refCount != 0)
+            continue;
+        if (m->color == self->freed->color)
+            continue;
+        if (m->color != self->whites->color)
+            continue;
+        if (self->freeFunc)
+            self->freeFunc(m);
         Collector_makeFree_(self, m);
         self->allocated--;
     }

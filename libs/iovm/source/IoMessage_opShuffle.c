@@ -387,7 +387,7 @@ void Levels_attach(Levels *self, IoMessage *msg, List *expressions) {
             // which may be NULL, and make a copy.
             IoMessage *rest = DATA(msg)->next;
             if (rest) {
-	        rest = DATA(rest)->next;
+                rest = DATA(rest)->next;
             }
             if (rest) {
                 rest = IoMessage_deepCopyOf_(rest);

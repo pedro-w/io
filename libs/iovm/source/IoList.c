@@ -366,7 +366,8 @@ void IoList_sliceArguments(IoList *self, IoObject *locals, IoMessage *m,
                 ? IoMessage_locals_intArgAt_(m, locals, 2)
                 : 1;
     if (*step == 0) {
-        IoState_error_(IOSTATE, m, "Io Assertion 'step cannot be equal to zero'");
+        IoState_error_(IOSTATE, m,
+                       "Io Assertion 'step cannot be equal to zero'");
         return;
     }
 
@@ -489,7 +490,8 @@ list(1, 2, 3) foreach(v, writeln(v))</pre>
     IoMessage *doMessage;
 
     IoMessage_foreachArgs(m, self, &slotName, &valueName, &doMessage);
-    if (state->errorRaised) return IONIL(self);
+    if (state->errorRaised)
+        return IONIL(self);
 
     // Iterative path
     if (state->currentFrame != NULL) {
@@ -548,7 +550,8 @@ IO_METHOD(IoList, reverseForeach) {
     IoMessage *doMessage;
 
     IoMessage_foreachArgs(m, self, &slotName, &valueName, &doMessage);
-    if (state->errorRaised) return IONIL(self);
+    if (state->errorRaised)
+        return IONIL(self);
 
     // Iterative path
     if (state->currentFrame != NULL) {
@@ -749,9 +752,11 @@ IO_METHOD(IoList, atInsert) {
     */
 
     int index = IoMessage_locals_intArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject *v = IoMessage_locals_valueArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     if (IoList_checkIndex(self, m, 1, index, "List atInsert"))
         return IONIL(self);
@@ -767,7 +772,8 @@ IO_METHOD(IoList, removeAt) {
     */
 
     int index = IoMessage_locals_intArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject *v = List_at_(DATA(self), index);
 
     if (IoList_checkIndex(self, m, 0, index, "Io List atInsert"))
@@ -958,7 +964,8 @@ IO_METHOD(IoList, sortInPlaceBy) {
     sc.state = IOSTATE;
     sc.locals = locals;
     sc.block = IoMessage_locals_blockArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     sc.blockMsg = IoMessage_new(IOSTATE);
     sc.argMsg1 = IoMessage_new(IOSTATE);
     sc.argMsg2 = IoMessage_new(IOSTATE);

@@ -49,7 +49,8 @@ void IoVMCodeInit(IoObject *context);
 static void IoState_markSlotLazyArgs_(IoState *self, IoObject *object,
                                       const char *slotName) {
     IoObject *proto = IoObject_firstProto(object);
-    if (!proto) return;
+    if (!proto)
+        return;
     IoObject *f = IoObject_rawGetSlot_(proto, SIOSYMBOL(slotName));
     if (f && ISCFUNCTION(f)) {
         ((IoCFunctionData *)IoObject_dataPointer(f))->isLazyArgs = 1;
@@ -60,8 +61,7 @@ static void IoState_markLazyArgsCFunctions_(IoState *self) {
     // Control flow
     IoObject *an_object = IoObject_new(self);
     IoObject *a_list = IoList_new(self);
-    IoObject *a_number =
-        IoNumber_newWithDouble_(self, 0.0);
+    IoObject *a_number = IoNumber_newWithDouble_(self, 0.0);
     IoObject *a_date = IoDate_new(self);
     IoObject *a_sequence = IoSeq_new(self);
     IoObject *a_map = IoMap_new(self);
@@ -281,7 +281,7 @@ void IoState_new_atAddress(void *address) {
         // Initialize iterative evaluation frame stack
         self->currentFrame = NULL;
         self->frameDepth = 0;
-        self->maxFrameDepth = 10000;  // Default max depth
+        self->maxFrameDepth = 10000; // Default max depth
         self->framePoolCount = 0;
         memset(self->framePool, 0, sizeof(self->framePool));
         self->needsControlFlowHandling = 0;
@@ -342,8 +342,6 @@ void IoState_setupQuickAccessSymbols(IoState *self) {
     self->stackSizeSymbol = IoState_retainedSymbol(self, "stackSize");
     self->typeSymbol = IoState_retainedSymbol(self, "type");
     self->updateSlotSymbol = IoState_retainedSymbol(self, "updateSlot");
-
-
 
     self->runTargetSymbol = IoState_retainedSymbol(self, "runTarget");
     self->runMessageSymbol = IoState_retainedSymbol(self, "runMessage");

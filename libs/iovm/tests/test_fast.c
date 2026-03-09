@@ -18,7 +18,8 @@ int main() {
     IoMessage *msg = IoMessage_newFromText_labelSymbol_(state, "2 + 3", label);
 
     printf("Calling fast evaluator...\n");
-    IoObject *result = IoMessage_locals_performOn_fast(msg, state->lobby, state->lobby);
+    IoObject *result =
+        IoMessage_locals_performOn_fast(msg, state->lobby, state->lobby);
 
     if (ISNUMBER(result)) {
         printf("Result: %d\n", IoNumber_asInt(result));

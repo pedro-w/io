@@ -47,8 +47,7 @@ static inline IoEvalFrame *IoFramePool_alloc(IoFramePool *pool) {
 // Return frame to pool (inline for speed)
 static inline void IoFramePool_free(IoFramePool *pool, IoEvalFrame *frame) {
     // Check if frame is from pool
-    if (frame >= &pool->frames[0] &&
-        frame < &pool->frames[FRAME_POOL_SIZE]) {
+    if (frame >= &pool->frames[0] && frame < &pool->frames[FRAME_POOL_SIZE]) {
         int idx = frame - &pool->frames[0];
         IoEvalFrame_reset(frame);
         pool->freeList[pool->freeCount++] = idx;
@@ -58,7 +57,8 @@ static inline void IoFramePool_free(IoFramePool *pool, IoEvalFrame *frame) {
 }
 
 // Push frame using pool
-static inline IoEvalFrame *IoState_pushFrameFast_(IoState *state, IoFramePool *pool) {
+static inline IoEvalFrame *IoState_pushFrameFast_(IoState *state,
+                                                  IoFramePool *pool) {
     IoEvalFrame *frame = IoFramePool_alloc(pool);
     frame->parent = state->currentFrame;
     state->currentFrame = frame;
@@ -66,7 +66,7 @@ static inline IoEvalFrame *IoState_pushFrameFast_(IoState *state, IoFramePool *p
 
     if (state->frameDepth > state->maxFrameDepth) {
         IoState_error_(state, NULL, "Stack overflow: frame depth exceeded %d",
-                      state->maxFrameDepth);
+                       state->maxFrameDepth);
     }
 
     return frame;
@@ -83,7 +83,9 @@ static inline void IoState_popFrameFast_(IoState *state, IoFramePool *pool) {
 }
 
 // Fast activation for blocks
-static inline void IoState_activateBlockFast_(IoState *state, IoEvalFrame *callerFrame, IoFramePool *pool) {
+static inline void IoState_activateBlockFast_(IoState *state,
+                                              IoEvalFrame *callerFrame,
+                                              IoFramePool *pool) {
     IoBlock *block = (IoBlock *)callerFrame->slotValue;
     IoBlockData *blockData = (IoBlockData *)IoObject_dataPointer(block);
 
@@ -93,24 +95,23 @@ static inline void IoState_activateBlockFast_(IoState *state, IoEvalFrame *calle
     IoObject *scope = blockData->scope ? blockData->scope : callerFrame->target;
 
     IoCall *callObject = IoCall_with(
-        state, callerFrame->locals, callerFrame->target,
-        callerFrame->message, callerFrame->slotContext,
-        block, state->currentCoroutine
-    );
+        state, callerFrame->locals, callerFrame->target, callerFrame->message,
+        callerFrame->slotContext, block, state->currentCoroutine);
 
     IoObject_createSlotsIfNeeded(blockLocals);
     PHash *bslots = IoObject_slots(blockLocals);
     PHash_at_put_(bslots, state->callSymbol, callObject);
     PHash_at_put_(bslots, state->selfSymbol, scope);
-    PHash_at_put_(bslots, state->updateSlotSymbol, state->localsUpdateSlotCFunc);
+    PHash_at_put_(bslots, state->updateSlotSymbol,
+                  state->localsUpdateSlotCFunc);
 
     List *argNames = blockData->argNames;
     if (callerFrame->argValues) {
-        LIST_FOREACH(argNames, i, name,
-                     if ((int)i < callerFrame->argCount) {
-                         IoObject *arg = callerFrame->argValues[i];
-                         IoObject_setSlot_to_(blockLocals, name, arg);
-                     });
+        LIST_FOREACH(
+            argNames, i, name, if ((int)i < callerFrame->argCount) {
+                IoObject *arg = callerFrame->argValues[i];
+                IoObject_setSlot_to_(blockLocals, name, arg);
+            });
     }
 
     IoObject_isReferenced_(blockLocals, 0);
@@ -142,21 +143,20 @@ IoObject *IoState_evalLoopFast_(IoState *state, IoFramePool *pool) {
 
 #ifdef __GNUC__
     // Computed goto labels (GCC extension - much faster than switch)
-    static void *dispatch_table[] = {
-        &&STATE_START,
-        &&STATE_EVAL_ARGS,
-        &&STATE_LOOKUP_SLOT,
-        &&STATE_ACTIVATE,
-        &&STATE_CONTINUE_CHAIN,
-        &&STATE_RETURN
-    };
+    static void *dispatch_table[] = {&&STATE_START,          &&STATE_EVAL_ARGS,
+                                     &&STATE_LOOKUP_SLOT,    &&STATE_ACTIVATE,
+                                     &&STATE_CONTINUE_CHAIN, &&STATE_RETURN};
 
-    #define DISPATCH() goto *dispatch_table[frame->state]
-    #define CASE(label) label:
+#define DISPATCH() goto *dispatch_table[frame->state]
+#define CASE(label)                                                            \
+    label:
 #else
-    // Fallback to switch for non-GCC compilers
-    #define DISPATCH() goto dispatch_switch; dispatch_switch: switch(frame->state)
-    #define CASE(label) case label:
+// Fallback to switch for non-GCC compilers
+#define DISPATCH()                                                             \
+    goto dispatch_switch;                                                      \
+    dispatch_switch:                                                           \
+    switch (frame->state)
+#define CASE(label) case label:
 #endif
 
     while ((frame = state->currentFrame) != NULL) {
@@ -220,7 +220,8 @@ IoObject *IoState_evalLoopFast_(IoState *state, IoFramePool *pool) {
             frame->currentArgIndex = 0;
 
             if (frame->argCount > 0) {
-                frame->argValues = io_calloc(frame->argCount, sizeof(IoObject *));
+                frame->argValues =
+                    io_calloc(frame->argCount, sizeof(IoObject *));
                 frame->state = FRAME_STATE_EVAL_ARGS;
             } else {
                 frame->state = FRAME_STATE_LOOKUP_SLOT;
@@ -263,7 +264,8 @@ IoObject *IoState_evalLoopFast_(IoState *state, IoFramePool *pool) {
 
         CASE(STATE_LOOKUP_SLOT) {
             messageName = IoMessage_name(frame->message);
-            slotValue = IoObject_rawGetSlot_context_(frame->target, messageName, &slotContext);
+            slotValue = IoObject_rawGetSlot_context_(frame->target, messageName,
+                                                     &slotContext);
 
             if (slotValue) {
                 frame->slotValue = slotValue;
@@ -271,9 +273,11 @@ IoObject *IoState_evalLoopFast_(IoState *state, IoFramePool *pool) {
                 frame->state = FRAME_STATE_ACTIVATE;
             } else {
                 if (IoObject_isLocals(frame->target)) {
-                    frame->result = IoObject_localsForward(frame->target, frame->locals, frame->message);
+                    frame->result = IoObject_localsForward(
+                        frame->target, frame->locals, frame->message);
                 } else {
-                    frame->result = IoObject_forward(frame->target, frame->locals, frame->message);
+                    frame->result = IoObject_forward(
+                        frame->target, frame->locals, frame->message);
                 }
                 frame->state = FRAME_STATE_CONTINUE_CHAIN;
             }
@@ -289,10 +293,12 @@ IoObject *IoState_evalLoopFast_(IoState *state, IoFramePool *pool) {
                     DISPATCH();
                 } else {
                     // CFunction
-                    IoTagActivateFunc *activateFunc = IoObject_tag(slotValue)->activateFunc;
+                    IoTagActivateFunc *activateFunc =
+                        IoObject_tag(slotValue)->activateFunc;
                     IoState_pushRetainPool(state);
-                    frame->result = activateFunc(slotValue, frame->target, frame->locals,
-                                                 frame->message, frame->slotContext);
+                    frame->result =
+                        activateFunc(slotValue, frame->target, frame->locals,
+                                     frame->message, frame->slotContext);
                     IoState_popRetainPoolExceptFor_(state, frame->result);
                     frame->state = FRAME_STATE_CONTINUE_CHAIN;
                 }
@@ -346,7 +352,8 @@ IoObject *IoState_evalLoopFast_(IoState *state, IoFramePool *pool) {
 }
 
 // Fast entry point
-IoObject *IoMessage_locals_performOn_fast(IoMessage *self, IoObject *locals, IoObject *target) {
+IoObject *IoMessage_locals_performOn_fast(IoMessage *self, IoObject *locals,
+                                          IoObject *target) {
     IoState *state = IOSTATE;
 
     // Initialize thread-local frame pool

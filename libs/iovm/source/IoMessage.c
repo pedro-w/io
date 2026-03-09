@@ -266,7 +266,8 @@ void IoMessage_mark(IoMessage *self) {
     IoObject_shouldMarkIfNonNull((IoObject *)DATA(self)->next);
     IoObject_shouldMarkIfNonNull((IoObject *)DATA(self)->label);
 
-    // Mark inline cache entries (prevent cached slot values from being collected)
+    // Mark inline cache entries (prevent cached slot values from being
+    // collected)
     IoObject_shouldMarkIfNonNull(DATA(self)->inlineCacheValue);
     IoObject_shouldMarkIfNonNull(DATA(self)->inlineCacheContext);
 }
@@ -546,7 +547,7 @@ IoObject *IoMessage_locals_numberArgAt_(IoMessage *self, IoObject *locals,
 
     if (!ISNUMBER(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Number");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
 
     return v;
@@ -598,7 +599,7 @@ IoObject *IoMessage_locals_seqArgAt_(IoMessage *self, IoObject *locals, int n) {
 
     if (!ISSEQ(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Sequence");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
 
     return v;
@@ -616,7 +617,7 @@ IoObject *IoMessage_locals_symbolArgAt_(IoMessage *self, IoObject *locals,
 
     if (!ISSEQ(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Sequence");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
 
     return IoSeq_rawAsSymbol(v);
@@ -629,7 +630,7 @@ IoObject *IoMessage_locals_mutableSeqArgAt_(IoMessage *self, IoObject *locals,
     if (!ISMUTABLESEQ(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n,
                                                    "mutable Sequence");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
 
     return v;
@@ -640,7 +641,7 @@ IoObject *IoMessage_locals_blockArgAt_(IoMessage *self, IoObject *locals,
     IoObject *v = IoMessage_locals_valueArgAt_(self, locals, n);
     if (!ISBLOCK(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Block");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
     return v;
 }
@@ -650,7 +651,7 @@ IoObject *IoMessage_locals_dateArgAt_(IoMessage *self, IoObject *locals,
     IoObject *v = IoMessage_locals_valueArgAt_(self, locals, n);
     if (!ISDATE(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Date");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
     return v;
 }
@@ -660,7 +661,7 @@ IoObject *IoMessage_locals_messageArgAt_(IoMessage *self, IoObject *locals,
     IoObject *v = IoMessage_locals_valueArgAt_(self, locals, n);
     if (!ISMESSAGE(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Message");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
     return v;
 }
@@ -670,7 +671,7 @@ IoObject *IoMessage_locals_listArgAt_(IoMessage *self, IoObject *locals,
     IoObject *v = IoMessage_locals_valueArgAt_(self, locals, n);
     if (!ISLIST(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "List");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
     return v;
 }
@@ -679,7 +680,7 @@ IoObject *IoMessage_locals_mapArgAt_(IoMessage *self, IoObject *locals, int n) {
     IoObject *v = IoMessage_locals_valueArgAt_(self, locals, n);
     if (!ISMAP(v)) {
         IoMessage_locals_numberArgAt_errorForType_(self, locals, n, "Map");
-        return IOSTATE->ioNil;  // Return early after error
+        return IOSTATE->ioNil; // Return early after error
     }
     return v;
 }
@@ -991,7 +992,8 @@ IO_METHOD(IoMessage, setArguments) {
     */
 
     IoList *ioList = IoMessage_locals_listArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     List *newArgs = IoList_rawList(ioList);
 
     List_removeAll(DATA(self)->args);

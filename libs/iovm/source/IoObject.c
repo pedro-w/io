@@ -405,8 +405,8 @@ void IoObject_rawAppendProto_(IoObject *self, IoObject *p) {
         memcpy(newProtos, oldProtos, (count + 1) * sizeof(IoObject *));
         IoObject_protos_(self, newProtos);
     } else {
-        IoObject_protos_(self, io_realloc(oldProtos,
-                                          (count + 2) * sizeof(IoObject *)));
+        IoObject_protos_(
+            self, io_realloc(oldProtos, (count + 2) * sizeof(IoObject *)));
     }
     IoObject_protos(self)[count] = IOREF(p);
     IoObject_protos(self)[count + 1] = NULL;
@@ -421,8 +421,7 @@ void IoObject_rawPrependProto_(IoObject *self, IoObject *p) {
 
     if ((void *)oldProtos == (void *)(data + 1)) {
         // Protos are inline - allocate new array
-        IoObject **newProtos =
-            (IoObject **)io_calloc(1, newSize);
+        IoObject **newProtos = (IoObject **)io_calloc(1, newSize);
         memcpy(newProtos + 1, oldProtos, oldSize);
         IoObject_protos_(self, newProtos);
     } else {
@@ -555,7 +554,8 @@ IO_METHOD(IoObject, setProtos) {
     */
 
     IoList *ioList = IoMessage_locals_listArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject_rawRemoveAllProtos(self);
     LIST_FOREACH(IoList_rawList(ioList), i, v,
                  IoObject_rawAppendProto_(self, (IoObject *)v));
@@ -592,10 +592,8 @@ void IoObject_freeSlots(
 void IoObject_willFree(IoObject *self) {
 #ifdef COLLECTOR_USE_REFCOUNT
     if (IoObject_ownsSlots(self)) {
-        PHASH_FOREACH(IoObject_slots(self), k, v,
-            (void)k;
-            Collector_value_removingRefTo_(IOCOLLECTOR, v);
-        );
+        PHASH_FOREACH(IoObject_slots(self), k, v, (void)k;
+                      Collector_value_removingRefTo_(IOCOLLECTOR, v););
     }
 #else
     (void)self;
@@ -666,8 +664,7 @@ void IoObject_dealloc(IoObject *self) // really io_free it
 
             // Try to recycle data+protos block for Number allocation
             IoState *st = objData->tag ? (IoState *)objData->tag->state : NULL;
-            if (st && objData->tag == st->numberTag &&
-                protosInline &&
+            if (st && objData->tag == st->numberTag && protosInline &&
                 st->numberDataFreeListSize < NUMBER_DATA_POOL_MAX) {
                 // Put on freelist (will be zeroed on reuse)
                 objData->data.ptr = st->numberDataFreeList;
@@ -961,9 +958,11 @@ IO_METHOD(IoObject, protoPerformWithArgList) {
     */
 
     IoSymbol *slotName = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoList *args = IoMessage_locals_listArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     List *argList = IoList_rawList(args);
     IoObject *context;
     IoObject *v = IoObject_rawGetSlot_context_(self, slotName, &context);
@@ -1076,9 +1075,11 @@ IO_METHOD(IoObject, protoSet_to_) {
     */
 
     IoSymbol *slotName = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject *slotValue = IoMessage_locals_valueArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject_inlineSetSlot_to_(self, slotName, slotValue);
     IOSTATE->slotVersion++;
     return slotValue;
@@ -1092,9 +1093,11 @@ IO_METHOD(IoObject, protoSetSlotWithType) {
     */
 
     IoSymbol *slotName = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject *slotValue = IoMessage_locals_valueArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject_inlineSetSlot_to_(self, slotName, slotValue);
     IoObject_createSlotsIfNeeded(slotValue);
     if (PHash_at_(IoObject_slots(slotValue), IOSTATE->typeSymbol) == NULL) {
@@ -1369,7 +1372,8 @@ IO_METHOD(IoObject, doMessage) {
     // Use iterative path if eval loop is active, otherwise recursive fallback
     if (state->currentFrame != NULL) {
         if (FRAME_DATA(state->currentFrame)->message == m) {
-            // Called directly from eval loop - use frame-state (zero C stack growth)
+            // Called directly from eval loop - use frame-state (zero C stack
+            // growth)
             IoEvalFrame *frame = state->currentFrame;
             IoEvalFrameData *fd = FRAME_DATA(frame);
             fd->controlFlow.doInfo.codeMessage = aMessage;
@@ -1406,8 +1410,8 @@ IO_METHOD(IoObject, doString) {
     // Use iterative path if eval loop is active, otherwise recursive fallback
     if (state->currentFrame != NULL) {
         IoState_pushCollectorPause(state);
-        IoMessage *codeMsg = IoMessage_newFromText_labelSymbol_(state,
-            CSTRING(string), label);
+        IoMessage *codeMsg =
+            IoMessage_newFromText_labelSymbol_(state, CSTRING(string), label);
         IoState_popCollectorPause(state);
 
         if (!codeMsg) {
@@ -1416,7 +1420,8 @@ IO_METHOD(IoObject, doString) {
         }
 
         if (FRAME_DATA(state->currentFrame)->message == m) {
-            // Called directly from eval loop - use frame-state (zero C stack growth)
+            // Called directly from eval loop - use frame-state (zero C stack
+            // growth)
             IoEvalFrame *frame = state->currentFrame;
             IoEvalFrameData *fd = FRAME_DATA(frame);
             fd->controlFlow.doInfo.codeMessage = codeMsg;
@@ -1446,11 +1451,13 @@ IO_METHOD(IoObject, doFile) {
     IoState *state = IOSTATE;
 
     IoSymbol *path = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (state->errorRaised) return state->ioNil;
+    if (state->errorRaised)
+        return state->ioNil;
 
     IoFile *file = IoFile_newWithPath_(state, path);
     IoObject *contents = IoFile_contents(file, locals, m);
-    if (state->errorRaised) return state->ioNil;
+    if (state->errorRaised)
+        return state->ioNil;
 
     IoSymbol *string = (IoSymbol *)IoSeq_rawAsSymbol(contents);
 
@@ -1461,18 +1468,19 @@ IO_METHOD(IoObject, doFile) {
     // Use iterative path if eval loop is active, otherwise recursive fallback
     if (state->currentFrame != NULL) {
         IoState_pushCollectorPause(state);
-        IoMessage *codeMsg = IoMessage_newFromText_labelSymbol_(state,
-            CSTRING(string), path);
+        IoMessage *codeMsg =
+            IoMessage_newFromText_labelSymbol_(state, CSTRING(string), path);
         IoState_popCollectorPause(state);
 
         if (!codeMsg) {
             IoState_error_(state, m, "doFile: failed to compile file %s",
-                          CSTRING(path));
+                           CSTRING(path));
             return state->ioNil;
         }
 
         if (FRAME_DATA(state->currentFrame)->message == m) {
-            // Called directly from eval loop - use frame-state (zero C stack growth)
+            // Called directly from eval loop - use frame-state (zero C stack
+            // growth)
             IoEvalFrame *frame = state->currentFrame;
             IoEvalFrameData *fd = FRAME_DATA(frame);
             fd->controlFlow.doInfo.codeMessage = codeMsg;

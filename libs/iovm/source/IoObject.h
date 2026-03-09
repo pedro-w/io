@@ -19,7 +19,8 @@ extern "C" {
 // #define IOALLOCREF(value) IoObject_isReferenced_(value, 1)
 
 #ifdef COLLECTOR_USE_REFCOUNT
-#define IOUNREF(value) Collector_value_removingRefTo_(IOCOLLECTOR, (void *)(value))
+#define IOUNREF(value)                                                         \
+    Collector_value_removingRefTo_(IOCOLLECTOR, (void *)(value))
 #else
 #define IOUNREF(value)
 #endif

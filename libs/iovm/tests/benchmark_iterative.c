@@ -44,7 +44,8 @@ double benchmarkIterative(IoState *state, const char *code, int iterations) {
     return ((double)(end - start)) / CLOCKS_PER_SEC;
 }
 
-void runBenchmark(IoState *state, const char *name, const char *code, int iterations) {
+void runBenchmark(IoState *state, const char *name, const char *code,
+                  int iterations) {
     printf("\n%s:\n", name);
     printf("  Code: %s\n", code);
 
@@ -59,13 +60,15 @@ void runBenchmark(IoState *state, const char *name, const char *code, int iterat
     double iterativeTime = benchmarkIterative(state, code, iterations);
     double iterativeOpsPerSec = iterations / iterativeTime;
 
-    printf("  Recursive: %.3f sec (%.2f M ops/sec)\n",
-           recursiveTime, recursiveOpsPerSec / 1000000.0);
+    printf("  Recursive: %.3f sec (%.2f M ops/sec)\n", recursiveTime,
+           recursiveOpsPerSec / 1000000.0);
     printf("  Pooled:    %.3f sec (%.2f M ops/sec) - %.2fx overhead\n",
-           iterativeTime, iterativeOpsPerSec / 1000000.0, iterativeTime / recursiveTime);
+           iterativeTime, iterativeOpsPerSec / 1000000.0,
+           iterativeTime / recursiveTime);
 
     double speedup = recursiveOpsPerSec / iterativeOpsPerSec;
-    printf("  Target:    Need %.2fx faster to match Ruby goal\n", speedup * 10.0);
+    printf("  Target:    Need %.2fx faster to match Ruby goal\n",
+           speedup * 10.0);
 }
 
 int main(int argc, char **argv) {

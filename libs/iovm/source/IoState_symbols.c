@@ -41,7 +41,8 @@ IoObject *IoState_numberWithDouble_(IoState *self, double n) {
 
     // Inline Number allocation: bypass IOCLONE overhead
     // (avoids pushCollectorPause/popCollectorPause which can trigger GC,
-    //  tag function dispatch, double Collector_addValue_, redundant field setup)
+    //  tag function dispatch, double Collector_addValue_, redundant field
+    //  setup)
 
     // 1. Get a CollectorMarker (recycled from freed list or fresh)
     IoObject *child = Collector_newMarker(self->collector);
@@ -55,8 +56,8 @@ IoObject *IoState_numberWithDouble_(IoState *self, double n) {
         // Zero for correctness (flags, listeners, etc. must be 0)
         memset(data, 0, sizeof(IoObjectData) + 2 * sizeof(IoObject *));
     } else {
-        data = (IoObjectData *)io_calloc(
-            1, sizeof(IoObjectData) + 2 * sizeof(IoObject *));
+        data = (IoObjectData *)io_calloc(1, sizeof(IoObjectData) +
+                                                2 * sizeof(IoObject *));
     }
 
     // 3. Set up the Number object
@@ -69,7 +70,8 @@ IoObject *IoState_numberWithDouble_(IoState *self, double n) {
     protos[0] = self->numberProto;
     data->protos = protos;
 
-    // 4. Stack retain for GC safety (Collector_newMarker already added to whites)
+    // 4. Stack retain for GC safety (Collector_newMarker already added to
+    // whites)
     IoState_unreferencedStackRetain_(self, child);
 
     return child;

@@ -71,9 +71,9 @@ typedef long long int64_t;
     defined(_MSC_VER)
 #define inline __inline
 // Do not do this on UCRT (Windows 10 and later)
-//#define snprintf _snprintf
+// #define snprintf _snprintf
 // Needed as Windows stdint.h does not have ssize_t
-typedef ptrdiff_t  ssize_t;
+typedef ptrdiff_t ssize_t;
 #ifndef __MINGW32__
 #define usleep(x) Sleep(((x) + 999) / 1000)
 #endif
