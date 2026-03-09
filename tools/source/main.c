@@ -1,4 +1,5 @@
 #include "IoState.h"
+#include <stdio.h>
 
 void IoAddonsInit(IoObject *context);
 
