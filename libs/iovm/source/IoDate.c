@@ -204,7 +204,8 @@ IO_METHOD(IoDate, cpuSecondsToRun) {
     */
 
     IoMessage_assertArgCount_receiver_(m, 1, self);
-    if (IOSTATE->errorRaised) return IONUMBER(0);
+    if (IOSTATE->errorRaised)
+        return IONUMBER(0);
 
     {
         double t2, t1 = clock();
@@ -639,7 +640,8 @@ IO_METHOD(IoDate, fromString) {
     */
 
     IoMessage_assertArgCount_receiver_(m, 2, self);
-    if (IOSTATE->errorRaised) return self;
+    if (IOSTATE->errorRaised)
+        return self;
     {
         IoSymbol *date_input = IoMessage_locals_seqArgAt_(m, locals, 0);
         IoSymbol *format = IoMessage_locals_seqArgAt_(m, locals, 1);

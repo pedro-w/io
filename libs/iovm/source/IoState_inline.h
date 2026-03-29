@@ -18,6 +18,11 @@
         IoState_error_(IOSTATE, m, "Io Assertion '%s'", message);              \
         return IONIL(self);                                                    \
     }
+#define IOASSERT0(value, message)                                              \
+    if (!(value)) {                                                            \
+        IoState_error_(IOSTATE, m, "Io Assertion '%s'", message);              \
+        return NULL;                                                           \
+    }
 
 #define IOCOLLECTOR (IOSTATE->collector)
 
@@ -162,7 +167,8 @@ IOINLINE IoObject *IoMessage_locals_quickValueArgAt_(IoMessage *self,
     // so this avoids all C stack re-entrancy for argument evaluation.
     if (state->currentFrame) {
         IoObject *preEvaled = IoState_preEvalArgAt_(state, self, n);
-        if (preEvaled) return preEvaled;
+        if (preEvaled)
+            return preEvaled;
     }
 
     // Fall back to direct evaluation (cached literals or recursive eval)

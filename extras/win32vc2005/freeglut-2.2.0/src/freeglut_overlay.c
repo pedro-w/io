@@ -38,12 +38,12 @@
 
 /* -- INTERFACE FUNCTIONS -------------------------------------------------- */
 
-void  glutEstablishOverlay( void )             { /* Not implemented */ }
-void  glutRemoveOverlay( void )                { /* Not implemented */ }
-void  glutUseLayer( GLenum layer )             { /* Not implemented */ }
-void  glutPostOverlayRedisplay( void )         { /* Not implemented */ }
-void  glutPostWindowOverlayRedisplay( int ID ) { /* Not implemented */ }
-void  glutShowOverlay( void )                  { /* Not implemented */ }
-void  glutHideOverlay( void )                  { /* Not implemented */ }
+void glutEstablishOverlay(void) { /* Not implemented */ }
+void glutRemoveOverlay(void) { /* Not implemented */ }
+void glutUseLayer(GLenum layer) { /* Not implemented */ }
+void glutPostOverlayRedisplay(void) { /* Not implemented */ }
+void glutPostWindowOverlayRedisplay(int ID) { /* Not implemented */ }
+void glutShowOverlay(void) { /* Not implemented */ }
+void glutHideOverlay(void) { /* Not implemented */ }
 
 /*** END OF FILE ***/

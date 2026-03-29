@@ -7,7 +7,7 @@
 
 #include "IoVMApi.h"
 
-//#include "Collector.h"
+// #include "Collector.h"
 #include "Stack.h"
 #include "PointerHash.h"
 #include "CHash.h"
@@ -22,8 +22,8 @@
 #include "IoCoroutine.h"
 
 #define IOMESSAGE_INLINE_PERFORM 1
-//#define IO_BLOCK_LOCALS_RECYCLING 1
-//#define IOSTATE_RECYCLING_ON 1
+// #define IO_BLOCK_LOCALS_RECYCLING 1
+// #define IOSTATE_RECYCLING_ON 1
 #define IOSTATE_DEFAULT_MAX_RECYCLED_OBJECTS 1000
 
 #ifdef __cplusplus
@@ -65,8 +65,6 @@ struct IoState {
     IoSymbol *typeSymbol;
     IoSymbol *updateSlotSymbol;
 
-
-
     IoSymbol *runTargetSymbol;
     IoSymbol *runMessageSymbol;
     IoSymbol *runLocalsSymbol;
@@ -100,13 +98,13 @@ struct IoState {
     // Fast Number allocation: cached tag/proto + data block freelist
     IoTag *numberTag;
     IoObject *numberProto;
-    #define NUMBER_DATA_POOL_MAX 512
+#define NUMBER_DATA_POOL_MAX 512
     void *numberDataFreeList;
     int numberDataFreeListSize;
 
-    // Block activation pools: pre-built blockLocals and Call objects
-    // retained so GC won't collect them. Returned to pool on block return.
-    #define BLOCK_LOCALS_POOL_MAX 8
+// Block activation pools: pre-built blockLocals and Call objects
+// retained so GC won't collect them. Returned to pool on block return.
+#define BLOCK_LOCALS_POOL_MAX 8
     IoObject *blockLocalsPool[BLOCK_LOCALS_POOL_MAX];
     int blockLocalsPoolSize;
 
@@ -114,8 +112,8 @@ struct IoState {
     IoTag *callTag;
     IoObject *callProto;
 
-    // Call object pool: reuses GC-managed Call objects across block activations
-    #define CALL_POOL_MAX 8
+// Call object pool: reuses GC-managed Call objects across block activations
+#define CALL_POOL_MAX 8
     IoObject *callPool[CALL_POOL_MAX];
     int callPoolSize;
 
@@ -155,22 +153,22 @@ struct IoState {
 
     // iterative evaluation frame stack (for continuations)
     // IoEvalFrame is typedef IoObject, so this is IoObject *
-    IoObject *currentFrame;            // Top of the evaluation frame stack
-    int frameDepth;                    // Current frame depth
-    int maxFrameDepth;                 // Maximum allowed frame depth
+    IoObject *currentFrame; // Top of the evaluation frame stack
+    int frameDepth;         // Current frame depth
+    int maxFrameDepth;      // Maximum allowed frame depth
 
-    // Frame object pool — reuses GC-managed IoEvalFrame objects
-    // Pooled frames remain valid collector objects, just parked for reuse.
-    #define FRAME_POOL_SIZE 256
+// Frame object pool — reuses GC-managed IoEvalFrame objects
+// Pooled frames remain valid collector objects, just parked for reuse.
+#define FRAME_POOL_SIZE 256
     IoObject *framePool[FRAME_POOL_SIZE];
     int framePoolCount;
 
     // Control flow handling flag (for non-reentrant primitives)
-    int needsControlFlowHandling;      // Set by primitives that modify frame state
+    int needsControlFlowHandling; // Set by primitives that modify frame state
 #ifdef IO_CALLCC
-    int continuationInvoked;           // Set when a continuation replaces the frame stack
+    int continuationInvoked; // Set when a continuation replaces the frame stack
 #endif
-    int nestedEvalDepth;               // Depth of nested eval loops (for IoCoroutine_try)
+    int nestedEvalDepth; // Depth of nested eval loops (for IoCoroutine_try)
 
     // Slot mutation counter for inline cache invalidation.
     // Incremented on every setSlot/updateSlot/removeSlot.

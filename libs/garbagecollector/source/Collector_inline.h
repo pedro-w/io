@@ -68,7 +68,8 @@ IOINLINE void Collector_value_addingRefTo_(Collector *self, void *v,
 }
 
 IOINLINE void Collector_value_removingRefTo_(Collector *self, void *ref) {
-    if (!ref) return;
+    if (!ref)
+        return;
     CollectorMarker *m = (CollectorMarker *)ref;
     if (m->refCount > 0) {
         m->refCount--;
@@ -88,8 +89,7 @@ IOINLINE void Collector_value_removingRefTo_(Collector *self, void *ref) {
 IOINLINE void *Collector_value_addingRefTo_(Collector *self, void *v,
                                             void *ref) {
     if (Collector_markerIsBlack_(self, (CollectorMarker *)v) &&
-        Collector_markerIsWhite_(self, (CollectorMarker *)ref))
-    {
+        Collector_markerIsWhite_(self, (CollectorMarker *)ref)) {
         Collector_makeGray_(self, (CollectorMarker *)ref);
     }
 

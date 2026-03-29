@@ -109,17 +109,17 @@ int ucs4ncmp(ucs4 const *s1, ucs4 const *s2, size_t n);
 /*
  * IS_UTF8_n tests the length of the next wide character
  */
-#define IS_UTF8_1(c) (0x00 == ((c)&0x80))
-#define IS_UTF8_2(c) (0xc0 == ((c)&0xe0))
-#define IS_UTF8_3(c) (0xe0 == ((c)&0xf0))
-#define IS_UTF8_4(c) (0xf0 == ((c)&0xf8))
-#define IS_UTF8_5(c) (0xf8 == ((c)&0xfc))
-#define IS_UTF8_6(c) (0xfc == ((c)&0xfe))
+#define IS_UTF8_1(c) (0x00 == ((c) & 0x80))
+#define IS_UTF8_2(c) (0xc0 == ((c) & 0xe0))
+#define IS_UTF8_3(c) (0xe0 == ((c) & 0xf0))
+#define IS_UTF8_4(c) (0xf0 == ((c) & 0xf8))
+#define IS_UTF8_5(c) (0xf8 == ((c) & 0xfc))
+#define IS_UTF8_6(c) (0xfc == ((c) & 0xfe))
 
 /* Extension byte? */
-#define IS_UTF8_X(c) (0x80 == ((c)&0xc0))
+#define IS_UTF8_X(c) (0x80 == ((c) & 0xc0))
 /* ISO-8859-1 character? */
-#define IS_UTF8_I(c) (0xc0 == ((c)&0xfc))
+#define IS_UTF8_I(c) (0xc0 == ((c) & 0xfc))
 
 #define IS_UTF8_S1(s) (IS_UTF8_1(s[0]))
 #define IS_UTF8_S2(s) (IS_UTF8_2(s[0]) && ((s)[1] & 192) == 128)
@@ -153,21 +153,21 @@ int ucs4ncmp(ucs4 const *s1, ucs4 const *s2, size_t n);
 
 #define UTF8_S1(s, c) ((s)[0] = (c))
 #define UTF8_S2(s, c)                                                          \
-    ((s)[0] = (((c) >> 6) & 31) | 0xc0, (s)[1] = ((c)&63) | 128)
+    ((s)[0] = (((c) >> 6) & 31) | 0xc0, (s)[1] = ((c) & 63) | 128)
 #define UTF8_S3(s, c)                                                          \
     ((s)[0] = (((c) >> 12) & 15) | 0xe0, (s)[1] = ((c >> 6) & 63) | 128,       \
-     (s)[2] = ((c)&63) | 128)
+     (s)[2] = ((c) & 63) | 128)
 #define UTF8_S4(s, c)                                                          \
     ((s)[0] = (((c) >> 18) & 7) | 0xf0, (s)[1] = ((c >> 12) & 63) | 128,       \
-     (s)[2] = ((c >> 6) & 63) | 128, (s)[3] = ((c)&63) | 128)
+     (s)[2] = ((c >> 6) & 63) | 128, (s)[3] = ((c) & 63) | 128)
 #define UTF8_S5(s, c)                                                          \
     ((s)[0] = (((c) >> 24) & 3) | 0xf8, (s)[1] = ((c >> 18) & 63) | 128,       \
      (s)[2] = ((c >> 12) & 63) | 128, (s)[3] = ((c >> 6) & 63) | 128,          \
-     (s)[4] = ((c)&63) | 128)
+     (s)[4] = ((c) & 63) | 128)
 #define UTF8_S6(s, c)                                                          \
     ((s)[0] = (((c) >> 30) & 1) | 0xfc, (s)[1] = ((c >> 24) & 63) | 128,       \
      (s)[2] = ((c >> 18) & 63) | 128, (s)[3] = ((c >> 12) & 63) | 128,         \
-     (s)[4] = ((c >> 6) & 63) | 128, (s)[5] = ((c)&63) | 128)
+     (s)[4] = ((c >> 6) & 63) | 128, (s)[5] = ((c) & 63) | 128)
 
 // SOFIA_END_DECLS
 

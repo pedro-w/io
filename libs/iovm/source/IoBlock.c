@@ -428,7 +428,8 @@ IO_METHOD(IoBlock, argumentNames_) {
     */
 
     IoList *newArgNames = IoMessage_locals_listArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     List *rawNewArgNames = IoList_rawList(newArgNames);
 
     LIST_FOREACH(

@@ -1,5 +1,5 @@
-#ifndef  __FREEGLUT_EXT_H__
-#define  __FREEGLUT_EXT_H__
+#ifndef __FREEGLUT_EXT_H__
+#define __FREEGLUT_EXT_H__
 
 /*
  * freeglut_ext.h
@@ -29,86 +29,91 @@
  */
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
 /*
- * GLUT API Extension macro definitions -- behaviour when the user clicks on an "x" to close a window
+ * GLUT API Extension macro definitions -- behaviour when the user clicks on an
+ * "x" to close a window
  */
-#define GLUT_ACTION_EXIT                         0
-#define GLUT_ACTION_GLUTMAINLOOP_RETURNS         1
-#define GLUT_ACTION_CONTINUE_EXECUTION           2
+#define GLUT_ACTION_EXIT 0
+#define GLUT_ACTION_GLUTMAINLOOP_RETURNS 1
+#define GLUT_ACTION_CONTINUE_EXECUTION 2
 
 /*
  * Create a new rendering context when the user opens a new window?
  */
-#define GLUT_CREATE_NEW_CONTEXT                  0
-#define GLUT_USE_CURRENT_CONTEXT                 1
+#define GLUT_CREATE_NEW_CONTEXT 0
+#define GLUT_USE_CURRENT_CONTEXT 1
 
 /*
  * GLUT API Extension macro definitions -- the glutGet parameters
  */
-#define  GLUT_ACTION_ON_WINDOW_CLOSE        0x01F9
+#define GLUT_ACTION_ON_WINDOW_CLOSE 0x01F9
 
-#define  GLUT_WINDOW_BORDER_WIDTH           0x01FA
-#define  GLUT_WINDOW_HEADER_HEIGHT          0x01FB
+#define GLUT_WINDOW_BORDER_WIDTH 0x01FA
+#define GLUT_WINDOW_HEADER_HEIGHT 0x01FB
 
-#define  GLUT_VERSION                       0x01FC
+#define GLUT_VERSION 0x01FC
 
-#define  GLUT_RENDERING_CONTEXT             0x01FD
+#define GLUT_RENDERING_CONTEXT 0x01FD
 
 /*
  * Process loop function, see freeglut_main.c
  */
- void     glutMainLoopEvent( void );
- void     glutLeaveMainLoop( void );
+void glutMainLoopEvent(void);
+void glutLeaveMainLoop(void);
 
 /*
  * Window-specific callback functions, see freeglut_callbacks.c
  */
- void     glutMouseWheelFunc( void (* callback)( int, int, int, int ) );
- void     glutCloseFunc( void (* callback)( void ) );
- void     glutWMCloseFunc( void (* callback)( void ) );
+void glutMouseWheelFunc(void (*callback)(int, int, int, int));
+void glutCloseFunc(void (*callback)(void));
+void glutWMCloseFunc(void (*callback)(void));
 /* A. Donev: Also a destruction callback for menus */
- void     glutMenuDestroyFunc( void (* callback)( void ) );
+void glutMenuDestroyFunc(void (*callback)(void));
 
 /*
  * State setting and retrieval functions, see freeglut_state.c
  */
- void     glutSetOption ( GLenum option_flag, int value ) ;
+void glutSetOption(GLenum option_flag, int value);
 /* A.Donev: User-data manipulation */
- void*    glutGetWindowData( void );
- void     glutSetWindowData(void* data);
- void*    glutGetMenuData( void );
- void     glutSetMenuData(void* data);
+void *glutGetWindowData(void);
+void glutSetWindowData(void *data);
+void *glutGetMenuData(void);
+void glutSetMenuData(void *data);
 
 /*
  * Font stuff, see freeglut_font.c
  */
- int      glutBitmapHeight( void* font );
- GLfloat  glutStrokeHeight( void* font );
- void     glutBitmapString( void* font, const unsigned char *string );
- void     glutStrokeString( void* font, const unsigned char *string );
+int glutBitmapHeight(void *font);
+GLfloat glutStrokeHeight(void *font);
+void glutBitmapString(void *font, const unsigned char *string);
+void glutStrokeString(void *font, const unsigned char *string);
 
 /*
  * Geometry functions, see freeglut_geometry.c
  */
- void     glutWireRhombicDodecahedron( void );
- void     glutSolidRhombicDodecahedron( void );
- void     glutWireSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble scale ) ;
- void     glutSolidSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble scale ) ;
- void     glutWireCylinder( GLdouble radius, GLdouble height, GLint slices, GLint stacks);
- void     glutSolidCylinder( GLdouble radius, GLdouble height, GLint slices, GLint stacks);
+void glutWireRhombicDodecahedron(void);
+void glutSolidRhombicDodecahedron(void);
+void glutWireSierpinskiSponge(int num_levels, GLdouble offset[3],
+                              GLdouble scale);
+void glutSolidSierpinskiSponge(int num_levels, GLdouble offset[3],
+                               GLdouble scale);
+void glutWireCylinder(GLdouble radius, GLdouble height, GLint slices,
+                      GLint stacks);
+void glutSolidCylinder(GLdouble radius, GLdouble height, GLint slices,
+                       GLint stacks);
 
 /*
  * Extension functions, see freeglut_ext.c
  */
- void *  glutGetProcAddress( const char *procName );
+void *glutGetProcAddress(const char *procName);
 
- void  glutDropFilesFunc(void (*callback)(int, int, const char*, int));
+void glutDropFilesFunc(void (*callback)(int, int, const char *, int));
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 /*** END OF FILE ***/

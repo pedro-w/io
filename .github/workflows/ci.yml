@@ -19,17 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
       - name: Check format
-        uses: DoozyX/clang-format-lint-action@v0.12
+        uses: DoozyX/clang-format-lint-action@v0.20
         with:
           source: 'libs'
           extensions: 'h,c'
           style: file
-          clangFormatVersion: 12
+          clangFormatVersion: 20
 
   unix:
     name: Unix Build (${{ matrix.os }} - ${{ matrix.build_type }})
@@ -49,30 +49,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.14
+        uses: jwlawson/actions-setup-cmake@v2.1.1
 
       - name: Build
         run: |
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
-          make -j$([ "$(uname)" = "Darwin" ] && sysctl -n hw.ncpu || nproc)
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake --build build
 
       - name: Install
         run: |
-          cd build
-          sudo make install
-
+          cmake --install build --prefix ${{ runner.temp }}
+          
       - name: Test
         run: |
           cd build
-          ./_build/binaries/io --version
-          ./_build/binaries/io ../libs/iovm/tests/correctness/run.io
+          ./tools/io_static --version
+          ./tools/io_static ../libs/iovm/tests/correctness/run.io
         timeout-minutes: 10
 
       - name: Test Samples
@@ -82,7 +79,7 @@ jobs:
           for sample in ../samples/misc/*.io; do
             if [ -f "$sample" ]; then
               echo "Testing: $(basename $sample)"
-              timeout 5s ./_build/binaries/io "$sample" || echo "Sample timed out or failed: $sample"
+              timeout 5s ./tools/io_static "$sample" || echo "Sample timed out or failed: $sample"
             fi
           done
 
@@ -91,24 +88,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
       - name: Build
         run: |
-          mkdir build
-          cd build
-          cmake -G"MinGW Makefiles" ..
-          make
+          cmake -S . -B build
+          cmake --build build
 
       - name: Install
         run: |
-          cd build
-          make install
-
+          cmake --install build --prefix ${{ runner.temp }}
       - name: Test
         run: |
           cd build
-          & _build/binaries/io_static.exe --% --version
-          & _build/binaries/io_static.exe --% ../libs/iovm/tests/correctness/run.io
+          & tools/io_static.exe --% --version
+          & tools/io_static.exe --% ../libs/iovm/tests/correctness/run.io

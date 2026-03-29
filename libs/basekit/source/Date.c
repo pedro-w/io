@@ -68,9 +68,7 @@ void Date_setToLocalTimeZone(Date *self) {
     gettimeofday(&timeval, &(self->tz));
 }
 
-struct timezone Date_timeZone(const Date *self) {
-    return self->tz;
-}
+struct timezone Date_timeZone(const Date *self) { return self->tz; }
 
 void Date_setTimeZone_(Date *self, struct timezone tz) { self->tz = tz; }
 

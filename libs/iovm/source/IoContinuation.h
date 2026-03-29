@@ -30,15 +30,16 @@ create an independent deep copy of the continuation first.
 extern "C" {
 #endif
 
-#define ISCONTINUATION(self) \
+#define ISCONTINUATION(self)                                                   \
     IoObject_hasCloneFunc_(self, (IoTagCloneFunc *)IoContinuation_rawClone)
 
 typedef IoObject IoContinuation;
 
 typedef struct {
-    IoEvalFrame *capturedFrame;  // Captured frame stack (GC-managed, not deep copied)
-    IoObject *capturedLocals;    // The locals where callcc was invoked
-    int invoked;                 // Has this continuation been invoked?
+    IoEvalFrame
+        *capturedFrame; // Captured frame stack (GC-managed, not deep copied)
+    IoObject *capturedLocals; // The locals where callcc was invoked
+    int invoked;              // Has this continuation been invoked?
 } IoContinuationData;
 
 // Proto and lifecycle
@@ -50,8 +51,8 @@ IOVM_API void IoContinuation_mark(IoContinuation *self);
 
 // Internal
 IOVM_API void IoContinuation_captureFrameStack_(IoContinuation *self,
-                                                 IoEvalFrame *frame,
-                                                 IoObject *locals);
+                                                IoEvalFrame *frame,
+                                                IoObject *locals);
 
 // Methods
 IOVM_API IO_METHOD(IoContinuation, invoke);

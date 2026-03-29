@@ -6,7 +6,7 @@
 #define IOTAG_DEFINED 1
 
 #include "Common.h"
-//#include "Stack.h"
+// #include "Stack.h"
 #include "BStream.h"
 
 #include "IoVMApi.h"

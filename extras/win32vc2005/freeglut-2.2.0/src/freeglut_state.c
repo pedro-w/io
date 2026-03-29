@@ -53,15 +53,14 @@
 /*
  * Queries the GL context about some attributes
  */
-static int fghGetConfig( int attribute )
-{
-  int returnValue = 0;
+static int fghGetConfig(int attribute) {
+    int returnValue = 0;
 
-  if( fgStructure.Window )
-      glXGetConfig( fgDisplay.Display, fgStructure.Window->Window.VisualInfo,
-                    attribute, &returnValue );
+    if (fgStructure.Window)
+        glXGetConfig(fgDisplay.Display, fgStructure.Window->Window.VisualInfo,
+                     attribute, &returnValue);
 
-  return returnValue;
+    return returnValue;
 }
 #endif
 
@@ -70,67 +69,63 @@ static int fghGetConfig( int attribute )
 /*
  * General settings assignment method
  */
-void  glutSetOption( GLenum eWhat, int value )
-{
-  freeglut_assert_ready;
+void glutSetOption(GLenum eWhat, int value) {
+    freeglut_assert_ready;
 
-  /*
-   * XXX In chronological code add order.  (WHY in that order?)
-   */
-  switch( eWhat )
-  {
-  case GLUT_INIT_WINDOW_X:
-      fgState.Position.X = (GLint)value;
-      break;
+    /*
+     * XXX In chronological code add order.  (WHY in that order?)
+     */
+    switch (eWhat) {
+    case GLUT_INIT_WINDOW_X:
+        fgState.Position.X = (GLint)value;
+        break;
 
-  case GLUT_INIT_WINDOW_Y:
-      fgState.Position.Y = (GLint)value;
-      break;
+    case GLUT_INIT_WINDOW_Y:
+        fgState.Position.Y = (GLint)value;
+        break;
 
-  case GLUT_INIT_WINDOW_WIDTH:
-      fgState.Size.X = (GLint)value;
-      break;
+    case GLUT_INIT_WINDOW_WIDTH:
+        fgState.Size.X = (GLint)value;
+        break;
 
-  case GLUT_INIT_WINDOW_HEIGHT:
-      fgState.Size.Y = (GLint)value;
-      break;
+    case GLUT_INIT_WINDOW_HEIGHT:
+        fgState.Size.Y = (GLint)value;
+        break;
 
-  case GLUT_INIT_DISPLAY_MODE:
-      fgState.DisplayMode = (unsigned int)value;
-      break;
+    case GLUT_INIT_DISPLAY_MODE:
+        fgState.DisplayMode = (unsigned int)value;
+        break;
 
-  case GLUT_ACTION_ON_WINDOW_CLOSE:
-      fgState.ActionOnWindowClose = value;
-      break;
+    case GLUT_ACTION_ON_WINDOW_CLOSE:
+        fgState.ActionOnWindowClose = value;
+        break;
 
-  case GLUT_RENDERING_CONTEXT:
-      fgState.UseCurrentContext =
-          ( value == GLUT_USE_CURRENT_CONTEXT ) ? GL_TRUE : GL_FALSE;
-      break;
+    case GLUT_RENDERING_CONTEXT:
+        fgState.UseCurrentContext =
+            (value == GLUT_USE_CURRENT_CONTEXT) ? GL_TRUE : GL_FALSE;
+        break;
 
-  case GLUT_WINDOW_CURSOR:
-      if( fgStructure.Window != NULL )
-          fgStructure.Window->State.Cursor = value;
-      break;
+    case GLUT_WINDOW_CURSOR:
+        if (fgStructure.Window != NULL)
+            fgStructure.Window->State.Cursor = value;
+        break;
 
-  default:
-      fgWarning( "glutSetOption(): missing enum handle %i\n", eWhat );
-      break;
-  }
+    default:
+        fgWarning("glutSetOption(): missing enum handle %i\n", eWhat);
+        break;
+    }
 }
 
 /*
  * General settings query method
  */
-int  glutGet( GLenum eWhat )
-{
+int glutGet(GLenum eWhat) {
 #if TARGET_HOST_WIN32
-    int returnValue ;
-    GLboolean boolValue ;
+    int returnValue;
+    GLboolean boolValue;
 #endif
 
-    switch (eWhat)
-    {
+    switch (eWhat) {
     case GLUT_INIT_STATE:
         return fgState.Initialised;
 
@@ -143,20 +138,28 @@ int  glutGet( GLenum eWhat )
     /*
      * XXX In chronological code add order.  (WHY in that order?)
      */
-    switch( eWhat )
-    {
+    switch (eWhat) {
     /*
      * Following values are stored in fgState and fgDisplay global structures
      */
-    case GLUT_SCREEN_WIDTH:         return fgDisplay.ScreenWidth   ;
-    case GLUT_SCREEN_HEIGHT:        return fgDisplay.ScreenHeight  ;
-    case GLUT_SCREEN_WIDTH_MM:      return fgDisplay.ScreenWidthMM ;
-    case GLUT_SCREEN_HEIGHT_MM:     return fgDisplay.ScreenHeightMM;
-    case GLUT_INIT_WINDOW_X:        return fgState.Position.X      ;
-    case GLUT_INIT_WINDOW_Y:        return fgState.Position.Y      ;
-    case GLUT_INIT_WINDOW_WIDTH:    return fgState.Size.X          ;
-    case GLUT_INIT_WINDOW_HEIGHT:   return fgState.Size.Y          ;
-    case GLUT_INIT_DISPLAY_MODE:    return fgState.DisplayMode     ;
+    case GLUT_SCREEN_WIDTH:
+        return fgDisplay.ScreenWidth;
+    case GLUT_SCREEN_HEIGHT:
+        return fgDisplay.ScreenHeight;
+    case GLUT_SCREEN_WIDTH_MM:
+        return fgDisplay.ScreenWidthMM;
+    case GLUT_SCREEN_HEIGHT_MM:
+        return fgDisplay.ScreenHeightMM;
+    case GLUT_INIT_WINDOW_X:
+        return fgState.Position.X;
+    case GLUT_INIT_WINDOW_Y:
+        return fgState.Position.Y;
+    case GLUT_INIT_WINDOW_WIDTH:
+        return fgState.Size.X;
+    case GLUT_INIT_WINDOW_HEIGHT:
+        return fgState.Size.Y;
+    case GLUT_INIT_DISPLAY_MODE:
+        return fgState.DisplayMode;
 
     /*
      * The window/context specific queries are handled mostly by
@@ -169,35 +172,36 @@ int  glutGet( GLenum eWhat )
         return 0;
 
 #if TARGET_HOST_UNIX_X11
-    /*
-     * The rest of GLX queries under X are general enough to use a macro to
-     * check them
-     */
-#   define GLX_QUERY(a,b) case a: return fghGetConfig( b );
+        /*
+         * The rest of GLX queries under X are general enough to use a macro to
+         * check them
+         */
+#define GLX_QUERY(a, b)                                                        \
+    case a:                                                                    \
+        return fghGetConfig(b);
 
-    GLX_QUERY( GLUT_WINDOW_RGBA,                GLX_RGBA                );
-    GLX_QUERY( GLUT_WINDOW_DOUBLEBUFFER,        GLX_DOUBLEBUFFER        );
-    GLX_QUERY( GLUT_WINDOW_BUFFER_SIZE,         GLX_BUFFER_SIZE         );
-    GLX_QUERY( GLUT_WINDOW_STENCIL_SIZE,        GLX_STENCIL_SIZE        );
-    GLX_QUERY( GLUT_WINDOW_DEPTH_SIZE,          GLX_DEPTH_SIZE          );
-    GLX_QUERY( GLUT_WINDOW_RED_SIZE,            GLX_RED_SIZE            );
-    GLX_QUERY( GLUT_WINDOW_GREEN_SIZE,          GLX_GREEN_SIZE          );
-    GLX_QUERY( GLUT_WINDOW_BLUE_SIZE,           GLX_BLUE_SIZE           );
-    GLX_QUERY( GLUT_WINDOW_ALPHA_SIZE,          GLX_ALPHA_SIZE          );
-    GLX_QUERY( GLUT_WINDOW_ACCUM_RED_SIZE,      GLX_ACCUM_RED_SIZE      );
-    GLX_QUERY( GLUT_WINDOW_ACCUM_GREEN_SIZE,    GLX_ACCUM_GREEN_SIZE    );
-    GLX_QUERY( GLUT_WINDOW_ACCUM_BLUE_SIZE,     GLX_ACCUM_BLUE_SIZE     );
-    GLX_QUERY( GLUT_WINDOW_ACCUM_ALPHA_SIZE,    GLX_ACCUM_ALPHA_SIZE    );
-    GLX_QUERY( GLUT_WINDOW_STEREO,              GLX_STEREO              );
+        GLX_QUERY(GLUT_WINDOW_RGBA, GLX_RGBA);
+        GLX_QUERY(GLUT_WINDOW_DOUBLEBUFFER, GLX_DOUBLEBUFFER);
+        GLX_QUERY(GLUT_WINDOW_BUFFER_SIZE, GLX_BUFFER_SIZE);
+        GLX_QUERY(GLUT_WINDOW_STENCIL_SIZE, GLX_STENCIL_SIZE);
+        GLX_QUERY(GLUT_WINDOW_DEPTH_SIZE, GLX_DEPTH_SIZE);
+        GLX_QUERY(GLUT_WINDOW_RED_SIZE, GLX_RED_SIZE);
+        GLX_QUERY(GLUT_WINDOW_GREEN_SIZE, GLX_GREEN_SIZE);
+        GLX_QUERY(GLUT_WINDOW_BLUE_SIZE, GLX_BLUE_SIZE);
+        GLX_QUERY(GLUT_WINDOW_ALPHA_SIZE, GLX_ALPHA_SIZE);
+        GLX_QUERY(GLUT_WINDOW_ACCUM_RED_SIZE, GLX_ACCUM_RED_SIZE);
+        GLX_QUERY(GLUT_WINDOW_ACCUM_GREEN_SIZE, GLX_ACCUM_GREEN_SIZE);
+        GLX_QUERY(GLUT_WINDOW_ACCUM_BLUE_SIZE, GLX_ACCUM_BLUE_SIZE);
+        GLX_QUERY(GLUT_WINDOW_ACCUM_ALPHA_SIZE, GLX_ACCUM_ALPHA_SIZE);
+        GLX_QUERY(GLUT_WINDOW_STEREO, GLX_STEREO);
 
-#   undef GLX_QUERY
+#undef GLX_QUERY
 
     /*
      * Colormap size is handled in a bit different way than all the rest
      */
     case GLUT_WINDOW_COLORMAP_SIZE:
-        if( (fghGetConfig( GLX_RGBA )) || (fgStructure.Window == NULL) )
-        {
+        if ((fghGetConfig(GLX_RGBA)) || (fgStructure.Window == NULL)) {
             /*
              * We've got a RGBA visual, so there is no colormap at all.
              * The other possibility is that we have no current window set.
@@ -213,56 +217,51 @@ int  glutGet( GLenum eWhat )
     case GLUT_WINDOW_X:
     case GLUT_WINDOW_Y:
     case GLUT_WINDOW_BORDER_WIDTH:
-    case GLUT_WINDOW_HEADER_HEIGHT:
-    {
+    case GLUT_WINDOW_HEADER_HEIGHT: {
         int x, y;
         Window w;
 
-        if( fgStructure.Window == NULL )
+        if (fgStructure.Window == NULL)
             return 0;
 
-        XTranslateCoordinates(
-            fgDisplay.Display,
-            fgStructure.Window->Window.Handle,
-            fgDisplay.RootWindow,
-            0, 0, &x, &y, &w);
+        XTranslateCoordinates(fgDisplay.Display,
+                              fgStructure.Window->Window.Handle,
+                              fgDisplay.RootWindow, 0, 0, &x, &y, &w);
 
-        switch ( eWhat )
-        {
-        case GLUT_WINDOW_X: return x;
-        case GLUT_WINDOW_Y: return y;
+        switch (eWhat) {
+        case GLUT_WINDOW_X:
+            return x;
+        case GLUT_WINDOW_Y:
+            return y;
         }
 
-        if ( w == 0 )
+        if (w == 0)
             return 0;
-        XTranslateCoordinates(
-            fgDisplay.Display,
-            fgStructure.Window->Window.Handle,
-            w, 0, 0, &x, &y, &w);
+        XTranslateCoordinates(fgDisplay.Display,
+                              fgStructure.Window->Window.Handle, w, 0, 0, &x,
+                              &y, &w);
 
-        switch ( eWhat )
-        {
-        case GLUT_WINDOW_BORDER_WIDTH:  return x;
-        case GLUT_WINDOW_HEADER_HEIGHT: return y;
+        switch (eWhat) {
+        case GLUT_WINDOW_BORDER_WIDTH:
+            return x;
+        case GLUT_WINDOW_HEADER_HEIGHT:
+            return y;
         }
     }
 
     case GLUT_WINDOW_WIDTH:
-    case GLUT_WINDOW_HEIGHT:
-    {
+    case GLUT_WINDOW_HEIGHT: {
         XWindowAttributes winAttributes;
 
-        if( fgStructure.Window == NULL )
+        if (fgStructure.Window == NULL)
             return 0;
-        XGetWindowAttributes(
-            fgDisplay.Display,
-            fgStructure.Window->Window.Handle,
-            &winAttributes
-        );
-        switch ( eWhat )
-        {
-        case GLUT_WINDOW_WIDTH:            return winAttributes.width ;
-        case GLUT_WINDOW_HEIGHT:           return winAttributes.height ;
+        XGetWindowAttributes(fgDisplay.Display,
+                             fgStructure.Window->Window.Handle, &winAttributes);
+        switch (eWhat) {
+        case GLUT_WINDOW_WIDTH:
+            return winAttributes.width;
+        case GLUT_WINDOW_HEIGHT:
+            return winAttributes.height;
         }
     }
 
@@ -270,13 +269,13 @@ int  glutGet( GLenum eWhat )
      * I do not know yet if there will be a fgChooseVisual() function for Win32
      */
     case GLUT_DISPLAY_MODE_POSSIBLE:
-        return( fgChooseVisual() == NULL ? 0 : 1 );
+        return (fgChooseVisual() == NULL ? 0 : 1);
 
     /*
      * This is system-dependant
      */
     case GLUT_WINDOW_FORMAT_ID:
-        if( fgStructure.Window == NULL )
+        if (fgStructure.Window == NULL)
             return 0;
 
         return fgStructure.Window->Window.VisualInfo->visualid;
@@ -287,58 +286,57 @@ int  glutGet( GLenum eWhat )
      * Handle the OpenGL inquiries
      */
     case GLUT_WINDOW_RGBA:
-      glGetBooleanv ( GL_RGBA_MODE, &boolValue );
-      returnValue = boolValue ? 1 : 0;
-      return returnValue;
+        glGetBooleanv(GL_RGBA_MODE, &boolValue);
+        returnValue = boolValue ? 1 : 0;
+        return returnValue;
     case GLUT_WINDOW_DOUBLEBUFFER:
-      glGetBooleanv ( GL_DOUBLEBUFFER, &boolValue );
-      returnValue = boolValue ? 1 : 0;
-      return returnValue;
+        glGetBooleanv(GL_DOUBLEBUFFER, &boolValue);
+        returnValue = boolValue ? 1 : 0;
+        return returnValue;
     case GLUT_WINDOW_STEREO:
-      glGetBooleanv ( GL_STEREO, &boolValue );
-      returnValue = boolValue ? 1 : 0;
-      return returnValue;
+        glGetBooleanv(GL_STEREO, &boolValue);
+        returnValue = boolValue ? 1 : 0;
+        return returnValue;
 
     case GLUT_WINDOW_RED_SIZE:
-      glGetIntegerv ( GL_RED_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_RED_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_GREEN_SIZE:
-      glGetIntegerv ( GL_GREEN_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_GREEN_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_BLUE_SIZE:
-      glGetIntegerv ( GL_BLUE_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_BLUE_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_ALPHA_SIZE:
-      glGetIntegerv ( GL_ALPHA_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_ALPHA_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_ACCUM_RED_SIZE:
-      glGetIntegerv ( GL_ACCUM_RED_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_ACCUM_RED_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_ACCUM_GREEN_SIZE:
-      glGetIntegerv ( GL_ACCUM_GREEN_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_ACCUM_GREEN_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_ACCUM_BLUE_SIZE:
-      glGetIntegerv ( GL_ACCUM_BLUE_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_ACCUM_BLUE_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_ACCUM_ALPHA_SIZE:
-      glGetIntegerv ( GL_ACCUM_ALPHA_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_ACCUM_ALPHA_BITS, &returnValue);
+        return returnValue;
     case GLUT_WINDOW_DEPTH_SIZE:
-      glGetIntegerv ( GL_DEPTH_BITS, &returnValue );
-      return returnValue;
+        glGetIntegerv(GL_DEPTH_BITS, &returnValue);
+        return returnValue;
 
     case GLUT_WINDOW_BUFFER_SIZE:
-      returnValue = 1 ;                                      /* ????? */
-      return returnValue;
+        returnValue = 1; /* ????? */
+        return returnValue;
     case GLUT_WINDOW_STENCIL_SIZE:
-      returnValue = 0 ;                                      /* ????? */
-      return returnValue;
+        returnValue = 0; /* ????? */
+        return returnValue;
 
     case GLUT_WINDOW_X:
     case GLUT_WINDOW_Y:
     case GLUT_WINDOW_WIDTH:
-    case GLUT_WINDOW_HEIGHT:
-    {
+    case GLUT_WINDOW_HEIGHT: {
         /*
          *  There is considerable confusion about the "right thing to
          *  do" concerning window  size and position.  GLUT itself is
@@ -365,49 +363,51 @@ int  glutGet( GLenum eWhat )
 
         RECT winRect;
 
-        freeglut_return_val_if_fail( fgStructure.Window != NULL, 0 );
+        freeglut_return_val_if_fail(fgStructure.Window != NULL, 0);
 
         /*
          * We need to call GetWindowRect() first...
          *  (this returns the pixel coordinates of the outside of the window)
          */
-        GetWindowRect( fgStructure.Window->Window.Handle, &winRect );
+        GetWindowRect(fgStructure.Window->Window.Handle, &winRect);
 
         /*
          * ...then we've got to correct the results we've just received...
          */
-        if ( ( fgStructure.GameMode != fgStructure.Window ) && ( fgStructure.Window->Parent == NULL ) &&
-             ( ! fgStructure.Window->IsMenu ) )
-        {
-          winRect.left   += GetSystemMetrics( SM_CXSIZEFRAME );
-          winRect.right  -= GetSystemMetrics( SM_CXSIZEFRAME );
-          winRect.top    += GetSystemMetrics( SM_CYSIZEFRAME ) + GetSystemMetrics( SM_CYCAPTION );
-          winRect.bottom -= GetSystemMetrics( SM_CYSIZEFRAME );
+        if ((fgStructure.GameMode != fgStructure.Window) &&
+            (fgStructure.Window->Parent == NULL) &&
+            (!fgStructure.Window->IsMenu)) {
+            winRect.left += GetSystemMetrics(SM_CXSIZEFRAME);
+            winRect.right -= GetSystemMetrics(SM_CXSIZEFRAME);
+            winRect.top += GetSystemMetrics(SM_CYSIZEFRAME) +
+                           GetSystemMetrics(SM_CYCAPTION);
+            winRect.bottom -= GetSystemMetrics(SM_CYSIZEFRAME);
         }
 
-        switch( eWhat )
-        {
-        case GLUT_WINDOW_X:      return winRect.left                ;
-        case GLUT_WINDOW_Y:      return winRect.top                 ;
-        case GLUT_WINDOW_WIDTH:  return winRect.right - winRect.left;
-        case GLUT_WINDOW_HEIGHT: return winRect.bottom - winRect.top;
+        switch (eWhat) {
+        case GLUT_WINDOW_X:
+            return winRect.left;
+        case GLUT_WINDOW_Y:
+            return winRect.top;
+        case GLUT_WINDOW_WIDTH:
+            return winRect.right - winRect.left;
+        case GLUT_WINDOW_HEIGHT:
+            return winRect.bottom - winRect.top;
         }
-    }
-    break;
+    } break;
 
-    case GLUT_WINDOW_BORDER_WIDTH :
-        return GetSystemMetrics( SM_CXSIZEFRAME );
+    case GLUT_WINDOW_BORDER_WIDTH:
+        return GetSystemMetrics(SM_CXSIZEFRAME);
 
-    case GLUT_WINDOW_HEADER_HEIGHT :
-        return GetSystemMetrics( SM_CYCAPTION );
+    case GLUT_WINDOW_HEADER_HEIGHT:
+        return GetSystemMetrics(SM_CYCAPTION);
 
     case GLUT_DISPLAY_MODE_POSSIBLE:
-        return fgSetupPixelFormat( fgStructure.Window, GL_TRUE,
-                                    PFD_MAIN_PLANE );
+        return fgSetupPixelFormat(fgStructure.Window, GL_TRUE, PFD_MAIN_PLANE);
 
     case GLUT_WINDOW_FORMAT_ID:
-        if( fgStructure.Window != NULL )
-            return GetPixelFormat( fgStructure.Window->Window.Device );
+        if (fgStructure.Window != NULL)
+            return GetPixelFormat(fgStructure.Window->Window.Device);
         return 0;
 
 #endif
@@ -416,29 +416,31 @@ int  glutGet( GLenum eWhat )
      * The window structure queries
      */
     case GLUT_WINDOW_PARENT:
-        if( fgStructure.Window         == NULL ) return 0;
-        if( fgStructure.Window->Parent == NULL ) return 0;
+        if (fgStructure.Window == NULL)
+            return 0;
+        if (fgStructure.Window->Parent == NULL)
+            return 0;
         return fgStructure.Window->Parent->ID;
 
     case GLUT_WINDOW_NUM_CHILDREN:
-        if( fgStructure.Window == NULL )
+        if (fgStructure.Window == NULL)
             return 0;
-        return fgListLength( &fgStructure.Window->Children );
+        return fgListLength(&fgStructure.Window->Children);
 
     case GLUT_WINDOW_CURSOR:
-        if( fgStructure.Window == NULL )
+        if (fgStructure.Window == NULL)
             return 0;
         return fgStructure.Window->State.Cursor;
 
     case GLUT_MENU_NUM_ITEMS:
-        if( fgStructure.Menu == NULL )
+        if (fgStructure.Menu == NULL)
             return 0;
-        return fgListLength( &fgStructure.Menu->Entries );
+        return fgListLength(&fgStructure.Menu->Entries);
 
     case GLUT_ACTION_ON_WINDOW_CLOSE:
         return fgState.ActionOnWindowClose;
 
-    case GLUT_VERSION :
+    case GLUT_VERSION:
         return VERSION_MAJOR * 10000 + VERSION_MINOR * 100 + VERSION_PATCH;
 
     case GLUT_RENDERING_CONTEXT:
@@ -446,7 +448,7 @@ int  glutGet( GLenum eWhat )
                                          : GLUT_CREATE_NEW_CONTEXT;
 
     default:
-        fgWarning( "glutGet(): missing enum handle %i\n", eWhat );
+        fgWarning("glutGet(): missing enum handle %i\n", eWhat);
         break;
     }
     return -1;
@@ -455,15 +457,13 @@ int  glutGet( GLenum eWhat )
 /*
  * Returns various device information.
  */
-int  glutDeviceGet( GLenum eWhat )
-{
+int glutDeviceGet(GLenum eWhat) {
     freeglut_assert_ready;
 
     /*
      * XXX WARNING: we are mostly lying in this function.
      */
-    switch( eWhat )
-    {
+    switch (eWhat) {
     case GLUT_HAS_KEYBOARD:
         /*
          * We always have a keyboard present on PC machines...
@@ -474,12 +474,12 @@ int  glutDeviceGet( GLenum eWhat )
          * XXX Though in actuality, we can probably assume BOTH a
          * XXX mouse and keyboard for most/all of our users.
          */
-        return TRUE ;
+        return TRUE;
 
 #if TARGET_HOST_UNIX_X11
 
     case GLUT_HAS_MOUSE:
-        return TRUE ;
+        return TRUE;
 
     case GLUT_NUM_MOUSE_BUTTONS:
         /*
@@ -501,22 +501,22 @@ int  glutDeviceGet( GLenum eWhat )
          * XXX XFree86...)  It is at least worth taking a look at
          * XXX this file.
          */
-        return 3 ;
+        return 3;
 
 #elif TARGET_HOST_WIN32
 
     case GLUT_HAS_MOUSE:
         /*
-         * The Windows can be booted without a mouse. 
+         * The Windows can be booted without a mouse.
          * It would be nice to have this reported.
          */
-        return GetSystemMetrics( SM_MOUSEPRESENT );
+        return GetSystemMetrics(SM_MOUSEPRESENT);
 
     case GLUT_NUM_MOUSE_BUTTONS:
         /*
          * We are much more fortunate under Win32 about this...
          */
-        return GetSystemMetrics( SM_CMOUSEBUTTONS );
+        return GetSystemMetrics(SM_CMOUSEBUTTONS);
 
 #endif
 
@@ -550,7 +550,7 @@ int  glutDeviceGet( GLenum eWhat )
         return GLUT_KEY_REPEAT_DEFAULT;
 
     default:
-        fgWarning( "glutDeviceGet(): missing enum handle %i\n", eWhat );
+        fgWarning("glutDeviceGet(): missing enum handle %i\n", eWhat);
         break;
     }
 
@@ -563,11 +563,9 @@ int  glutDeviceGet( GLenum eWhat )
 /*
  * This should return the current state of ALT, SHIFT and CTRL keys.
  */
-int  glutGetModifiers( void )
-{
-    if( fgState.Modifiers == 0xffffffff )
-    {
-        fgWarning( "glutGetModifiers() called outside an input callback" );
+int glutGetModifiers(void) {
+    if (fgState.Modifiers == 0xffffffff) {
+        fgWarning("glutGetModifiers() called outside an input callback");
         return 0;
     }
 
@@ -577,8 +575,7 @@ int  glutGetModifiers( void )
 /*
  * Return the state of the GLUT API overlay subsystem. A misery ;-)
  */
-int  glutLayerGet( GLenum eWhat )
-{
+int glutLayerGet(GLenum eWhat) {
     freeglut_assert_ready;
 
     /*
@@ -587,8 +584,7 @@ int  glutLayerGet( GLenum eWhat )
      * XXX Can we merge the UNIX/X11 and WIN32 sections?  Or
      * XXX is overlay support planned?
      */
-    switch( eWhat )
-    {
+    switch (eWhat) {
 
 #if TARGET_HOST_UNIX_X11
 
@@ -621,9 +617,9 @@ int  glutLayerGet( GLenum eWhat )
 #elif TARGET_HOST_WIN32
 
     case GLUT_OVERLAY_POSSIBLE:
-/*      return fgSetupPixelFormat( fgStructure.Window, GL_TRUE,
-                                   PFD_OVERLAY_PLANE ); */
-      return FALSE ;
+        /*      return fgSetupPixelFormat( fgStructure.Window, GL_TRUE,
+                                           PFD_OVERLAY_PLANE ); */
+        return FALSE;
 
     case GLUT_LAYER_IN_USE:
         return GLUT_NORMAL;
@@ -650,7 +646,7 @@ int  glutLayerGet( GLenum eWhat )
 #endif
 
     default:
-        fgWarning( "glutLayerGet(): missing enum handle %i\n", eWhat );
+        fgWarning("glutLayerGet(): missing enum handle %i\n", eWhat);
         break;
     }
 

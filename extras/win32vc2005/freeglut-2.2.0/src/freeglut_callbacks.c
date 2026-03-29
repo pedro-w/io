@@ -32,65 +32,52 @@
 #include "../include/GL/freeglut.h"
 #include "freeglut_internal.h"
 
-
 /* -- INTERFACE FUNCTIONS -------------------------------------------------- */
 
 /*
  * All of the callbacks setting methods can be generalized to this:
  */
-#define SET_CALLBACK(a)              \
-    if( fgStructure.Window == NULL ) \
-        return;                      \
-    FETCH_WCB( ( *( fgStructure.Window ) ), a ) = callback;
+#define SET_CALLBACK(a)                                                        \
+    if (fgStructure.Window == NULL)                                            \
+        return;                                                                \
+    FETCH_WCB((*(fgStructure.Window)), a) = callback;
 
-void  glutDropFilesFunc(void (*callback)(int, int, const char*, int))
-{
-	SET_CALLBACK( DropFiles );
-
+void glutDropFilesFunc(void (*callback)(int, int, const char *, int)) {
+    SET_CALLBACK(DropFiles);
 }
 
 /*
  * Sets the Display callback for the current window
  */
-void  glutDisplayFunc( void (* callback)( void ) )
-{
-    if( !callback )
-        fgError( "Fatal error in program.  NULL display callback not "
-                 "permitted in GLUT 3.0+ or freeglut 2.0.1+\n" );
-    SET_CALLBACK( Display );
+void glutDisplayFunc(void (*callback)(void)) {
+    if (!callback)
+        fgError("Fatal error in program.  NULL display callback not "
+                "permitted in GLUT 3.0+ or freeglut 2.0.1+\n");
+    SET_CALLBACK(Display);
     fgStructure.Window->State.Redisplay = GL_TRUE;
 }
 
 /*
  * Sets the Reshape callback for the current window
  */
-void  glutReshapeFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( Reshape );
-}
+void glutReshapeFunc(void (*callback)(int, int)) { SET_CALLBACK(Reshape); }
 
 /*
  * Sets the Keyboard callback for the current window
  */
-void  glutKeyboardFunc( void (* callback)
-                                  ( unsigned char, int, int ) )
-{
-    SET_CALLBACK( Keyboard );
+void glutKeyboardFunc(void (*callback)(unsigned char, int, int)) {
+    SET_CALLBACK(Keyboard);
 }
 
 /*
  * Sets the Special callback for the current window
  */
-void  glutSpecialFunc( void (* callback)( int, int, int ) )
-{
-    SET_CALLBACK( Special );
-}
+void glutSpecialFunc(void (*callback)(int, int, int)) { SET_CALLBACK(Special); }
 
 /*
  * Sets the global idle callback
  */
-void  glutIdleFunc( void (* callback)( void ) )
-{
+void glutIdleFunc(void (*callback)(void)) {
     freeglut_assert_ready;
     fgState.IdleCallback = callback;
 }
@@ -98,163 +85,133 @@ void  glutIdleFunc( void (* callback)( void ) )
 /*
  * Sets the Timer callback for the current window
  */
-void  glutTimerFunc( unsigned int timeOut, void (* callback)( int ),
-                               int timerID )
-{
+void glutTimerFunc(unsigned int timeOut, void (*callback)(int), int timerID) {
     SFG_Timer *timer, *node;
 
     freeglut_assert_ready;
 
-    if( (timer = fgState.FreeTimers.Last) )
-    {
-        fgListRemove( &fgState.FreeTimers, &timer->Node );
-    }
-    else
-    {
-        if( ! (timer = malloc(sizeof(SFG_Timer))) )
-            fgError( "Fatal error: "
-                     "Memory allocation failure in glutTimerFunc()\n" );
+    if ((timer = fgState.FreeTimers.Last)) {
+        fgListRemove(&fgState.FreeTimers, &timer->Node);
+    } else {
+        if (!(timer = malloc(sizeof(SFG_Timer))))
+            fgError("Fatal error: "
+                    "Memory allocation failure in glutTimerFunc()\n");
     }
 
-    timer->Callback  = callback;
-    timer->ID        = timerID;
+    timer->Callback = callback;
+    timer->ID = timerID;
     timer->TriggerTime = fgElapsedTime() + timeOut;
 
-    for( node = fgState.Timers.First; node; node = node->Node.Next )
-    {
-        if( node->TriggerTime > timer->TriggerTime )
+    for (node = fgState.Timers.First; node; node = node->Node.Next) {
+        if (node->TriggerTime > timer->TriggerTime)
             break;
     }
 
-    fgListInsert( &fgState.Timers, &node->Node, &timer->Node );
+    fgListInsert(&fgState.Timers, &node->Node, &timer->Node);
 }
 
 /*
  * Sets the Visibility callback for the current window.
  */
-static void fghVisibility( int status )
-{
+static void fghVisibility(int status) {
     int glut_status = GLUT_VISIBLE;
-    
-    freeglut_assert_ready;
-    freeglut_return_if_fail( fgStructure.Window );
 
-    if( ( GLUT_HIDDEN == status )  || ( GLUT_FULLY_COVERED == status ) )
+    freeglut_assert_ready;
+    freeglut_return_if_fail(fgStructure.Window);
+
+    if ((GLUT_HIDDEN == status) || (GLUT_FULLY_COVERED == status))
         glut_status = GLUT_NOT_VISIBLE;
-    INVOKE_WCB( *( fgStructure.Window ), Visibility, ( glut_status ) );
+    INVOKE_WCB(*(fgStructure.Window), Visibility, (glut_status));
 }
 
-void  glutVisibilityFunc( void (* callback)( int ) )
-{
-    SET_CALLBACK( Visibility );
+void glutVisibilityFunc(void (*callback)(int)) {
+    SET_CALLBACK(Visibility);
 
-    if( callback )
-        glutWindowStatusFunc( fghVisibility );
+    if (callback)
+        glutWindowStatusFunc(fghVisibility);
     else
-        glutWindowStatusFunc( NULL );
+        glutWindowStatusFunc(NULL);
 }
 
 /*
  * Sets the keyboard key release callback for the current window
  */
-void  glutKeyboardUpFunc( void (* callback)
-                                    ( unsigned char, int, int ) )
-{
-    SET_CALLBACK( KeyboardUp );
+void glutKeyboardUpFunc(void (*callback)(unsigned char, int, int)) {
+    SET_CALLBACK(KeyboardUp);
 }
 
 /*
  * Sets the special key release callback for the current window
  */
-void  glutSpecialUpFunc( void (* callback)( int, int, int ) )
-{
-    SET_CALLBACK( SpecialUp );
+void glutSpecialUpFunc(void (*callback)(int, int, int)) {
+    SET_CALLBACK(SpecialUp);
 }
 
 /*
  * Sets the joystick callback and polling rate for the current window
  */
-void  glutJoystickFunc( void (* callback)
-                                  ( unsigned int, int, int, int ),
-                                  int pollInterval )
-{
-    SET_CALLBACK( Joystick );
+void glutJoystickFunc(void (*callback)(unsigned int, int, int, int),
+                      int pollInterval) {
+    SET_CALLBACK(Joystick);
     fgStructure.Window->State.JoystickPollRate = pollInterval;
 
     fgStructure.Window->State.JoystickLastPoll =
         fgElapsedTime() - fgStructure.Window->State.JoystickPollRate;
 
-    if( fgStructure.Window->State.JoystickLastPoll < 0 )
+    if (fgStructure.Window->State.JoystickLastPoll < 0)
         fgStructure.Window->State.JoystickLastPoll = 0;
 }
 
 /*
  * Sets the mouse callback for the current window
  */
-void  glutMouseFunc( void (* callback)( int, int, int, int ) )
-{
-    SET_CALLBACK( Mouse );
+void glutMouseFunc(void (*callback)(int, int, int, int)) {
+    SET_CALLBACK(Mouse);
 }
 
 /*
  * Sets the mouse wheel callback for the current window
  */
-void  glutMouseWheelFunc( void (* callback)( int, int, int, int ) )
-{
-    SET_CALLBACK( MouseWheel );
+void glutMouseWheelFunc(void (*callback)(int, int, int, int)) {
+    SET_CALLBACK(MouseWheel);
 }
 
 /*
  * Sets the mouse motion callback for the current window (one or more buttons
  * are pressed)
  */
-void  glutMotionFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( Motion );
-}
+void glutMotionFunc(void (*callback)(int, int)) { SET_CALLBACK(Motion); }
 
 /*
  * Sets the passive mouse motion callback for the current window (no mouse
  * buttons are pressed)
  */
-void  glutPassiveMotionFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( Passive );
+void glutPassiveMotionFunc(void (*callback)(int, int)) {
+    SET_CALLBACK(Passive);
 }
 
 /*
  * Window mouse entry/leave callback
  */
-void  glutEntryFunc( void (* callback)( int ) )
-{
-    SET_CALLBACK( Entry );
-}
+void glutEntryFunc(void (*callback)(int)) { SET_CALLBACK(Entry); }
 
 /*
  * Window destruction callbacks
  */
-void  glutCloseFunc( void (* callback)( void ) )
-{
-    SET_CALLBACK( Destroy );
-}
+void glutCloseFunc(void (*callback)(void)) { SET_CALLBACK(Destroy); }
 
-void  glutWMCloseFunc( void (* callback)( void ) )
-{
-    glutCloseFunc( callback );
-}
+void glutWMCloseFunc(void (*callback)(void)) { glutCloseFunc(callback); }
 
 /* A. Donev: Destruction callback for menus */
-void  glutMenuDestroyFunc( void (* callback)( void ) )
-{
-    if( fgStructure.Menu )
+void glutMenuDestroyFunc(void (*callback)(void)) {
+    if (fgStructure.Menu)
         fgStructure.Menu->Destroy = callback;
 }
 
 /*
  * Deprecated version of glutMenuStatusFunc callback setting method
  */
-void  glutMenuStateFunc( void (* callback)( int ) )
-{
+void glutMenuStateFunc(void (*callback)(int)) {
     freeglut_assert_ready;
     fgState.MenuStateCallback = callback;
 }
@@ -262,8 +219,7 @@ void  glutMenuStateFunc( void (* callback)( int ) )
 /*
  * Sets the global menu status callback for the current window
  */
-void  glutMenuStatusFunc( void (* callback)( int, int, int ) )
-{
+void glutMenuStatusFunc(void (*callback)(int, int, int)) {
     freeglut_assert_ready;
     fgState.MenuStatusCallback = callback;
 }
@@ -271,73 +227,58 @@ void  glutMenuStatusFunc( void (* callback)( int, int, int ) )
 /*
  * Sets the overlay display callback for the current window
  */
-void  glutOverlayDisplayFunc( void (* callback)( void ) )
-{
-    SET_CALLBACK( OverlayDisplay );
+void glutOverlayDisplayFunc(void (*callback)(void)) {
+    SET_CALLBACK(OverlayDisplay);
 }
 
 /*
  * Sets the window status callback for the current window
  */
-void  glutWindowStatusFunc( void (* callback)( int ) )
-{
-    SET_CALLBACK( WindowStatus );
-}
+void glutWindowStatusFunc(void (*callback)(int)) { SET_CALLBACK(WindowStatus); }
 
 /*
  * Sets the spaceball motion callback for the current window
  */
-void  glutSpaceballMotionFunc( void (* callback)( int, int, int ) )
-{
-    SET_CALLBACK( SpaceMotion );
+void glutSpaceballMotionFunc(void (*callback)(int, int, int)) {
+    SET_CALLBACK(SpaceMotion);
 }
 
 /*
  * Sets the spaceball rotate callback for the current window
  */
-void  glutSpaceballRotateFunc( void (* callback)( int, int, int ) )
-{
-    SET_CALLBACK( SpaceRotation );
+void glutSpaceballRotateFunc(void (*callback)(int, int, int)) {
+    SET_CALLBACK(SpaceRotation);
 }
 
 /*
  * Sets the spaceball button callback for the current window
  */
-void  glutSpaceballButtonFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( SpaceButton );
+void glutSpaceballButtonFunc(void (*callback)(int, int)) {
+    SET_CALLBACK(SpaceButton);
 }
 
 /*
  * Sets the button box callback for the current window
  */
-void  glutButtonBoxFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( ButtonBox );
-}
+void glutButtonBoxFunc(void (*callback)(int, int)) { SET_CALLBACK(ButtonBox); }
 
 /*
  * Sets the dials box callback for the current window
  */
-void  glutDialsFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( Dials );
-}
+void glutDialsFunc(void (*callback)(int, int)) { SET_CALLBACK(Dials); }
 
 /*
  * Sets the tablet motion callback for the current window
  */
-void  glutTabletMotionFunc( void (* callback)( int, int ) )
-{
-    SET_CALLBACK( TabletMotion );
+void glutTabletMotionFunc(void (*callback)(int, int)) {
+    SET_CALLBACK(TabletMotion);
 }
 
 /*
  * Sets the tablet buttons callback for the current window
  */
-void  glutTabletButtonFunc( void (* callback)( int, int, int, int ) )
-{
-    SET_CALLBACK( TabletButton );
+void glutTabletButtonFunc(void (*callback)(int, int, int, int)) {
+    SET_CALLBACK(TabletButton);
 }
 
 /*** END OF FILE ***/

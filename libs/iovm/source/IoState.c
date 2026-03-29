@@ -19,7 +19,7 @@
 #include "IoBlock.h"
 #include "IoList.h"
 #include "IoMap.h"
-//#include "IoRange.h"
+// #include "IoRange.h"
 #include "IoFile.h"
 #include "IoDate.h"
 #include "IoDuration.h"
@@ -36,7 +36,7 @@
 #include "IoSandbox.h"
 #include "IoDirectory.h"
 #include "IoProfiler.h"
-//#include "IoEditLine.h"
+// #include "IoEditLine.h"
 
 #include <stdlib.h>
 
@@ -46,10 +46,11 @@ void IoVMCodeInit(IoObject *context);
 // Called once during init after all protos are registered.
 // Aliases (e.g., false.elseif := Object getSlot("if")) automatically
 // inherit the flag since they reference the same CFunction object.
-static void IoState_markSlotLazyArgs_(IoState *self, const char *protoId,
+static void IoState_markSlotLazyArgs_(IoState *self, IoObject *object,
                                       const char *slotName) {
-    IoObject *proto = IoState_protoWithId_(self, protoId);
-    if (!proto) return;
+    IoObject *proto = IoObject_firstProto(object);
+    if (!proto)
+        return;
     IoObject *f = IoObject_rawGetSlot_(proto, SIOSYMBOL(slotName));
     if (f && ISCFUNCTION(f)) {
         ((IoCFunctionData *)IoObject_dataPointer(f))->isLazyArgs = 1;
@@ -58,36 +59,43 @@ static void IoState_markSlotLazyArgs_(IoState *self, const char *protoId,
 
 static void IoState_markLazyArgsCFunctions_(IoState *self) {
     // Control flow
-    IoState_markSlotLazyArgs_(self, "Object", "if");
-    IoState_markSlotLazyArgs_(self, "Object", "while");
-    IoState_markSlotLazyArgs_(self, "Object", "for");
-    IoState_markSlotLazyArgs_(self, "Object", "loop");
+    IoObject *an_object = IoObject_new(self);
+    IoObject *a_list = IoList_new(self);
+    IoObject *a_number = IoNumber_newWithDouble_(self, 0.0);
+    IoObject *a_date = IoDate_new(self);
+    IoObject *a_sequence = IoSeq_new(self);
+    IoObject *a_map = IoMap_new(self);
+    IoObject *a_file = IoFile_new(self);
+    IoState_markSlotLazyArgs_(self, an_object, "if");
+    IoState_markSlotLazyArgs_(self, an_object, "while");
+    IoState_markSlotLazyArgs_(self, an_object, "for");
+    IoState_markSlotLazyArgs_(self, an_object, "loop");
 #ifdef IO_CALLCC
-    IoState_markSlotLazyArgs_(self, "Object", "callcc");
+    IoState_markSlotLazyArgs_(self, an_object, "callcc");
 #endif
     // Block/method construction
-    IoState_markSlotLazyArgs_(self, "Object", "method");
-    IoState_markSlotLazyArgs_(self, "Object", "block");
+    IoState_markSlotLazyArgs_(self, an_object, "method");
+    IoState_markSlotLazyArgs_(self, an_object, "block");
     // Evaluation (body is lazy)
-    IoState_markSlotLazyArgs_(self, "Object", "do");
-    IoState_markSlotLazyArgs_(self, "Object", "lexicalDo");
-    IoState_markSlotLazyArgs_(self, "Object", "message");
-    IoState_markSlotLazyArgs_(self, "Object", "foreachSlot");
+    IoState_markSlotLazyArgs_(self, an_object, "do");
+    IoState_markSlotLazyArgs_(self, an_object, "lexicalDo");
+    IoState_markSlotLazyArgs_(self, an_object, "message");
+    IoState_markSlotLazyArgs_(self, an_object, "foreachSlot");
     // List
-    IoState_markSlotLazyArgs_(self, "List", "foreach");
-    IoState_markSlotLazyArgs_(self, "List", "reverseForeach");
-    IoState_markSlotLazyArgs_(self, "List", "sortInPlace");
+    IoState_markSlotLazyArgs_(self, a_list, "foreach");
+    IoState_markSlotLazyArgs_(self, a_list, "reverseForeach");
+    IoState_markSlotLazyArgs_(self, a_list, "sortInPlace");
     // Number
-    IoState_markSlotLazyArgs_(self, "Number", "repeat");
+    IoState_markSlotLazyArgs_(self, a_number, "repeat");
     // Date
-    IoState_markSlotLazyArgs_(self, "Date", "cpuSecondsToRun");
+    IoState_markSlotLazyArgs_(self, a_date, "cpuSecondsToRun");
     // Sequence
-    IoState_markSlotLazyArgs_(self, "Sequence", "foreach");
+    IoState_markSlotLazyArgs_(self, a_sequence, "foreach");
     // Map
-    IoState_markSlotLazyArgs_(self, "Map", "foreach");
+    IoState_markSlotLazyArgs_(self, a_map, "foreach");
     // File
-    IoState_markSlotLazyArgs_(self, "File", "foreach");
-    IoState_markSlotLazyArgs_(self, "File", "foreachLine");
+    IoState_markSlotLazyArgs_(self, a_file, "foreach");
+    IoState_markSlotLazyArgs_(self, a_file, "foreachLine");
 }
 
 void IoState_new_atAddress(void *address) {
@@ -273,7 +281,7 @@ void IoState_new_atAddress(void *address) {
         // Initialize iterative evaluation frame stack
         self->currentFrame = NULL;
         self->frameDepth = 0;
-        self->maxFrameDepth = 10000;  // Default max depth
+        self->maxFrameDepth = 10000; // Default max depth
         self->framePoolCount = 0;
         memset(self->framePool, 0, sizeof(self->framePool));
         self->needsControlFlowHandling = 0;
@@ -335,8 +343,6 @@ void IoState_setupQuickAccessSymbols(IoState *self) {
     self->typeSymbol = IoState_retainedSymbol(self, "type");
     self->updateSlotSymbol = IoState_retainedSymbol(self, "updateSlot");
 
-
-
     self->runTargetSymbol = IoState_retainedSymbol(self, "runTarget");
     self->runMessageSymbol = IoState_retainedSymbol(self, "runMessage");
     self->runLocalsSymbol = IoState_retainedSymbol(self, "runLocals");
@@ -357,7 +363,8 @@ void IoState_setupSingletons(IoState *self) {
     IoObject_setSlot_to_(core, SIOSYMBOL("Call"), IoCall_proto(self));
 
     // Cache Call tag/proto for inline allocation in block activation
-    self->callProto = IoState_protoWithId_(self, "Call");
+    IoCall *dummy = IoCall_new(self);
+    self->callProto = IoObject_firstProto(dummy);
     self->callTag = IoObject_tag(self->callProto);
     self->blockLocalsPoolSize = 0;
     self->callPoolSize = 0;

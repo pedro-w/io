@@ -45,11 +45,12 @@ typedef IoObject IoCoroutine;
  * The eval loop continues processing whatever frames are now current.
  */
 typedef struct {
-    IoObject *frameStack;             // Suspended frame stack (IoEvalFrame, NULL if running)
-    Stack *ioStack;                   // Retain stack for GC
-    int stopStatus;                   // Per-coroutine stop status
-    IoObject *returnValue;            // Per-coroutine return value
-    int frameDepth;                   // Saved frame depth (avoids O(n) recalc on switch)
+    IoObject
+        *frameStack; // Suspended frame stack (IoEvalFrame, NULL if running)
+    Stack *ioStack;  // Retain stack for GC
+    int stopStatus;  // Per-coroutine stop status
+    IoObject *returnValue; // Per-coroutine return value
+    int frameDepth;        // Saved frame depth (avoids O(n) recalc on switch)
     int debuggingOn;
 } IoCoroutineData;
 
@@ -68,7 +69,8 @@ IOVM_API IO_METHOD(IoCoroutine, freeStack);
 
 // Frame-based coroutine state management
 IOVM_API void IoCoroutine_saveState_(IoCoroutine *self, struct IoState *state);
-IOVM_API void IoCoroutine_restoreState_(IoCoroutine *self, struct IoState *state);
+IOVM_API void IoCoroutine_restoreState_(IoCoroutine *self,
+                                        struct IoState *state);
 IOVM_API IoObject *IoCoroutine_rawFrameStack(IoCoroutine *self);
 
 // label

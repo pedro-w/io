@@ -1,5 +1,5 @@
-#ifndef  __FREEGLUT_H__
-#define  __FREEGLUT_H__
+#ifndef __FREEGLUT_H__
+#define __FREEGLUT_H__
 
 /*
  * freeglut.h
@@ -14,7 +14,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-//#define FREEGLUT_STATIC
+// #define FREEGLUT_STATIC
 
 #include "freeglut_std.h"
 #include "freeglut_ext.h"

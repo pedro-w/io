@@ -31,7 +31,7 @@
  * @date Created: Tue Apr 21 15:32:02 1998 pessi
  */
 
-//#include "config.h"
+// #include "config.h"
 
 #include "utf8.h"
 #include "utf8internal.h"

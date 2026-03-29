@@ -309,7 +309,7 @@ int Levels_isAssignOperator(Levels *self, IoSymbol *operator) {
 }
 
 IoSymbol *Levels_nameForAssignOperator(Levels *self, IoState *state,
-                                       IoSymbol *operator, IoSymbol * slotName,
+                                       IoSymbol *operator, IoSymbol *slotName,
                                        IoMessage *msg) {
     IoObject *value = IoMap_rawAt(self->assignOperatorTable, operator);
     const char *operatorString = CSTRING(operator);
@@ -387,7 +387,7 @@ void Levels_attach(Levels *self, IoMessage *msg, List *expressions) {
             // which may be NULL, and make a copy.
             IoMessage *rest = DATA(msg)->next;
             if (rest) {
-	        rest = DATA(rest)->next;
+                rest = DATA(rest)->next;
             }
             if (rest) {
                 rest = IoMessage_deepCopyOf_(rest);

@@ -16,10 +16,11 @@ extern "C" {
 
 #define IoObject_clean(self) PHash_clean(IoObject_slots(self));
 #define IOREF(value) IoObject_addingRef_((IoObject *)self, (IoObject *)value)
-//#define IOALLOCREF(value) IoObject_isReferenced_(value, 1)
+// #define IOALLOCREF(value) IoObject_isReferenced_(value, 1)
 
 #ifdef COLLECTOR_USE_REFCOUNT
-#define IOUNREF(value) Collector_value_removingRefTo_(IOCOLLECTOR, (void *)(value))
+#define IOUNREF(value)                                                         \
+    Collector_value_removingRefTo_(IOCOLLECTOR, (void *)(value))
 #else
 #define IOUNREF(value)
 #endif

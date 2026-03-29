@@ -134,7 +134,8 @@ IO_METHOD(IoMap, at) {
     */
 
     IoSymbol *k = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     void *result = PHash_at_(DATA(self), k);
 
     if (!result && IoMessage_argCount(m) > 1) {
@@ -150,9 +151,11 @@ IO_METHOD(IoMap, atPut) {
     */
 
     IoSymbol *k = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoObject *v = IoMessage_locals_valueArgAt_(m, locals, 1);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
     IoMap_rawAtPut(self, k, v);
     return self;
 }
@@ -164,7 +167,8 @@ IO_METHOD(IoMap, atIfAbsentPut) {
     */
 
     IoSymbol *k = IoMessage_locals_symbolArgAt_(m, locals, 0);
-    if (IOSTATE->errorRaised) return IONIL(self);
+    if (IOSTATE->errorRaised)
+        return IONIL(self);
 
     if (PHash_at_(DATA(self), k) == NULL) {
         IoObject *v = IoMessage_locals_valueArgAt_(m, locals, 1);
@@ -255,7 +259,8 @@ aMap foreach(k, v, myBlock(k, v))</pre>
     IoMessage *doMessage;
 
     IoMessage_foreachArgs(m, self, &keyName, &valueName, &doMessage);
-    if (state->errorRaised) return IONIL(self);
+    if (state->errorRaised)
+        return IONIL(self);
 
     // Iterative path: build keys list for index-based iteration
     if (state->currentFrame != NULL) {

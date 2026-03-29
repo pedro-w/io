@@ -74,7 +74,7 @@ struct IoObjectData {
 
 #define IoObject_state(self) ((IoState *)(IoObject_tag(self)->state))
 #define IOSTATE ((IoState *)(IoObject_tag(self)->state))
-//#define IOSTATE IoObject_state(state)
+// #define IOSTATE IoObject_state(state)
 
 #define IoObject_dataPointer(self) IoObject_deref(self)->data.ptr
 #define IoObject_setDataPointer_(self, v)                                      \

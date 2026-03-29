@@ -51,10 +51,12 @@ IoObject *IoState_on_doCString_withLabel_(IoState *self, IoObject *target,
     Stack *ioStackBefore;
     Stack *ioStackAfter;
     callDepth++;
-    fprintf(stderr, ">>> on_doCString ENTER (depth=%d, label=%s)\n", callDepth, label ? label : "NULL");
+    fprintf(stderr, ">>> on_doCString ENTER (depth=%d, label=%s)\n", callDepth,
+            label ? label : "NULL");
     fflush(stderr);
     ioStackBefore = self->currentIoStack;
-    fprintf(stderr, "on_doCString: ioStack before push = %p\n", (void*)ioStackBefore);
+    fprintf(stderr, "on_doCString: ioStack before push = %p\n",
+            (void *)ioStackBefore);
     fflush(stderr);
 #endif
 
@@ -78,7 +80,7 @@ IoObject *IoState_on_doCString_withLabel_(IoState *self, IoObject *target,
 #ifdef DEBUG_CORO_EVAL
     ioStackAfter = self->currentIoStack;
     fprintf(stderr, "on_doCString: ioStack after tryToPerform = %p (was %p)\n",
-            (void*)ioStackAfter, (void*)ioStackBefore);
+            (void *)ioStackAfter, (void *)ioStackBefore);
     fflush(stderr);
 
     if (ioStackBefore != ioStackAfter) {
@@ -90,7 +92,8 @@ IoObject *IoState_on_doCString_withLabel_(IoState *self, IoObject *target,
     IoState_popRetainPoolExceptFor_(self, result);
 
 #ifdef DEBUG_CORO_EVAL
-    fprintf(stderr, "<<< on_doCString EXIT (depth=%d, result=%p)\n", callDepth, (void*)result);
+    fprintf(stderr, "<<< on_doCString EXIT (depth=%d, result=%p)\n", callDepth,
+            (void *)result);
     callDepth--;
     fflush(stderr);
 #endif

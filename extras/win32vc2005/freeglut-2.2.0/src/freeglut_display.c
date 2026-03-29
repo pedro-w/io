@@ -32,14 +32,12 @@
 #include "../include/GL/freeglut.h"
 #include "freeglut_internal.h"
 
-
 /* -- INTERFACE FUNCTIONS -------------------------------------------------- */
 
 /*
  * Marks the current window to have the redisplay performed when possible...
  */
-void  glutPostRedisplay( void )
-{
+void glutPostRedisplay(void) {
     freeglut_assert_ready;
     freeglut_assert_window;
     fgStructure.Window->State.Redisplay = GL_TRUE;
@@ -48,35 +46,31 @@ void  glutPostRedisplay( void )
 /*
  * Swaps the buffers for the current window (if any)
  */
-void  glutSwapBuffers( void )
-{
+void glutSwapBuffers(void) {
     freeglut_assert_ready;
     freeglut_assert_window;
 
-    glFlush( );
-    if( ! fgStructure.Window->Window.DoubleBuffered )
+    glFlush();
+    if (!fgStructure.Window->Window.DoubleBuffered)
         return;
 
 #if TARGET_HOST_UNIX_X11
-    glXSwapBuffers( fgDisplay.Display, fgStructure.Window->Window.Handle );
+    glXSwapBuffers(fgDisplay.Display, fgStructure.Window->Window.Handle);
 #elif TARGET_HOST_WIN32
-    SwapBuffers( fgStructure.Window->Window.Device );
+    SwapBuffers(fgStructure.Window->Window.Device);
 #endif
 
     /* GLUT_FPS env var support */
-    if( fgState.FPSInterval )
-    {
-        GLint t = glutGet( GLUT_ELAPSED_TIME );
+    if (fgState.FPSInterval) {
+        GLint t = glutGet(GLUT_ELAPSED_TIME);
         fgState.SwapCount++;
-        if( fgState.SwapTime == 0 )
+        if (fgState.SwapTime == 0)
             fgState.SwapTime = t;
-        else if( t - fgState.SwapTime > fgState.FPSInterval )
-        {
-            float time = 0.001f * ( t - fgState.SwapTime );
-            float fps = ( float )fgState.SwapCount / time;
-            fprintf( stderr,
-                     "freeglut: %d frames in %.2f seconds = %.2f FPS\n",
-                     fgState.SwapCount, time, fps );
+        else if (t - fgState.SwapTime > fgState.FPSInterval) {
+            float time = 0.001f * (t - fgState.SwapTime);
+            float fps = (float)fgState.SwapCount / time;
+            fprintf(stderr, "freeglut: %d frames in %.2f seconds = %.2f FPS\n",
+                    fgState.SwapCount, time, fps);
             fgState.SwapTime = t;
             fgState.SwapCount = 0;
         }
@@ -86,13 +80,12 @@ void  glutSwapBuffers( void )
 /*
  * Mark appropriate window to be displayed
  */
-void  glutPostWindowRedisplay( int windowID )
-{
-    SFG_Window* window;
+void glutPostWindowRedisplay(int windowID) {
+    SFG_Window *window;
 
     freeglut_assert_ready;
-    window = fgWindowByID( windowID );
-    freeglut_return_if_fail( window );
+    window = fgWindowByID(windowID);
+    freeglut_return_if_fail(window);
     window->State.Redisplay = GL_TRUE;
 }
 
